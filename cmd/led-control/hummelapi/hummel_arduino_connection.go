@@ -141,6 +141,8 @@ func (o *HummelArduinoConnection) WaitRepsonse(cmd *HummelCommandResponse, timeo
 
 func (o *HummelArduinoConnection) HummelCommand(cmdType byte, cmdCode byte, data []byte) (*HummelCommandResponse, error) {
 	cmd := newHummelCommand(cmdType, cmdCode, data)
+	b:= cmd.GetCmdBytes()
+	_=b
 	if _, err := o.port.Write(cmd.GetCmdBytes()); err != nil {
 		return nil, err
 	}

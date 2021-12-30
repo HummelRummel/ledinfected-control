@@ -32,7 +32,7 @@ type (
 func (o *HummelArduinoLedStripePaletteConfig) getBytes() []byte {
 	var sortedPaletteCHSV [16]CHSV
 	for i := 0; i < 16; i++ {
-		sortedPaletteCHSV[o.Palette[i].ID] = o.Palette[i]
+		sortedPaletteCHSV[o.Palette[i].ID - 1] = o.Palette[i]
 	}
 	var paletteBytes []byte
 	for i := 0; i < 16; i++ {
@@ -61,9 +61,10 @@ func castStripePalatteConfig(buf []byte, offset int) (*HummelArduinoLedStripePal
 	for i := 0; i < 16; i++ {
 		byteBaseIndex := i * 3
 		o.Palette[i] = CHSV{
-			H: buf[offset+byteBaseIndex],
-			S: buf[offset+byteBaseIndex+1],
-			V: buf[offset+byteBaseIndex+2],
+			ID: uint8(i + 1),
+			H:  buf[offset+byteBaseIndex],
+			S:  buf[offset+byteBaseIndex+1],
+			V:  buf[offset+byteBaseIndex+2],
 		}
 	}
 	return o, nil
@@ -78,9 +79,10 @@ func castStripePalatteConfigTyp(buf []byte, offset int) (*HummelArduinoLedStripe
 	for i := 0; i < 16; i++ {
 		byteBaseIndex := i * 3
 		o.Palette[i] = CHSV{
-			H: buf[offset+byteBaseIndex],
-			S: buf[offset+byteBaseIndex+1],
-			V: buf[offset+byteBaseIndex+2],
+			ID: uint8(i + 1),
+			H:  buf[offset+byteBaseIndex],
+			S:  buf[offset+byteBaseIndex+1],
+			V:  buf[offset+byteBaseIndex+2],
 		}
 	}
 	return o, nil

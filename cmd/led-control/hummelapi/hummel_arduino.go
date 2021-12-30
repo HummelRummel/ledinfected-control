@@ -18,8 +18,15 @@ func NewHummelArduino(devFile string) (*HummelArduino, error) {
 	}
 	o := &HummelArduino{
 		connection:    connection,
-		CircleStripe:  HummelArduinoLedStripe{},
-		RadialStripes: [4]HummelArduinoLedStripe{},
+		CircleStripe:  HummelArduinoLedStripe{
+			connection: connection, stripeType: hummelCommandTypeCircle, setupType: hummelCommandTypeSetupCircle,
+		},
+		RadialStripes: [4]HummelArduinoLedStripe{
+			{connection: connection, stripeType: hummelCommandTypeRadial1, setupType: hummelCommandTypeSetupRadial1},
+			{connection: connection, stripeType: hummelCommandTypeRadial2, setupType: hummelCommandTypeSetupRadial2},
+			{connection: connection, stripeType: hummelCommandTypeRadial3, setupType: hummelCommandTypeSetupRadial3},
+			{connection: connection, stripeType: hummelCommandTypeRadial4, setupType: hummelCommandTypeSetupRadial4},
+		},
 	}
 
 	return o, nil
@@ -66,12 +73,12 @@ func (o *HummelArduino) GetConfig() (*HummelArduinoConfig, error) {
 		if err != nil {
 			return nil, err
 		}
-		baseConfig, err := castStripeBaseConfig(response.data, indexOffset)
+		baseConfig, err := castStripeBaseConfig(response.data, indexOffset+2)
 		if err != nil {
 			return nil, err
 		}
 
-		palette, err := castStripePalatteConfig(response.data, indexOffset)
+		palette, err := castStripePalatteConfig(response.data, indexOffset+5)
 		if err != nil {
 			return nil, err
 		}

@@ -90,11 +90,11 @@ func (o *apiServer) getCallbackArdoinoAndStripe(c *gin.Context) (*hummelapi.Humm
 	case "radial1":
 		return a, &a.RadialStripes[0], nil
 	case "radial2":
-		return a, &a.RadialStripes[0], nil
+		return a, &a.RadialStripes[1], nil
 	case "radial3":
-		return a, &a.RadialStripes[0], nil
+		return a, &a.RadialStripes[2], nil
 	case "radial4":
-		return a, &a.RadialStripes[0], nil
+		return a, &a.RadialStripes[3], nil
 	default:
 		return nil, nil, fmt.Errorf("stripe %s not suported", stripeID)
 	}
@@ -144,6 +144,9 @@ func (o *apiServer) setPinConfigNumLEDsCallback(c *gin.Context) {
 
 	if err := s.SetNumLeds(pinConfig.NumLEDs); err != nil {
 		fmt.Printf("failed to set num leds: %s\n", err)
+		c.String(http.StatusBadRequest, "failed to set num leds")
+		return
+
 	}
 	c.JSON(http.StatusOK, "{}")
 }
@@ -157,6 +160,7 @@ func (o *apiServer) savePinConfigCallback(c *gin.Context) {
 
 	if err := s.SavePinConfig(); err != nil {
 		fmt.Printf("failed to save pin config: %s\n", err)
+		c.String(http.StatusBadRequest, "failed to save pin config")
 	}
 	c.JSON(http.StatusOK, "{}")
 }
@@ -242,6 +246,8 @@ func (o *apiServer) setPaletteConfigCallback(c *gin.Context) {
 
 	if err := s.SetPaletteCHSV(&paletteConfig); err != nil {
 		fmt.Printf("failed to set palette config: %s\n", err)
+		c.String(http.StatusBadRequest, "failed to set palette config")
+		return
 	}
 
 	c.JSON(http.StatusOK, "{}")
@@ -261,6 +267,8 @@ func (o *apiServer) setPinConfigLedPinCallback(c *gin.Context) {
 
 	if err := s.SetLedPin(pinConfig.LedPin); err != nil {
 		fmt.Printf("failed to set pin led: %s\n", err)
+		c.String(http.StatusBadRequest, "failed to set pin led")
+		return
 	}
 	c.JSON(http.StatusOK, "{}")
 }
