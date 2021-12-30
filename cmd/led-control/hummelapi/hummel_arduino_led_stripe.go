@@ -73,7 +73,7 @@ func (o *HummelArduinoLedStripe) SetPaletteCHSV(palette *HummelArduinoLedStripeP
 	return nil
 }
 
-func (o *HummelArduinoLedStripe) Save() error {
+func (o *HummelArduinoLedStripe) SaveConfig() error {
 	_, err := o.connection.HummelCommand(o.stripeType, hummelCommandCodeSave, nil)
 	return err
 }

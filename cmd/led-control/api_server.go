@@ -6,6 +6,7 @@ import (
 	"github.com/nbmoa/led-control/cmd/led-control/hummelapi"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -49,38 +50,219 @@ func (o *apiServer) run() {
 }
 
 func (o *apiServer) registerEndpoints() {
-	o.engine.GET("/config", o.getSingleConfigCallback)
-	o.engine.GET("/dev/:devFile/config", o.getConfigCallback)
+	o.engine.GET("/config", o.getAllConfigsCallback)
+	o.engine.GET("/ado/:Id/config", o.getConfigByIdCallback)
+	o.engine.POST("/ado/:Id/:Stripe/pin/ledpin", o.setPinConfigLedPinCallback)
+	o.engine.POST("/ado/:Id/:Stripe/pin/numleds", o.setPinConfigNumLEDsCallback)
+	o.engine.POST("/ado/:Id/:Stripe/pin/save", o.savePinConfigCallback)
+	o.engine.POST("/ado/:Id/:Stripe/base/movement/direction", o.setBaseConfigMovementDirectionCallback)
+	o.engine.POST("/ado/:Id/:Stripe/base/movement/speed", o.setBaseConfigMovementSpeedCallback)
+	o.engine.POST("/ado/:Id/:Stripe/base/brightness", o.setBaseConfigBrightnessCallback)
+	o.engine.POST("/ado/:Id/:Stripe/palette", o.setPaletteConfigCallback)
+	o.engine.POST("/ado/:Id/:Stripe/save", o.saveConfigCallback)
+
 }
 
-func (o *apiServer) getConfigCallback(c *gin.Context) {
-	devFile := c.Param("devFile")
-
+func (o *apiServer) getCallbackArduino(c *gin.Context) (*hummelapi.HummelArduino, error) {
+	id, err := strconv.Atoi(c.Param("Id"))
+	if err != nil {
+		return nil, fmt.Errorf("could not read arduino id: %s", err)
+	}
 	for _, a := range o.arduinos {
-		if a.GetDevFile() == devFile {
-			arduinoConfig, err := a.GetConfig()
-			if err != nil {
-				fmt.Printf("failed to read config: %s\n", err)
-			}
-			c.JSON(http.StatusOK, arduinoConfig)
+		if a.GetID() == uint8(id) {
+			return a, nil
 		}
 	}
-	c.String(http.StatusNotFound, "")
+	return nil, fmt.Errorf("arduino with id %d not found", id)
 }
 
-func (o *apiServer) getSingleConfigCallback(c *gin.Context) {
-	if len(o.arduinos) == 1 {
-		arduinoConfig, err := o.arduinos[0].GetConfig()
+func (o *apiServer) getCallbackArdoinoAndStripe(c *gin.Context) (*hummelapi.HummelArduino, *hummelapi.HummelArduinoLedStripe, error) {
+	a, err := o.getCallbackArduino(c)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	stripeID := c.Param("Stripe")
+
+	switch stripeID {
+	case "circle":
+		return a, &a.CircleStripe, nil
+	case "radial1":
+		return a, &a.RadialStripes[0], nil
+	case "radial2":
+		return a, &a.RadialStripes[0], nil
+	case "radial3":
+		return a, &a.RadialStripes[0], nil
+	case "radial4":
+		return a, &a.RadialStripes[0], nil
+	default:
+		return nil, nil, fmt.Errorf("stripe %s not suported", stripeID)
+	}
+
+}
+
+func (o *apiServer) getConfigByIdCallback(c *gin.Context) {
+	a, err := o.getCallbackArduino(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+
+	arduinoConfig, err := a.GetConfig()
+	if err != nil {
+		fmt.Printf("failed to read config: %s\n", err)
+	}
+	c.JSON(http.StatusOK, arduinoConfig)
+}
+
+func (o *apiServer) getAllConfigsCallback(c *gin.Context) {
+	var configs []*hummelapi.HummelArduinoConfig
+	for _, a := range o.arduinos {
+		arduinoConfig, err := a.GetConfig()
 		if err != nil {
 			fmt.Printf("failed to read config: %s\n", err)
 			c.String(http.StatusServiceUnavailable, "")
 			return
 		}
-		c.JSON(http.StatusOK, arduinoConfig)
+		configs = append(configs, arduinoConfig)
+	}
+	c.JSON(http.StatusOK, configs)
+	return
+}
+
+func (o *apiServer) setPinConfigNumLEDsCallback(c *gin.Context) {
+	_, s, err := o.getCallbackArdoinoAndStripe(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
 		return
 	}
-	fmt.Printf("no or more then one arduino found\n")
-	c.String(http.StatusNotFound, "")
+	var pinConfig hummelapi.HummelArduinoLedStripePinConfig
+	if err := c.BindJSON(&pinConfig); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	if err := s.SetNumLeds(pinConfig.NumLEDs); err != nil {
+		fmt.Printf("failed to set num leds: %s\n", err)
+	}
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) savePinConfigCallback(c *gin.Context) {
+	_, s, err := o.getCallbackArdoinoAndStripe(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+
+	if err := s.SavePinConfig(); err != nil {
+		fmt.Printf("failed to save pin config: %s\n", err)
+	}
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setBaseConfigMovementDirectionCallback(c *gin.Context) {
+	_, s, err := o.getCallbackArdoinoAndStripe(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	var baseConfig hummelapi.HummelArduinoLedStripeBaseConfig
+	if err := c.BindJSON(&baseConfig); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	if err := s.SetMovementDirection(baseConfig.MovementDirection); err != nil {
+		fmt.Printf("failed to set movement direction: %s\n", err)
+	}
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setBaseConfigMovementSpeedCallback(c *gin.Context) {
+	_, s, err := o.getCallbackArdoinoAndStripe(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	var baseConfig hummelapi.HummelArduinoLedStripeBaseConfig
+	if err := c.BindJSON(&baseConfig); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	if err := s.SetMovementSpeed(baseConfig.MovementSpeed); err != nil {
+		fmt.Printf("failed to set movement speed: %s\n", err)
+	}
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setBaseConfigBrightnessCallback(c *gin.Context) {
+	_, s, err := o.getCallbackArdoinoAndStripe(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	var baseConfig hummelapi.HummelArduinoLedStripeBaseConfig
+	if err := c.BindJSON(&baseConfig); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	if err := s.SetBrightness(baseConfig.Brightness); err != nil {
+		fmt.Printf("failed to set brightness: %s\n", err)
+	}
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) saveConfigCallback(c *gin.Context) {
+	_, s, err := o.getCallbackArdoinoAndStripe(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+
+	if err := s.SaveConfig(); err != nil {
+		fmt.Printf("failed to save config: %s\n", err)
+	}
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setPaletteConfigCallback(c *gin.Context) {
+	_, s, err := o.getCallbackArdoinoAndStripe(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	var paletteConfig hummelapi.HummelArduinoLedStripePaletteConfig
+	if err := c.BindJSON(&paletteConfig); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	if err := s.SetPaletteCHSV(&paletteConfig); err != nil {
+		fmt.Printf("failed to set palette config: %s\n", err)
+	}
+
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setPinConfigLedPinCallback(c *gin.Context) {
+	_, s, err := o.getCallbackArdoinoAndStripe(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	var pinConfig hummelapi.HummelArduinoLedStripePinConfig
+	if err := c.BindJSON(&pinConfig); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	if err := s.SetLedPin(pinConfig.LedPin); err != nil {
+		fmt.Printf("failed to set pin led: %s\n", err)
+	}
+	c.JSON(http.StatusOK, "{}")
 }
 
 func (o *apiServer) stop() {

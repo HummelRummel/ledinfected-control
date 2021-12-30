@@ -6,8 +6,8 @@ type (
 	HummelArduino struct {
 		connection *HummelArduinoConnection
 
-		circleStripe  HummelArduinoLedStripe
-		radialStripes [4]HummelArduinoLedStripe
+		CircleStripe  HummelArduinoLedStripe
+		RadialStripes [4]HummelArduinoLedStripe
 	}
 )
 
@@ -18,8 +18,8 @@ func NewHummelArduino(devFile string) (*HummelArduino, error) {
 	}
 	o := &HummelArduino{
 		connection:    connection,
-		circleStripe:  HummelArduinoLedStripe{},
-		radialStripes: [4]HummelArduinoLedStripe{},
+		CircleStripe:  HummelArduinoLedStripe{},
+		RadialStripes: [4]HummelArduinoLedStripe{},
 	}
 
 	return o, nil
@@ -88,7 +88,7 @@ func (o *HummelArduino) GetConfig() (*HummelArduinoConfig, error) {
 		DevFile: o.GetDevFile(),
 		ID:      response.data[0],
 	}
-	
+
 	c.Circle, err = readNextStripeConfig("circle", stripBaseOffset+0)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read Circle stripe config: %s", err)

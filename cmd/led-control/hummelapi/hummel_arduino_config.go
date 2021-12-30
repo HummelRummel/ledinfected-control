@@ -30,9 +30,13 @@ type (
 )
 
 func (o *HummelArduinoLedStripePaletteConfig) getBytes() []byte {
+	var sortedPaletteCHSV [16]CHSV
+	for i := 0; i < 16; i++ {
+		sortedPaletteCHSV[o.Palette[i].ID] = o.Palette[i]
+	}
 	var paletteBytes []byte
 	for i := 0; i < 16; i++ {
-		paletteBytes = append(paletteBytes, o.Palette[i].H, o.Palette[i].S, o.Palette[i].V)
+		paletteBytes = append(paletteBytes, sortedPaletteCHSV[i].H, sortedPaletteCHSV[i].S, sortedPaletteCHSV[i].V)
 	}
 	return paletteBytes
 }
