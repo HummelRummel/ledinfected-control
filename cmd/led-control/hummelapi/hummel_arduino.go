@@ -48,7 +48,6 @@ func (o *HummelArduino) GetConfig() (*HummelArduinoConfig, error) {
 		return nil, err
 	}
 
-
 	idSize := 1
 	ledConfigSize := 2
 	baseConfgSize := 3
@@ -62,7 +61,7 @@ func (o *HummelArduino) GetConfig() (*HummelArduinoConfig, error) {
 		return nil, fmt.Errorf("unexpected config size, expected (%d), got %d", configSize, len(response.data))
 	}
 
-	readNextStripeConfig := func(indexOffset int) (*HummelArduinoLedStripeConfig, error) {
+	readNextStripeConfig := func(stripeID string, indexOffset int) (*HummelArduinoLedStripeConfig, error) {
 		pinConfig, err := castStripePinConfig(response.data, indexOffset)
 		if err != nil {
 			return nil, err
@@ -78,25 +77,25 @@ func (o *HummelArduino) GetConfig() (*HummelArduinoConfig, error) {
 		}
 
 		return &HummelArduinoLedStripeConfig{
-			Pin:     pinConfig,
-			Base:    baseConfig,
-			Palette: palette,
+			StripeID: stripeID,
+			Pin:      pinConfig,
+			Base:     baseConfig,
+			Palette:  palette,
 		}, nil
 	}
 
 	c := &HummelArduinoConfig{
-		ID: response.data[0],
+		DevFile: o.GetDevFile(),
+		ID:      response.data[0],
 	}
-
-	fmt.Printf("readID :%d\n", c.ID)
-
-	c.Circle, err = readNextStripeConfig(stripBaseOffset + 0)
+	
+	c.Circle, err = readNextStripeConfig("circle", stripBaseOffset+0)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read Circle stripe config: %s", err)
 	}
 
 	for i := 0; i < 4; i++ {
-		c.Radials[i], err = readNextStripeConfig(stripBaseOffset + (paletteSize * (i + 1)))
+		c.Radials[i], err = readNextStripeConfig(fmt.Sprintf("radial%d", i+1), stripBaseOffset+(paletteSize*(i+1)))
 		if err != nil {
 			return nil, fmt.Errorf("failed to read radial %d stripe config: %s", i, err)
 		}

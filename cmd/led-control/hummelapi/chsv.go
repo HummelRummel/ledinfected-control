@@ -1,9 +1,9 @@
 package hummelapi
 
-type(
+type (
 	CHSV struct {
-		h uint8
-		s uint8
-		v uint8
+		H uint8 `json:"h"`
+		S uint8 `json:"s"`
+		V uint8 `json:"v"`
 	}
 )

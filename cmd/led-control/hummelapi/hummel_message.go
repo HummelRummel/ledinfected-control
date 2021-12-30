@@ -14,10 +14,10 @@ package hummelapi
  	Byte(s) | Value    | Description
   	--------|----------|---------------------------
   	  1+2   | ProtoId  | Sending or consuming protocol ID twice to start the message
-      3     | LenData  | Length of the data of the message (including the cmd, the cmdId and optional data)
-      4     | CmdId    | Running int to id the command response
-      5     | Cmd      | Command for the client (Type | Cmd)
-      6+    | Data     | Optional
+      3+4   | LenData  | Length of the data of the message (including the cmd, the cmdId and optional data)
+      5     | CmdId    | Running int to id the command response
+      6     | Cmd      | Command for the client (Type | Cmd)
+      7+    | Data     | Optional
 
 */
 

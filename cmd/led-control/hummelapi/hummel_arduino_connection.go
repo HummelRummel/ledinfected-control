@@ -84,11 +84,11 @@ func (o *HummelArduinoConnection) Close() {
 
 func (o *HummelArduinoConnection) readHandler() {
 	clientMarkerFound := 0
+	buf := make([]byte, 500)
 	for {
 		if o.stop {
 			return
 		}
-		buf := make([]byte, 128)
 		n, err := o.port.Read(buf)
 		if err != nil {
 			// error
@@ -96,6 +96,9 @@ func (o *HummelArduinoConnection) readHandler() {
 				return
 			}
 		}
+		//for i := 0; i < n; i++ {
+		//	fmt.Printf("0x%x\n", buf[i])
+		//}
 		for i := 0; i < n; i++ {
 			if clientMarkerFound == 2 {
 				castHummelCommand(buf, i)

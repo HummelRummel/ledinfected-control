@@ -25,14 +25,14 @@ func newHummelCommand(cmdType byte, cmdCode byte, data []byte) *HummelCommandRes
 
 func castHummelCommand(buf []byte, index int) (*HummelCommandResponse, error) {
 	lenIndex := index
-	baseCmdIndex := index + 1
+	baseCmdIndex := index + 2
 	// the first thing we read is the length
-	lenMsgData := buf[lenIndex]
+	lenMsgData := uint16(buf[lenIndex]) + (uint16(buf[lenIndex+1]) << 8)
 	if lenIndex+2+int(lenMsgData) > len(buf) {
 		// we need to read more data, we are currently screwed
 		return nil, fmt.Errorf("could not be read message in one chunk, this is currently not supported")
 	}
-	if lenMsgData > 100 {
+	if lenMsgData > 1000 {
 		return nil, fmt.Errorf("message data length looks strange, %d", lenMsgData)
 	}
 
@@ -66,9 +66,10 @@ func (o *HummelCommandResponse) IsEqual(other *HummelCommandResponse) bool {
 func (o *HummelCommandResponse) GetCmdBytes() []byte {
 	cmdBytes := []byte{hummelCommandProtocolIdSending, hummelCommandProtocolIdSending}
 
-	lenData := uint8(len(o.data))
-
-	cmdBytes = append(cmdBytes, lenData, o.cmdID, o.cmdType|o.cmdCode)
+	lenData := uint16(len(o.data))
+	lowerLenByte := uint8(lenData & 0xff)
+	higherLenByte := uint8((lenData >> 8) & 0xff)
+	cmdBytes = append(cmdBytes, lowerLenByte, higherLenByte, o.cmdID, o.cmdType|o.cmdCode)
 	if len(o.data) > 0 {
 		cmdBytes = append(cmdBytes, o.data...)
 	}
