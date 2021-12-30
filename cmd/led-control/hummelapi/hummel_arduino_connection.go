@@ -84,7 +84,7 @@ func (o *HummelArduinoConnection) Close() {
 
 func (o *HummelArduinoConnection) readHandler() {
 	clientMarkerFound := 0
-	buf := make([]byte, 500)
+	buf := make([]byte, 256)
 	for {
 		if o.stop {
 			return
@@ -93,6 +93,7 @@ func (o *HummelArduinoConnection) readHandler() {
 		if err != nil {
 			// error
 			if o.stop {
+				continue
 				return
 			}
 		}
@@ -101,10 +102,33 @@ func (o *HummelArduinoConnection) readHandler() {
 		//}
 		for i := 0; i < n; i++ {
 			if clientMarkerFound == 2 {
-				castHummelCommand(buf, i)
+				var newBuf []byte
+				newBuf = append(newBuf, buf[i:n]...)
+				lenMsgData := int(buf[i]) + (int(buf[i+1]) << 8)
+				for {
+					if (len(newBuf)) < (lenMsgData + 4) {
+						addN, err := o.port.Read(buf)
+						if err != nil {
+							// error
+							if o.stop {
+								return
+							}
+							break
+						}
+						newBuf = append(newBuf, buf[:addN]...)
+					} else {
+						break
+					}
+				}
+
+				if (len(newBuf)) < (lenMsgData + 4) {
+					fmt.Printf("failed: could not read the complete message, discarding it\n")
+					continue
+				}
+
 				// now we are actually at the stage to read the length and the rest of the response
 
-				hummelCmd, err := castHummelCommand(buf, i)
+				hummelCmd, err := castHummelCommand(newBuf)
 				if err != nil {
 					fmt.Printf("failed to read command: %s", err)
 					clientMarkerFound = 0
@@ -141,8 +165,8 @@ func (o *HummelArduinoConnection) WaitRepsonse(cmd *HummelCommandResponse, timeo
 
 func (o *HummelArduinoConnection) HummelCommand(cmdType byte, cmdCode byte, data []byte) (*HummelCommandResponse, error) {
 	cmd := newHummelCommand(cmdType, cmdCode, data)
-	b:= cmd.GetCmdBytes()
-	_=b
+	b := cmd.GetCmdBytes()
+	_ = b
 	if _, err := o.port.Write(cmd.GetCmdBytes()); err != nil {
 		return nil, err
 	}

@@ -102,7 +102,7 @@ func (o *HummelArduino) GetConfig() (*HummelArduinoConfig, error) {
 	}
 
 	for i := 0; i < 4; i++ {
-		c.Radials[i], err = readNextStripeConfig(fmt.Sprintf("radial%d", i+1), stripBaseOffset+(paletteSize*(i+1)))
+		c.Radials[i], err = readNextStripeConfig(fmt.Sprintf("radial%d", i+1), stripBaseOffset+((paletteSize+5)*(i+1)))
 		if err != nil {
 			return nil, fmt.Errorf("failed to read radial %d stripe config: %s", i, err)
 		}

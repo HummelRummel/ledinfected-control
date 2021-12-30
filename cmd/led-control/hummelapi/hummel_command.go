@@ -23,9 +23,9 @@ func newHummelCommand(cmdType byte, cmdCode byte, data []byte) *HummelCommandRes
 	}
 }
 
-func castHummelCommand(buf []byte, index int) (*HummelCommandResponse, error) {
-	lenIndex := index
-	baseCmdIndex := index + 2
+func castHummelCommand(buf []byte) (*HummelCommandResponse, error) {
+	lenIndex := 0
+	baseCmdIndex := 0 + 2
 	// the first thing we read is the length
 	lenMsgData := uint16(buf[lenIndex]) + (uint16(buf[lenIndex+1]) << 8)
 	if lenIndex+2+int(lenMsgData) > len(buf) {
