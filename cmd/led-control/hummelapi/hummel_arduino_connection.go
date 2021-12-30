@@ -2,8 +2,9 @@ package hummelapi
 
 import (
 	"fmt"
-	"github.com/goiiot/libserial"
 	"time"
+
+	"go.bug.st/serial"
 )
 
 /*
@@ -29,7 +30,7 @@ import (
 type (
 	HummelArduinoConnection struct {
 		devFile string
-		port    *libserial.SerialPort
+		port    serial.Port
 
 		id uint8
 
@@ -40,36 +41,37 @@ type (
 )
 
 func NewHummelArduinoConnection(devFile string) (*HummelArduinoConnection, error) {
-	conn, err := libserial.Open(devFile, libserial.WithReadTimeout(time.Second*5))
+	port, err := serial.Open(devFile, &serial.Mode{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to opern serial: %s", err)
 	}
 	fmt.Printf("opened serial device %s\n", devFile)
 
-	fmt.Printf("waiting for 10 sec for the device to come up again\n")
-	// wait for the arduino reset
-	time.Sleep(time.Second * 10)
-
 	o := &HummelArduinoConnection{
 		devFile: devFile,
-		port:    conn,
+		port:    port,
 
 		responseChan: make(chan *HummelCommandResponse),
 
 		stop: false,
 	}
 
+	// start the read handler
+	go o.readHandler()
+
+	fmt.Printf("waiting for 10 sec for the device to come up again\n")
+	// wait for the arduino reset
+	time.Sleep(time.Second * 10)
+
 	fmt.Printf("try to get the device id of the device\n")
 	// fixme disabled for now so I can test if the other things work
 	id, err := o.getId()
 	if err != nil {
+		time.Sleep(time.Second * 18)
 		o.Close()
 		return nil, fmt.Errorf("failed to read get ID: %s\n", err)
 	}
 	o.id = id
-
-	// start the read handler
-	go o.readHandler()
 
 	fmt.Printf("new device with ID %d added\n", o.id)
 	return o, nil
@@ -80,13 +82,13 @@ func (o *HummelArduinoConnection) Close() {
 	o.port.Close()
 }
 
-func (o *HummelArduinoConnection) clearRead() {
-}
-
 func (o *HummelArduinoConnection) readHandler() {
 	clientMarkerFound := 0
 	for {
-		var buf []byte
+		if o.stop {
+			return
+		}
+		buf := make([]byte, 128)
 		n, err := o.port.Read(buf)
 		if err != nil {
 			// error
@@ -136,7 +138,7 @@ func (o *HummelArduinoConnection) WaitRepsonse(cmd *HummelCommandResponse, timeo
 
 func (o *HummelArduinoConnection) HummelCommand(cmdType byte, cmdCode byte, data []byte) (*HummelCommandResponse, error) {
 	cmd := newHummelCommand(cmdType, cmdCode, data)
-	if _, err := o.write(cmd.GetCmdBytes()); err != nil {
+	if _, err := o.port.Write(cmd.GetCmdBytes()); err != nil {
 		return nil, err
 	}
 
@@ -168,35 +170,34 @@ func (o *HummelArduinoConnection) GetDevFile() string {
 	return o.devFile
 }
 
-func (o *HummelArduinoConnection) write(data []byte) (int, error) {
-	fmt.Printf("try to write %d bytes: %x\n", len(data), data)
-	n, err := o.port.Write(data)
-	if err != nil {
-		fmt.Printf("failed to write: %s\n", err)
-	}
-	return n, err
-}
+//func (o *HummelArduinoConnection) write(data []byte) (int, error) {
+//	fmt.Printf("try to write %d bytes: %x\n", len(data), data)
+//	if err != nil {
+//		fmt.Printf("failed to write: %s\n", err)
+//	}
+//	return n, err
+//}
 
-func (o *HummelArduinoConnection) read(numBytes int) ([]byte, error) {
-	cnt := 0
-	buf := []byte{}
-	for {
-		readBuf := []byte{48}
-		n, err := o.port.Read(readBuf)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read (already read %d, %X): %s", len(buf), buf, err)
-		}
-		if n == 0 {
-			return readBuf, fmt.Errorf("nothing more to read")
-		}
-
-		buf = append(buf, readBuf...)
-		cnt += n
-		if cnt > numBytes {
-			return buf, fmt.Errorf("expected to read %d, but got %d", cnt, n)
-		} else if cnt == numBytes {
-			return buf, nil
-		}
-		// not enough read yet, continue
-	}
-}
+//func (o *HummelArduinoConnection) read(numBytes int) ([]byte, error) {
+//	cnt := 0
+//	buf := []byte{}
+//	for {
+//		readBuf := []byte{48}
+//		n, err := o.port.Read(readBuf)
+//		if err != nil {
+//			return nil, fmt.Errorf("failed to read (already read %d, %X): %s", len(buf), buf, err)
+//		}
+//		if n == 0 {
+//			return readBuf, fmt.Errorf("nothing more to read")
+//		}
+//
+//		buf = append(buf, readBuf...)
+//		cnt += n
+//		if cnt > numBytes {
+//			return buf, fmt.Errorf("expected to read %d, but got %d", cnt, n)
+//		} else if cnt == numBytes {
+//			return buf, nil
+//		}
+//		// not enough read yet, continue
+//	}
+//}

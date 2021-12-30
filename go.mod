@@ -3,16 +3,12 @@ module github.com/nbmoa/led-control
 go 1.17
 
 require (
-	github.com/goiiot/libserial v0.0.0-20200930225431-f187770dc15d
-	github.com/jacobsa/go-serial v0.0.0-20180131005756-15cf729a72d4 // indirect
-)
-
-require (
-	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-gonic/gin v1.7.7
+	go.bug.st/serial v1.3.3
 )
 
 require (
+	github.com/creack/goselect v0.1.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect

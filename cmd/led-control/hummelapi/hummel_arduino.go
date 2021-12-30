@@ -48,8 +48,6 @@ func (o *HummelArduino) GetConfig() (*HummelArduinoConfig, error) {
 		return nil, err
 	}
 
-	// MOA TBD read the response
-	_ = response
 
 	idSize := 1
 	ledConfigSize := 2

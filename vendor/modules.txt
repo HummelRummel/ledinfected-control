@@ -1,6 +1,6 @@
-# github.com/fsnotify/fsnotify v1.5.1
+# github.com/creack/goselect v0.1.2
 ## explicit; go 1.13
-github.com/fsnotify/fsnotify
+github.com/creack/goselect
 # github.com/gin-contrib/sse v0.1.0
 ## explicit; go 1.12
 github.com/gin-contrib/sse
@@ -21,14 +21,9 @@ github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.4.1
 ## explicit; go 1.13
 github.com/go-playground/validator/v10
-# github.com/goiiot/libserial v0.0.0-20200930225431-f187770dc15d
-## explicit; go 1.15
-github.com/goiiot/libserial
 # github.com/golang/protobuf v1.3.3
 ## explicit; go 1.12
 github.com/golang/protobuf/proto
-# github.com/jacobsa/go-serial v0.0.0-20180131005756-15cf729a72d4
-## explicit
 # github.com/json-iterator/go v1.1.9
 ## explicit; go 1.12
 github.com/json-iterator/go
@@ -47,6 +42,10 @@ github.com/modern-go/reflect2
 # github.com/ugorji/go/codec v1.1.7
 ## explicit
 github.com/ugorji/go/codec
+# go.bug.st/serial v1.3.3
+## explicit; go 1.13
+go.bug.st/serial
+go.bug.st/serial/unixutils
 # golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 ## explicit; go 1.11
 golang.org/x/crypto/sha3
