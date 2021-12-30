@@ -1,0 +1,12 @@
+/.idea
+/.vscode
+
+/.build
+/.dist
+/.test
+
+coverage.txt
+
+*.pid
+*.out
+*.test

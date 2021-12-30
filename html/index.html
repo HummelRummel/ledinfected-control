@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titel</title>
+</head>
+<body>
+<style>
+    #kontakt {
+        border: solid 1px red;
+        float: right;
+        margin-right: 10px;
+        height: 125px;
+        width: 145px;
+    }
+    /* Kompaktes Layout für mobile Geräte */
+    body {
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    /* Mobile first - alle Dokument-Blöcke bekommen 100% Breite */
+    header, nav, nav a, article, aside, footer {
+        flex: 1 100%;
+    }
+
+    /* nebeneinander bei ausreichender Breite */
+    @media all and (min-width: 35em) {
+        article {
+            flex: 3 1 0%;
+        }
+        aside {
+            flex: 1 1 0%;
+        }
+    }
+
+</style>
+<article>
+    <h1>Willkommen bei der Schreinerei Meier!</h1>
+    ...
+    <div id="myData"></div>
+</article>
+
+<aside id="kontakt">
+    <h2>Kontakt</h2>
+    <p>Telefon: 01234 4711</p>
+    <p>7 - 17 Uhr, sonst AB</p>
+</aside>
+
+<script>
+    fetch('assets/test.json')
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            appendData(data);
+        })
+        .catch(function (err) {
+            console.log('error: ' + err);
+        });
+    function appendData(data) {
+        var mainContainer = document.getElementById("myData");
+        for (var i = 0; i < data.length; i++) {
+            var div = document.createElement("div");
+            div.innerHTML = 'dev: ' + data.hummelHub[i].dev;
+            mainContainer.appendChild(div);
+        }
+    }
+</script>
+</body>
+</html>
