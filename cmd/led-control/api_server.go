@@ -32,7 +32,8 @@ func newApiServer() (*apiServer, error) {
 func (o *apiServer) run() {
 	wg := sync.WaitGroup{}
 
-	o.registerEndpoints()
+	o.registerRestAPIEndpoints()
+	o.registerWebEndpoints()
 
 	wg.Add(1)
 	go func() {
@@ -43,24 +44,31 @@ func (o *apiServer) run() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		o.engine.Run("localhost:8081")
+		o.engine.Run("localhost:8080")
 	}()
 
 	wg.Wait()
 }
 
-func (o *apiServer) registerEndpoints() {
-	o.engine.GET("/config", o.getAllConfigsCallback)
-	o.engine.GET("/ado/:Id/config", o.getConfigByIdCallback)
-	o.engine.POST("/ado/:Id/:Stripe/pin/ledpin", o.setPinConfigLedPinCallback)
-	o.engine.POST("/ado/:Id/:Stripe/pin/numleds", o.setPinConfigNumLEDsCallback)
-	o.engine.POST("/ado/:Id/:Stripe/pin/save", o.savePinConfigCallback)
-	o.engine.POST("/ado/:Id/:Stripe/base/movement/direction", o.setBaseConfigMovementDirectionCallback)
-	o.engine.POST("/ado/:Id/:Stripe/base/movement/speed", o.setBaseConfigMovementSpeedCallback)
-	o.engine.POST("/ado/:Id/:Stripe/base/brightness", o.setBaseConfigBrightnessCallback)
-	o.engine.POST("/ado/:Id/:Stripe/palette", o.setPaletteConfigCallback)
-	o.engine.POST("/ado/:Id/:Stripe/save", o.saveConfigCallback)
+func (o *apiServer) registerRestAPIEndpoints() {
+	o.engine.GET("/api/config", o.getAllConfigsCallback)
+	o.engine.GET("/api/ado/:Id/config", o.getConfigByIdCallback)
+	o.engine.POST("/api/ado/:Id/set_id", o.setIdCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/pin/led_pin", o.setPinConfigLedPinCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/pin/num_leds", o.setPinConfigNumLEDsCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/pin/save", o.savePinConfigCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/base/movement/direction", o.setBaseConfigMovementDirectionCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/base/movement/speed", o.setBaseConfigMovementSpeedCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/base/brightness", o.setBaseConfigBrightnessCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/palette", o.setPaletteConfigCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/save", o.saveConfigCallback)
 
+}
+
+
+func (o *apiServer) registerWebEndpoints() {
+	o.engine.Static("/assets", "./assets")
+	o.engine.StaticFile("/", "./html/index.html")
 }
 
 func (o *apiServer) getCallbackArduino(c *gin.Context) (*hummelapi.HummelArduino, error) {
@@ -113,6 +121,24 @@ func (o *apiServer) getConfigByIdCallback(c *gin.Context) {
 		fmt.Printf("failed to read config: %s\n", err)
 	}
 	c.JSON(http.StatusOK, arduinoConfig)
+}
+func (o *apiServer) setIdCallback(c *gin.Context) {
+	a, err := o.getCallbackArduino(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	var arduinoConfig hummelapi.HummelArduinoConfig
+	if err := c.BindJSON(&arduinoConfig); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	err = a.SetID(arduinoConfig.ID)
+	if err != nil {
+		fmt.Printf("failed to read config: %s\n", err)
+	}
+	c.JSON(http.StatusOK, "{}")
 }
 
 func (o *apiServer) getAllConfigsCallback(c *gin.Context) {

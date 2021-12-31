@@ -1,72 +1,468 @@
-<!doctype html>
-<html lang="de">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titel</title>
+    <title>HummelFlowerControlCentre</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="assets/styles.css"/>
 </head>
-<body>
-<style>
-    #kontakt {
-        border: solid 1px red;
-        float: right;
-        margin-right: 10px;
-        height: 125px;
-        width: 145px;
-    }
-    /* Kompaktes Layout für mobile Geräte */
-    body {
-        display: flex;
-        flex-flow: row wrap;
-    }
+<body onload="updateFields();">
+<script src="assets/hummel_api.js"></script>
+// INSERT BEGIN
+<h1>HummelFlowerControlCentre</h1>
+<p>&nbsp;</p>
 
-    /* Mobile first - alle Dokument-Blöcke bekommen 100% Breite */
-    header, nav, nav a, article, aside, footer {
-        flex: 1 100%;
-    }
+<div id="hummel_arduinos">
+    <table>
+        <tbody>
+        <tr>
+            <td>ArduinoID</td>
+            <td id="arduino_id">TBD&nbsp;</td>
+        </tr>
+        <tr>
+            <td>DevFile</td>
+            <td id="arduino_dev_file">TBD&nbsp;</td>
+        </tr>
+        <tr>
+            <td>SaveID</td>
+            <td id="arduino_id_save">TBD&nbsp;</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>&nbsp;</p>
+    <table>
+        <tbody>
+        <tr>
+            <td>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>CircleStripe</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>LedPin</td>
+                                    <td id="circle_led_pin">TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>NumLeds</td>
+                                    <td id="circle_num_leds">TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>SavePinConfig</td>
+                                    <td id="circle_save_pin_config">TBD</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Brightness</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveSpeed</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveDirection</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Palette</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Save</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>Radial1Stripe</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>LedPin</td>
+                                    <td>TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>NumLeds</td>
+                                    <td>TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>SavePinConfig</td>
+                                    <td>TBD</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Brightness</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveSpeed</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveDirection</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Palette</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Save</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>Radial2Stripe</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>LedPin</td>
+                                    <td>TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>NumLeds</td>
+                                    <td>TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>SavePinConfig</td>
+                                    <td>TBD</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Brightness</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveSpeed</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveDirection</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Palette</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Save</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>Radial3Stripe</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>LedPin</td>
+                                    <td>TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>NumLeds</td>
+                                    <td>TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>SavePinConfig</td>
+                                    <td>TBD</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Brightness</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveSpeed</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveDirection</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Palette</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Save</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>Radial4Stripe</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>LedPin</td>
+                                    <td>TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>NumLeds</td>
+                                    <td>TBD</td>
+                                </tr>
+                                <tr>
+                                    <td>SavePinConfig</td>
+                                    <td>TBD</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Brightness</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveSpeed</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MoveDirection</td>
+                                                <td>TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Palette</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>Save</td>
+                                                <td>&nbsp;TBD</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-    /* nebeneinander bei ausreichender Breite */
-    @media all and (min-width: 35em) {
-        article {
-            flex: 3 1 0%;
-        }
-        aside {
-            flex: 1 1 0%;
-        }
-    }
+    // INSERT END
+</div>
 
-</style>
-<article>
-    <h1>Willkommen bei der Schreinerei Meier!</h1>
-    ...
-    <div id="myData"></div>
-</article>
+<template id="uint8_t_element">
+    <div>
+        <table>
+            <tr>
+                <td id="key"></td>
+                <td><input type="number" id="value" name="abc"></td>
+            </tr>
+        </table>
+    </div>
+</template>
 
-<aside id="kontakt">
-    <h2>Kontakt</h2>
-    <p>Telefon: 01234 4711</p>
-    <p>7 - 17 Uhr, sonst AB</p>
-</aside>
 
-<script>
-    fetch('assets/test.json')
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (data) {
-            appendData(data);
-        })
-        .catch(function (err) {
-            console.log('error: ' + err);
-        });
-    function appendData(data) {
-        var mainContainer = document.getElementById("myData");
-        for (var i = 0; i < data.length; i++) {
-            var div = document.createElement("div");
-            div.innerHTML = 'dev: ' + data.hummelHub[i].dev;
-            mainContainer.appendChild(div);
-        }
-    }
-</script>
 </body>
 </html>

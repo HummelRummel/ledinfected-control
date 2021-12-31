@@ -28,11 +28,6 @@ func main() {
 		fmt.Printf("failed to create api server: %s", err)
 		return
 	}
-	webSrv, err := newWebServer()
-	if err != nil {
-		fmt.Printf("failed to create web server: %s", err)
-		return
-	}
 
 	wg := sync.WaitGroup{}
 
@@ -42,11 +37,6 @@ func main() {
 		apiSrv.run()
 	}()
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		webSrv.run()
-	}()
 
 	wg.Wait()
 }
