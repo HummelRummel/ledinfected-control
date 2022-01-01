@@ -5,464 +5,400 @@
     <meta charset="UTF-8"/>
     <link rel="stylesheet" type="text/css" href="assets/styles.css"/>
 </head>
-<body onload="updateFields();">
+<body onload="setupCallbacks();">
+<script src="assets/w3color.js"></script>
 <script src="assets/hummel_api.js"></script>
-// INSERT BEGIN
-<h1>HummelFlowerControlCentre</h1>
+<h1>HummelRummel FlowerControlCentre</h1>
 <p>&nbsp;</p>
-
-<div id="hummel_arduinos">
-    <table>
-        <tbody>
-        <tr>
-            <td>ArduinoID</td>
-            <td id="arduino_id">TBD&nbsp;</td>
-        </tr>
-        <tr>
-            <td>DevFile</td>
-            <td id="arduino_dev_file">TBD&nbsp;</td>
-        </tr>
-        <tr>
-            <td>SaveID</td>
-            <td id="arduino_id_save">TBD&nbsp;</td>
-        </tr>
-        </tbody>
-    </table>
-    <p>&nbsp;</p>
-    <table>
-        <tbody>
-        <tr>
-            <td>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>CircleStripe</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>LedPin</td>
-                                    <td id="circle_led_pin">TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>NumLeds</td>
-                                    <td id="circle_num_leds">TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>SavePinConfig</td>
-                                    <td id="circle_save_pin_config">TBD</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Brightness</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveSpeed</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveDirection</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Palette</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Save</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>Radial1Stripe</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>LedPin</td>
-                                    <td>TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>NumLeds</td>
-                                    <td>TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>SavePinConfig</td>
-                                    <td>TBD</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Brightness</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveSpeed</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveDirection</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Palette</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Save</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>Radial2Stripe</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>LedPin</td>
-                                    <td>TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>NumLeds</td>
-                                    <td>TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>SavePinConfig</td>
-                                    <td>TBD</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Brightness</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveSpeed</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveDirection</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Palette</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Save</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>Radial3Stripe</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>LedPin</td>
-                                    <td>TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>NumLeds</td>
-                                    <td>TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>SavePinConfig</td>
-                                    <td>TBD</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Brightness</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveSpeed</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveDirection</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Palette</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Save</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>Radial4Stripe</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>LedPin</td>
-                                    <td>TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>NumLeds</td>
-                                    <td>TBD</td>
-                                </tr>
-                                <tr>
-                                    <td>SavePinConfig</td>
-                                    <td>TBD</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Brightness</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveSpeed</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>MoveDirection</td>
-                                                <td>TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Palette</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>Save</td>
-                                                <td>&nbsp;TBD</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    // INSERT END
-</div>
-
-<template id="uint8_t_element">
-    <div>
-        <table>
-            <tr>
-                <td id="key"></td>
-                <td><input type="number" id="value" name="abc"></td>
-            </tr>
-        </table>
-    </div>
-</template>
-
-
+<table style="border-collapse: collapse; width: 100%;" border="1">
+    <tbody>
+    <tr>
+        <td style="width: 100%;">
+            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial1_speed" type="number" /></td>
+                </tr>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial1_direction" type="checkbox" /></td>
+                </tr>
+                <tr style="height: 29px;">
+                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+                    <td style="width: 90.84507042253522%; height: 29px;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                            <tr>
+                                <td style="width: 6.25%;"><input id="1_radial1_led1" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led2" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led3" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led4" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led5" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led6" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led7" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led8" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led9" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led10" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led11" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led12" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led13" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led14" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led15" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial1_led16" type="color" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 100%;">
+            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial2_speed" type="number" /></td>
+                </tr>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial2_direction" type="checkbox" /></td>
+                </tr>
+                <tr style="height: 29px;">
+                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+                    <td style="width: 90.84507042253522%; height: 29px;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                            <tr>
+                                <td style="width: 6.25%;"><input id="1_radial2_led1" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led2" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led3" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led4" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led5" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led6" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led7" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led8" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led9" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led10" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led11" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led12" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led13" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led14" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led15" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial2_led16" type="color" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 100%;">
+            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial3_speed" type="number" /></td>
+                </tr>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial3_direction" type="checkbox" /></td>
+                </tr>
+                <tr style="height: 29px;">
+                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+                    <td style="width: 90.84507042253522%; height: 29px;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                            <tr>
+                                <td style="width: 6.25%;"><input id="1_radial3_led1" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led2" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led3" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led4" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led5" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led6" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led7" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led8" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led9" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led10" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led11" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led12" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led13" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led14" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led15" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial3_led16" type="color" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 100%;">
+        </td>
+            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial4_speed" type="number" /></td>
+                </tr>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial4_direction" type="checkbox" /></td>
+                </tr>
+                <tr style="height: 29px;">
+                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+                    <td style="width: 90.84507042253522%; height: 29px;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                            <tr>
+                                <td style="width: 6.25%;"><input id="1_radial4_led1" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led2" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led3" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led4" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led5" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led6" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led7" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led8" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led9" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led10" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led11" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led12" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led13" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led14" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led15" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="1_radial4_led16" type="color" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+    </tr>
+    <tr>
+        <td style="width: 100%;">
+            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial1_speed" type="number" /></td>
+                </tr>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial1_direction" type="checkbox" /></td>
+                </tr>
+                <tr style="height: 29px;">
+                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+                    <td style="width: 90.84507042253522%; height: 29px;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                            <tr>
+                                <td style="width: 6.25%;"><input id="2_radial1_led1" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led2" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led3" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led4" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led5" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led6" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led7" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led8" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led9" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led10" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led11" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led12" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led13" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led14" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led15" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial1_led16" type="color" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 100%;">
+            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial2_speed" type="number" /></td>
+                </tr>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial2_direction" type="checkbox" /></td>
+                </tr>
+                <tr style="height: 29px;">
+                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+                    <td style="width: 90.84507042253522%; height: 29px;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                            <tr>
+                                <td style="width: 6.25%;"><input id="2_radial2_led1" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led2" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led3" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led4" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led5" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led6" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led7" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led8" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led9" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led10" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led11" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led12" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led13" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led14" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led15" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial2_led16" type="color" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 100%;">
+            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial3_speed" type="number" /></td>
+                </tr>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial3_direction" type="checkbox" /></td>
+                </tr>
+                <tr style="height: 29px;">
+                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+                    <td style="width: 90.84507042253522%; height: 29px;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                            <tr>
+                                <td style="width: 6.25%;"><input id="2_radial3_led1" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led2" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led3" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led4" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led5" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led6" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led7" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led8" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led9" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led10" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led11" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led12" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led13" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led14" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led15" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial3_led16" type="color" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 100%;">
+            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial4_speed" type="number" /></td>
+                </tr>
+                <tr style="height: 18px;">
+                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial4_direction" type="checkbox" /></td>
+                </tr>
+                <tr style="height: 29px;">
+                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+                    <td style="width: 90.84507042253522%; height: 29px;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                            <tr>
+                                <td style="width: 6.25%;"><input id="2_radial4_led1" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led2" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led3" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led4" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led5" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led6" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led7" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led8" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led9" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led10" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led11" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led12" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led13" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led14" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led15" type="color" /></td>
+                                <td style="width: 6.25%;"><input id="2_radial4_led16" type="color" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Alle auf einmal</p>
+<table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
+    <tbody>
+    <tr style="height: 18px;">
+        <td style="width: 9.154929577464785%; height: 18px;">speed</td>
+        <td style="width: 90.84507042253522%; height: 18px;"><input id="all_speed" type="number" /></td>
+    </tr>
+    <tr style="height: 18px;">
+        <td style="width: 9.154929577464785%; height: 18px;">direction</td>
+        <td style="width: 90.84507042253522%; height: 18px;"><input id="all_direction" type="checkbox" /></td>
+    </tr>
+    <tr style="height: 29px;">
+        <td style="width: 9.154929577464785%; height: 29px;">palette</td>
+        <td style="width: 90.84507042253522%; height: 29px;">
+            <table style="border-collapse: collapse; width: 100%;" border="1">
+                <tbody>
+                <tr>
+                    <td style="width: 6.25%;"><input id="all_led1" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led2" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led3" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led4" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led5" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led6" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led7" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led8" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led9" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led10" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led11" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led12" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led13" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led14" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led15" type="color" /></td>
+                    <td style="width: 6.25%;"><input id="all_led16" type="color" /></td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

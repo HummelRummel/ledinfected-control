@@ -44,7 +44,7 @@ func (o *apiServer) run() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		o.engine.Run("localhost:8080")
+		o.engine.Run(":8080")
 	}()
 
 	wg.Wait()
