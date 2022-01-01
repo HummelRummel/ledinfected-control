@@ -75,80 +75,94 @@ function setupCallbacks() {
 }
 
 function setupAllHandler(paletteCallback, baseCallback) {
-    for (let id = 1; id < 3; id++) {
-        for (let stripCnt = 1; stripCnt < 5; stripCnt++) {
-            stripeID = id+"_"+stripCnt
-            for (let i = 1; i < 17; i++) {
-                document.getElementById(stripeID + "_led" + i).addEventListener('input', paletteCallback);
-            }
-            document.getElementById(stripeID + "_speed").addEventListener('input', baseCallback);
-            document.getElementById(stripeID + "_direction").addEventListener('input', baseCallback);
-        }
+    stripeID = "all"
+    console.log(stripeID)
+    for (let i = 1; i < 17; i++) {
+        document.getElementById(stripeID + "_led" + i).addEventListener('input', paletteCallback);
     }
+    document.getElementById(stripeID + "_speed").addEventListener('input', baseCallback);
+    document.getElementById(stripeID + "_direction").addEventListener('input', baseCallback);
+
 }
 
 function setupStripeHandler(stripeID, paletteCallback, baseCallback) {
     for (let i = 1; i < 17; i++) {
-        document.getElementById(stripeID+"_led"+i).addEventListener('input', paletteCallback);
+        document.getElementById(stripeID + "_led" + i).addEventListener('input', paletteCallback);
     }
-    document.getElementById(stripeID+"_speed").addEventListener('input', baseCallback);
-    document.getElementById(stripeID+"_direction").addEventListener('input', baseCallback);
+    document.getElementById(stripeID + "_speed").addEventListener('input', baseCallback);
+    document.getElementById(stripeID + "_direction").addEventListener('input', baseCallback);
 }
 
 function palette1Stripe1Update(e) {
-    paletteUpdate("1","radial1")
+    paletteUpdate("1_radial1","1/radial1")
 }
+
 function palette1Stripe2Update(e) {
-    paletteUpdate("1","radial2")
+    paletteUpdate("1_radial2","1/radial2")
 }
+
 function palette1Stripe3Update(e) {
-    paletteUpdate("1","radial3")
+    paletteUpdate("1_radial3","1/radial3")
 }
+
 function palette1Stripe4Update(e) {
-    paletteUpdate("1","radial4")
+    paletteUpdate("1_radial4","1/radial4")
 }
+
 function palette2Stripe1Update(e) {
-    paletteUpdate("2","radial1")
+    paletteUpdate("2_radial1","2/radial1")
 }
+
 function palette2Stripe2Update(e) {
-    paletteUpdate("2","radial2")
+    paletteUpdate("2_radial2","2/radial2")
 }
+
 function palette2Stripe3Update(e) {
-    paletteUpdate("2","radial3")
+    paletteUpdate("2_radial3","2/radial3")
 }
+
 function palette2Stripe4Update(e) {
-    paletteUpdate("2","radial4")
+    paletteUpdate("2_radial4","2/radial4")
 }
 
 function base1Stripe1Update(e) {
-    baseUpdate("1","radial1")
+    baseUpdate("1_radial1","1/radial1")
 }
+
 function base1Stripe2Update(e) {
-    baseUpdate("1","radial2")
+    baseUpdate("1_radial2","1/radial2")
 }
+
 function base1Stripe3Update(e) {
-    baseUpdate("1","radial3")
+    baseUpdate("1_radial3","1/radial3")
 }
+
 function base1Stripe4Update(e) {
-    baseUpdate("1","radial4")
+    baseUpdate("1_radial4", "1/radial4")
 }
+
 function base2Stripe1Update(e) {
-    baseUpdate("2","radial1")
+    baseUpdate("2_radial1", "2/radial1")
 }
+
 function base2Stripe2Update(e) {
-    baseUpdate("2","radial2")
+    baseUpdate("2_radial2", "2/radial2")
 }
+
 function base2Stripe3Update(e) {
-    baseUpdate("2","radial3")
+    baseUpdate("2_radial3","2/radial3")
 }
+
 function base2Stripe4Update(e) {
-    baseUpdate("2","radial4")
+    baseUpdate("2_radial4","2/radial4")
 }
 
 function paletteAllUpdate(e) {
+    console.log("aa")
     for (let id = 1; id < 3; id++) {
         for (let stripCnt = 1; stripCnt < 5; stripCnt++) {
-            paletteUpdate(i,"radial"+stripCnt)
+            ep = id + "/radial" + stripCnt
+            paletteUpdate("all",ep)
         }
     }
 }
@@ -156,37 +170,38 @@ function paletteAllUpdate(e) {
 function baseAllUpdate(e) {
     for (let id = 1; id < 3; id++) {
         for (let stripCnt = 1; stripCnt < 5; stripCnt++) {
-            baseUpdate(i,"radial"+stripCnt)
+            ep = id + "/radial" + stripCnt
+            baseUpdate("all",ep)
         }
     }
 }
 
-function paletteUpdate(id, stripe) {
+function paletteUpdate(stripeID, ep) {
     console.log("mark")
     jsonData = '{ "palette": [';
     for (let i = 1; i < 17; i++) {
-        const rgb = w3color(document.getElementById(id+"_"+stripe+"_led"+i).value);
+        const rgb = w3color(document.getElementById(stripeID + "_led" + i).value);
         const hsv = rgbToHsv(rgb.red, rgb.green, rgb.blue)
-        jsonData += '{"id": '+i+', "h": '+Math.round(hsv.h)+', "s": '+Math.round(hsv.s)+', "v": '+Math.round(hsv.v)+'}'
-        if ( i != 16 ) {
-        jsonData += `,`
+        jsonData += '{"id": ' + i + ', "h": ' + Math.round(hsv.h) + ', "s": ' + Math.round(hsv.s) + ', "v": ' + Math.round(hsv.v) + '}'
+        if (i != 16) {
+            jsonData += `,`
         }
     }
     jsonData += ']}';
     console.log(jsonData)
-    sendHummelCommandPalette("api/ado/"+id+"/"+stripe+"/palette", jsonData)
+    sendHummelCommandPalette("api/ado/" + ep + "/palette", jsonData)
 }
 
-function baseUpdate(id, stripe) {
+function baseUpdate(stripeID, ep) {
     console.log("mark")
-    const speed = document.getElementById(id+"_"+stripe+"_speed");
-    const direction = document.getElementById(id+"_"+stripe+"_direction");
-    jsonDataSpeed = '{ "movement_speed": ' + (speed.value == "" ? 0 : speed.value) +'}';
-    jsonDataDirection = '{ "movement_direction": ' + (direction.value == "on" ? 1 : 0) +'}';
+    const speed = document.getElementById(stripeID + "_speed");
+    const direction = document.getElementById(stripeID + "_direction");
+    jsonDataSpeed = '{ "movement_speed": ' + (speed.value == "" ? 0 : speed.value) + '}';
+    jsonDataDirection = '{ "movement_direction": ' + (direction.checked ? "true" : "false") + '}';
     console.log(jsonDataDirection)
     console.log(jsonDataSpeed)
-    sendHummelCommandPalette("api/ado/"+id+"/"+stripe+"/base/movement/speed", jsonDataSpeed)
-    sendHummelCommandPalette("api/ado/"+id+"/"+stripe+"/base/movement/direction", jsonDataDirection)
+    sendHummelCommandPalette("api/ado/" + ep + "/base/movement/speed", jsonDataSpeed)
+    sendHummelCommandPalette("api/ado/" + ep + "/base/movement/direction", jsonDataDirection)
 }
 
 
@@ -269,15 +284,21 @@ function rgbToHsv(r, g, b) {
         h = 0; // achromatic
     } else {
         switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
+            case r:
+                h = (g - b) / d + (g < b ? 6 : 0);
+                break;
+            case g:
+                h = (b - r) / d + 2;
+                break;
+            case b:
+                h = (r - g) / d + 4;
+                break;
         }
 
         h /= 6;
     }
 
-    return {h: h * 255 , s: s *  255, v: v  * 255 };
+    return {h: h * 255, s: s * 255, v: v * 255};
 }
 
 /**
@@ -293,7 +314,7 @@ function rgbToHsv(r, g, b) {
  */
 function hsv2hsl(hsvH, hsvS, hsvV) {
     const hslL = (200 - hsvS) * hsvV / 100;
-    const [ hslS, hslV ] = [
+    const [hslS, hslV] = [
         hslL === 0 || hslL === 200 ? 0 : hsvS * hsvV / 100 / (hslL <= 100 ? hslL : 200 - hslL) * 100,
         hslL * 5 / 10
     ];
@@ -301,5 +322,5 @@ function hsv2hsl(hsvH, hsvS, hsvV) {
     const fixedH = (hsvH * 360) / 256
     const fixedS = (hslS * 100) / 256
     const fixedV = (hslV * 100) / 256
-    return [ fixedH, fixedS, fixedV ];
+    return [fixedH, fixedS, fixedV];
 }
