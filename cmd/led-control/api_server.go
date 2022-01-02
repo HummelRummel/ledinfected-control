@@ -164,7 +164,12 @@ func (o *apiServer) setStripeSetupCallback(c *gin.Context) {
 		return
 	}
 
-	if err := s.SetSetup(config.LedPin, config.NumLEDs); err != nil {
+	if err := s.SetSetup(config.LedPin, config.VirtualLen,
+		config.SubStripes[0].NumLEDs, config.SubStripes[0].Offset,
+		config.SubStripes[1].NumLEDs, config.SubStripes[1].Offset,
+		config.SubStripes[2].NumLEDs, config.SubStripes[2].Offset,
+		config.SubStripes[3].NumLEDs, config.SubStripes[3].Offset,
+		); err != nil {
 		fmt.Printf("failed to set setup: %s\n", err)
 		c.String(http.StatusBadRequest, "failed to set setup")
 		return

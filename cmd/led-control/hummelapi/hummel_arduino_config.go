@@ -16,8 +16,13 @@ type (
 		Palette  *HummelArduinoLedStripePaletteConfig `json:"palette"`
 	}
 	HummelArduinoLedStripePinConfig struct {
-		LedPin  uint8 `json:"led_pin"`
+		LedPin     uint8                                             `json:"led_pin"`
+		VirtualLen uint8                                             `json:"virtual_len"`
+		SubStripes [4]HummelArduinoLedStripePinConfigSubStripeConfig `json:"sub_stripes"`
+	}
+	HummelArduinoLedStripePinConfigSubStripeConfig struct {
 		NumLEDs uint8 `json:"num_leds"`
+		Offset  uint8 `json:"offset"`
 	}
 	HummelArduinoLedStripeBaseConfig struct {
 		Brightness        uint8 `json:"brightness"`
@@ -32,7 +37,7 @@ type (
 func (o *HummelArduinoLedStripePaletteConfig) getBytes() []byte {
 	var sortedPaletteCHSV [16]CHSV
 	for i := 0; i < 16; i++ {
-		sortedPaletteCHSV[o.Palette[i].ID - 1] = o.Palette[i]
+		sortedPaletteCHSV[o.Palette[i].ID-1] = o.Palette[i]
 	}
 	var paletteBytes []byte
 	for i := 0; i < 16; i++ {
@@ -42,10 +47,16 @@ func (o *HummelArduinoLedStripePaletteConfig) getBytes() []byte {
 }
 
 func castStripePinConfig(buf []byte, offset int) (*HummelArduinoLedStripePinConfig, error) {
-	return &HummelArduinoLedStripePinConfig{
-		LedPin:  buf[offset+0],
-		NumLEDs: buf[offset+1],
-	}, nil
+	o := &HummelArduinoLedStripePinConfig{
+		LedPin:     buf[offset+0],
+		VirtualLen: buf[offset+1],
+	}
+
+	for i := 1; i < 4; i++ {
+		o.SubStripes[0].NumLEDs = buf[offset+2+(i*2)]
+		o.SubStripes[1].Offset = buf[offset+3+(i*2)]
+	}
+	return o, nil
 }
 
 func castStripeBaseConfig(buf []byte, offset int) (*HummelArduinoLedStripeBaseConfig, error) {

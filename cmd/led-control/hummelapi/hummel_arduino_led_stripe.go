@@ -10,8 +10,8 @@ type (
 	}
 )
 
-func (o *HummelArduinoLedStripe) SetSetup(ledPin uint8, numLeds uint8) error {
-	_, err := o.connection.HummelCommand(o.setupType, hummelCommandCodeSetupConfig, []byte{ledPin, numLeds})
+func (o *HummelArduinoLedStripe) SetSetup(ledPin uint8, virtualLen uint8, s0NumLeds, s0Offset, s1NumLeds, s1Offset, s2NumLeds, s2Offset, s3NumLeds, s3Offset uint8) error {
+	_, err := o.connection.HummelCommand(o.setupType, hummelCommandCodeSetupConfig, []byte{ledPin, virtualLen, s0NumLeds, s0Offset, s1NumLeds, s1Offset, s2NumLeds, s2Offset, s3NumLeds,s3Offset})
 	if err != nil {
 		return err
 	}
