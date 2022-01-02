@@ -10,17 +10,8 @@ type (
 	}
 )
 
-func (o *HummelArduinoLedStripe) SetLedPin(pin uint8) error {
-	_, err := o.connection.HummelCommand(o.setupType, hummelCommandCodeSetupLedPin, []byte{pin})
-	if err != nil {
-		return err
-	}
-//	o.config.Pin.LedPin = pin
-	return nil
-}
-
-func (o *HummelArduinoLedStripe) SetNumLeds(numLeds uint8) error {
-	_, err := o.connection.HummelCommand(o.setupType, hummelCommandCodeSetupNumLeds, []byte{numLeds})
+func (o *HummelArduinoLedStripe) SetSetup(ledPin uint8, numLeds uint8) error {
+	_, err := o.connection.HummelCommand(o.setupType, hummelCommandCodeSetupConfig, []byte{ledPin, numLeds})
 	if err != nil {
 		return err
 	}
@@ -28,39 +19,20 @@ func (o *HummelArduinoLedStripe) SetNumLeds(numLeds uint8) error {
 	return nil
 }
 
-func (o *HummelArduinoLedStripe) SavePinConfig() error {
+func (o *HummelArduinoLedStripe) SaveSetup() error {
 	_, err := o.connection.HummelCommand(o.setupType, hummelCommandCodeSetupSave, nil)
 	return err
 }
 
-func (o *HummelArduinoLedStripe) SetBrightness(brightness uint8) error {
-	_, err := o.connection.HummelCommand(o.stripeType, hummelCommandCodeBrightness, []byte{brightness})
+func (o *HummelArduinoLedStripe) SetConfig(speed uint8, directionBool bool, brightness uint8) error {
+	direction := uint8(0)
+	if directionBool {
+		direction = 1
+	}
+	_, err := o.connection.HummelCommand(o.stripeType, hummelCommandCodeConfig, []byte{speed,direction,brightness})
 	if err != nil {
 		return err
 	}
-//	o.config.Base.Brightness = brightness
-	return nil
-}
-
-func (o *HummelArduinoLedStripe) SetMovementSpeed(speed uint8) error {
-	_, err := o.connection.HummelCommand(o.stripeType, hummelCommandCodeMovementSpeed, []byte{speed})
-	if err != nil {
-		return err
-	}
-//	o.config.Base.MovementSpeed = speed
-	return nil
-}
-
-func (o *HummelArduinoLedStripe) SetMovementDirection(direction bool) error {
-	val := uint8(0)
-	if direction {
-		val = 1
-	}
-	_, err := o.connection.HummelCommand(o.stripeType, hummelCommandCodeMovementDirection, []byte{val})
-	if err != nil {
-		return err
-	}
-//	o.config.Base.MovementDirection = (val == 1)
 	return nil
 }
 

@@ -36,6 +36,7 @@ const (
 	hummelCommandGlobalSync          = 0x01
 	hummelCommandCodeGlobalGetConfig = 0x02
 	hummelCommandCodeGlobalGetId     = 0x03
+	hummelCommandCodeGlobalBlackCmd  = 0x04
 	hummelCommandCodeGlobalSetId     = 0x0f
 
 	//////////////////////////////////////////////////
@@ -48,9 +49,10 @@ const (
 	hummelCommandTypeRadial4 = 0x40
 	hummelCommandTypeCircle  = 0x50
 
-	hummelCommandCodeMovementSpeed     = 0x01
-	hummelCommandCodeMovementDirection = 0x02
-	hummelCommandCodeBrightness        = 0x03
+	//hummelCommandCodeMovementSpeed     = 0x01 // deprecated
+	//hummelCommandCodeMovementDirection = 0x02 // deprecated
+	//hummelCommandCodeBrightness        = 0x03 // deprecated
+	hummelCommandCodeConfig            = 0x01
 	hummelCommandCodePaletteCHSV       = 0x04
 	hummelCommandCodeSave              = 0x0f
 
@@ -63,7 +65,8 @@ const (
 	hummelCommandTypeSetupRadial4 = 0xd0
 	hummelCommandTypeSetupCircle  = 0xe0
 
-	hummelCommandCodeSetupLedPin  = 0x0a
-	hummelCommandCodeSetupNumLeds = 0x0b
+	//hummelCommandCodeSetupLedPin  = 0x0a // deprecated
+	//hummelCommandCodeSetupNumLeds = 0x0b // deprecated
+	hummelCommandCodeSetupConfig  = 0x01
 	hummelCommandCodeSetupSave    = 0x0f
 )

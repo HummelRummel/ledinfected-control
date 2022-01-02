@@ -54,17 +54,13 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.GET("/api/config", o.getAllConfigsCallback)
 	o.engine.GET("/api/ado/:Id/config", o.getConfigByIdCallback)
 	o.engine.POST("/api/ado/:Id/set_id", o.setIdCallback)
-	o.engine.POST("/api/ado/:Id/:Stripe/pin/led_pin", o.setPinConfigLedPinCallback)
-	o.engine.POST("/api/ado/:Id/:Stripe/pin/num_leds", o.setPinConfigNumLEDsCallback)
-	o.engine.POST("/api/ado/:Id/:Stripe/pin/save", o.savePinConfigCallback)
-	o.engine.POST("/api/ado/:Id/:Stripe/base/movement/direction", o.setBaseConfigMovementDirectionCallback)
-	o.engine.POST("/api/ado/:Id/:Stripe/base/movement/speed", o.setBaseConfigMovementSpeedCallback)
-	o.engine.POST("/api/ado/:Id/:Stripe/base/brightness", o.setBaseConfigBrightnessCallback)
-	o.engine.POST("/api/ado/:Id/:Stripe/palette", o.setPaletteConfigCallback)
-	o.engine.POST("/api/ado/:Id/:Stripe/save", o.saveConfigCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/setup", o.setStripeSetupCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/setup/save", o.saveStripeSetupCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/config", o.setStripeConfigCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/config/palette", o.setStripePaletteConfigCallback)
+	o.engine.POST("/api/ado/:Id/:Stripe/config/save", o.saveStripeConfigCallback)
 
 }
-
 
 func (o *apiServer) registerWebEndpoints() {
 	o.engine.Static("/assets", "./assets")
@@ -156,42 +152,42 @@ func (o *apiServer) getAllConfigsCallback(c *gin.Context) {
 	return
 }
 
-func (o *apiServer) setPinConfigNumLEDsCallback(c *gin.Context) {
+func (o *apiServer) setStripeSetupCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
 		c.String(http.StatusNotFound, "")
 		return
 	}
-	var pinConfig hummelapi.HummelArduinoLedStripePinConfig
-	if err := c.BindJSON(&pinConfig); err != nil {
+	var config hummelapi.HummelArduinoLedStripePinConfig
+	if err := c.BindJSON(&config); err != nil {
 		c.String(http.StatusBadRequest, "")
 		return
 	}
 
-	if err := s.SetNumLeds(pinConfig.NumLEDs); err != nil {
-		fmt.Printf("failed to set num leds: %s\n", err)
-		c.String(http.StatusBadRequest, "failed to set num leds")
+	if err := s.SetSetup(config.LedPin, config.NumLEDs); err != nil {
+		fmt.Printf("failed to set setup: %s\n", err)
+		c.String(http.StatusBadRequest, "failed to set setup")
 		return
 
 	}
 	c.JSON(http.StatusOK, "{}")
 }
 
-func (o *apiServer) savePinConfigCallback(c *gin.Context) {
+func (o *apiServer) saveStripeSetupCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
 		c.String(http.StatusNotFound, "")
 		return
 	}
 
-	if err := s.SavePinConfig(); err != nil {
-		fmt.Printf("failed to save pin config: %s\n", err)
-		c.String(http.StatusBadRequest, "failed to save pin config")
+	if err := s.SaveSetup(); err != nil {
+		fmt.Printf("failed to save setup: %s\n", err)
+		c.String(http.StatusBadRequest, "failed to save setup")
 	}
 	c.JSON(http.StatusOK, "{}")
 }
 
-func (o *apiServer) setBaseConfigMovementDirectionCallback(c *gin.Context) {
+func (o *apiServer) setStripeConfigCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
 		c.String(http.StatusNotFound, "")
@@ -203,49 +199,13 @@ func (o *apiServer) setBaseConfigMovementDirectionCallback(c *gin.Context) {
 		return
 	}
 
-	if err := s.SetMovementDirection(baseConfig.MovementDirection); err != nil {
-		fmt.Printf("failed to set movement direction: %s\n", err)
+	if err := s.SetConfig(baseConfig.MovementSpeed, baseConfig.MovementDirection, baseConfig.Brightness); err != nil {
+		fmt.Printf("failed to set config: %s\n", err)
 	}
 	c.JSON(http.StatusOK, "{}")
 }
 
-func (o *apiServer) setBaseConfigMovementSpeedCallback(c *gin.Context) {
-	_, s, err := o.getCallbackArdoinoAndStripe(c)
-	if err != nil {
-		c.String(http.StatusNotFound, "")
-		return
-	}
-	var baseConfig hummelapi.HummelArduinoLedStripeBaseConfig
-	if err := c.BindJSON(&baseConfig); err != nil {
-		c.String(http.StatusBadRequest, "")
-		return
-	}
-
-	if err := s.SetMovementSpeed(baseConfig.MovementSpeed); err != nil {
-		fmt.Printf("failed to set movement speed: %s\n", err)
-	}
-	c.JSON(http.StatusOK, "{}")
-}
-
-func (o *apiServer) setBaseConfigBrightnessCallback(c *gin.Context) {
-	_, s, err := o.getCallbackArdoinoAndStripe(c)
-	if err != nil {
-		c.String(http.StatusNotFound, "")
-		return
-	}
-	var baseConfig hummelapi.HummelArduinoLedStripeBaseConfig
-	if err := c.BindJSON(&baseConfig); err != nil {
-		c.String(http.StatusBadRequest, "")
-		return
-	}
-
-	if err := s.SetBrightness(baseConfig.Brightness); err != nil {
-		fmt.Printf("failed to set brightness: %s\n", err)
-	}
-	c.JSON(http.StatusOK, "{}")
-}
-
-func (o *apiServer) saveConfigCallback(c *gin.Context) {
+func (o *apiServer) saveStripeConfigCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
 		c.String(http.StatusNotFound, "")
@@ -258,7 +218,7 @@ func (o *apiServer) saveConfigCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, "{}")
 }
 
-func (o *apiServer) setPaletteConfigCallback(c *gin.Context) {
+func (o *apiServer) setStripePaletteConfigCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
 		c.String(http.StatusNotFound, "")
@@ -276,26 +236,6 @@ func (o *apiServer) setPaletteConfigCallback(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "{}")
-}
-
-func (o *apiServer) setPinConfigLedPinCallback(c *gin.Context) {
-	_, s, err := o.getCallbackArdoinoAndStripe(c)
-	if err != nil {
-		c.String(http.StatusNotFound, "")
-		return
-	}
-	var pinConfig hummelapi.HummelArduinoLedStripePinConfig
-	if err := c.BindJSON(&pinConfig); err != nil {
-		c.String(http.StatusBadRequest, "")
-		return
-	}
-
-	if err := s.SetLedPin(pinConfig.LedPin); err != nil {
-		fmt.Printf("failed to set pin led: %s\n", err)
-		c.String(http.StatusBadRequest, "failed to set pin led")
-		return
-	}
 	c.JSON(http.StatusOK, "{}")
 }
 
