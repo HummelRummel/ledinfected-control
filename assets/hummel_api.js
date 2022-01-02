@@ -324,3 +324,118 @@ function hsv2hsl(hsvH, hsvS, hsvV) {
     const fixedV = (hslV * 100) / 256
     return [fixedH, fixedS, fixedV];
 }
+
+
+//// MOVEABLES
+
+
+
+$("#start").click(function () {
+});
+
+function addCss() {
+    const floating = document.querySelector('.box1');
+    const keyFrames = document.createElement("style");
+    keyFrames.type = 'text/css';
+    keyFrames.innerHTML = `\
+  @keyframes floating {\
+    0% { transform: translate(0px,  0px); }\
+    5% { transform: translate(0px,  0px); }\
+    10% { transform: translate(0px,  0px); }\
+    15% { transform: translate(0px,  0px); }\
+    20% { transform: translate(0px,  0px); }\
+    25% { transform: translate(0px,  0px); }\
+    30% { transform: translate(0px,  0px); }\
+    35% { transform: translate(0px,  0px); }\
+    40% { transform: translate(-7px,  4px); }\
+    45% { transform: translate(15px,  -3px); }\
+    50% { transform: translate(-8px,  15px); }\
+    55% { transform: translate(3px,  3px); }\
+    60% { transform: translate(1px,  -5px); }\
+    65% { transform: translate(-15px, 14px); }\
+    70% { transform: translate(8px, 3px); }\
+    75% { transform: translate(-3x,  15px); }\
+    80% { transform: translate(15px,  3px); }\
+    85% { transform: translate(-2px,  -13px); }\
+    90% { transform: translate(9px,  4px); }\
+    95% { transform: translate(-5px,  9px); }\
+    100% { transform: translate(-0px, -0px); }\
+  }\
+`;
+    console.log("aasdf")
+    floating.appendChild(keyFrames);
+}
+
+addCss();
+
+
+el1 = document.querySelector('.box1');
+el2 = document.querySelector('.box2');
+
+let newPosX1 = 0, newPosY1 = 0, startPosX1 = 0, startPosY1 = 0;
+
+let newPosX2 = 0, newPosY2 = 0, startPosX2 = 0, startPosY2 = 0;
+
+
+// when the user clicks down on the element
+el1.addEventListener('mousedown', function(e){
+    e.preventDefault();
+
+    // get the starting position of the cursor
+    startPosX1 = e.clientX;
+    startPosY1 = e.clientY;
+
+    document.addEventListener('mousemove', mouseMove1);
+
+    document.addEventListener('mouseup', function(){
+        document.removeEventListener('mousemove', mouseMove1);
+    });
+
+});
+
+// when the user clicks down on the element
+el2.addEventListener('mousedown', function(e){
+    e.preventDefault();
+
+    // get the starting position of the cursor
+    startPosX2 = e.clientX;
+    startPosY2 = e.clientY;
+
+    document.addEventListener('mousemove', mouseMove2);
+
+    document.addEventListener('mouseup', function(){
+        document.removeEventListener('mousemove', mouseMove2);
+    });
+
+});
+
+
+
+
+function mouseMove1(e) {
+    // calculate the new position
+    newPosX1 = startPosX1 - e.clientX;
+    newPosY1 = startPosY1 - e.clientY;
+
+    // with each move we also want to update the start X and Y
+    startPosX1 = e.clientX;
+    startPosY1 = e.clientY;
+
+    // set the element's new position:
+    el1.style.top = (el1.offsetTop - newPosY1) + "px";
+    el1.style.left = (el1.offsetLeft - newPosX1) + "px";
+}
+
+function mouseMove2(e) {
+    // calculate the new position
+    newPosX2 = startPosX2 - e.clientX;
+    newPosY2 = startPosY2 - e.clientY;
+
+    // with each move we also want to update the start X and Y
+    startPosX2 = e.clientX;
+    startPosY2 = e.clientY;
+
+    // set the element's new position:
+    el2.style.top = (el2.offsetTop - newPosY2) + "px";
+    el2.style.left = (el2.offsetLeft - newPosX2) + "px";
+}
