@@ -36,7 +36,10 @@ The WepApp consists of two different views, the overview and the detail view.
 The overview shows a flower field, with bubble bees flying around. Clicking at one of the flowers opens the detail view of the clicked flower.
 The detail view is used to actually control the flowers.
 
-#### Structure of the detail view
+### Structure of the overview view
+
+
+### Structure of the detail view
 
 ```
 ------------------------
@@ -49,14 +52,28 @@ The detail view is used to actually control the flowers.
 |-----         --------|
 |LED |         |Pattern|
 ------------------------
+|Ctrl|          |Preset|
+|-----          -------|
+|                      |
+|                      |
+|                      |
+|                      |
 |    ParameterArea     |
-|                      |
-| ParameterBumbleBees  |
-|                      |
-|                      |
-|                      |
-|                      |
 ------------------------
+
+The Selection area can be changed between the LED and the Pattern tabs, and the ParameterArea between the Ctrl and Preset tabs.
+
+#### LED selection area
+
+The LED selection area shows the setup of the LEDs and can be customized for each installation, by providing custom images with defined ImageMaps.
+The clickable areas defined in the ImageMap
+
+#### Pattern selection area
+
+The Pattern selection area shows the 16 Patterns of the select LEDs, and can be used
+#### Ctrl parameter area
+
+#### Preset parameter area
 
 ### Notes
 
