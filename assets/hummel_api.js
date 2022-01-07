@@ -1,441 +1,297 @@
-const getConfig = async () => {
-    const response = await fetch(window.location.origin + '/api/config');
-    const configs = await response.json(); //extract JSON from the http response
-
-    console.log("read configs:")
-    console.log(configs)
-    return configs;
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function addStripe() {
-    const stripes = document.getElementById("stripes");
-    stripes.innerHTML = "Hello JavaScript";
+function randomTranslate(b) {
+    return b + "% { transform: translate(" + getRandomInt(0, 10) + "px, " + getRandomInt(0, 10) + "px); }\n"
 }
 
-async function updateFields() {
-    configs = await getConfig();
-    console.log("update field configs:")
-    console.log(configs)
-    if (configs == null) {
-        console.log("no arduino found")
-        arduinos = document.getElementById("hummel_arduinos");
-        arduinos.innerHTML = "no arduinos found"
-        return
+let newPosX = 0, newPosY = 0, startPosX = 0, startPosY = 0;
+
+let hummelCnt = 0;
+
+hummeln = [];
+
+const maxSpeed = 100;
+const borderSizeLeftPercent = 2;
+const borderSizeTopPercent = 2;
+const hummelImageSize = 40;
+
+function createHummel(parentElement) {
+    hummelCnt += 1;
+    hummelID = 'hummel' + hummelCnt;
+
+    xPercent = getRandomInt(5, 95);
+    yPercent = getRandomInt(5, 95);
+
+    x = (parentElement.offsetWidth / 100) * xPercent;
+    y = (parentElement.offsetHeight / 100) * yPercent;
+
+    elements = createHummelElements(parentElement, hummelID);
+    styles = createHummelStyle(hummelID, xPercent, yPercent);
+
+    newHummel = {
+        hummelID: hummelID,
+        parent: parentElement,
+        elements: {
+            hummel: elements.hummel,
+            //    buzz_zone: elements.buzz_zone,
+            body: elements.body,
+        },
+        startPosX: 0,
+        startPosY: 0,
+        posX: x,
+        posY: y,
+        speed: getRandomInt(0, maxSpeed),
+        direction: getRandomInt(1, 360),
+        loopEnd: 0,
+        loopSpeed: 0,
+        autoMove: true,
+        imageSize: hummelImageSize,
+
+        mouseDownCallback: function (e) {
+            e.preventDefault();
+            hummel = findHummel(this);
+
+            // get the starting position of the cursor
+            hummel.startPosX = e.clientX;
+            hummel.startPosY = e.clientY;
+
+            moveCallback = hummel.moveMouseCallback.bind(hummel);
+
+            hummel.autoMove = false;
+            document.addEventListener('mousemove', moveCallback);
+
+            mouseUpCallback = function() {
+                document.removeEventListener('mousemove', moveCallback);
+                document.removeEventListener('mouseup', mouseUpCallback);
+                hummel.autoMove = true;
+                console.log("automove enabled again");
+            }
+            document.addEventListener('mouseup', mouseUpCallback);
+        },
+        moveMouseCallback: function (e) {
+            hummel = this;
+
+            // calculate the new position
+            newPosX = hummel.startPosX - e.clientX;
+            newPosY = hummel.startPosY - e.clientY;
+
+            // with each move we also want to update the start X and Y
+            hummel.startPosX = e.clientX;
+            hummel.startPosY = e.clientY;
+            // console.log(hummel.hummelID + " mouse move");
+
+            // console.log(hummel.elements.hummel.style)
+            // set the element's new position:
+            hummel.posX = hummel.elements.hummel.offsetLeft - newPosX
+            hummel.posY = hummel.elements.hummel.offsetTop - newPosY
+
+            hummel.elements.hummel.style.left = hummel.posX + "px";
+            hummel.elements.hummel.style.top = hummel.posY + "px";
+        },
+        automaticMovementAction: function () {
+            hummel = this;
+            screenHeight = hummel.parent.offsetHeight;
+            minY = (screenHeight / 100) * borderSizeTopPercent;
+            maxY = screenHeight - minY - hummel.imageSize;
+
+            screenWidth = hummel.parent.offsetWidth;
+            minX = (screenWidth / 100) * borderSizeLeftPercent;
+            maxX = screenWidth - minX - hummel.imageSize;
+
+            if (hummel.posX < minX) {
+                hummel.direction = getRandomInt(45, 135);
+                //console.log("minX reached, new direction: "+ hummel.direction)
+
+                hummel.speed = maxSpeed;
+            } else if (hummel.posX > maxX) {
+                hummel.direction = getRandomInt(225, 315);
+                //console.log("maxX reached, new direction: "+ hummel.direction)
+
+                hummel.speed = maxSpeed;
+            } else if (hummel.posY < minY) {
+                hummel.direction = getRandomInt(135, 225);
+                //console.log("minY reached, new direction: "+ hummel.direction)
+                hummel.speed = maxSpeed;
+            } else if (hummel.posY > maxY) {
+                hummel.direction = getRandomInt(-45, 45);
+                //console.log("maxY reached, new direction: "+ hummel.direction)
+
+                hummel.speed = maxSpeed;
+            } else {
+                seed = getRandomInt(0, 1000)
+                if (seed == 0) {
+                    oldSpeed = hummel.Speed;
+                    hummel.speed = getRandomInt(0, 100);
+                    //console.log("change speed from "+oldSpeed+" to "+ hummel.speed)
+                } else if (seed == 1) {
+                    hummel.direction = getRandomInt(0, 360);
+                    //console.log("change direction from "+ oldDirection +" to " + hummel.direction);
+                } else if (seed == 2) {
+                    hummel.speed = 100;
+                    loopValue = 360;
+                    if (getRandomInt(1, 2) == 1) {
+                        hummel.direction += loopValue;
+                    } else {
+                        hummel.direction -= loopValue;
+                    }
+                    hummel.loopSpeed = getRandomInt(3,10);
+                    hummel.loopEnd = getRandomInt(1, 360);
+                    console.log(hummel.hummelID + ": do a loop with " + loopValue)
+                } else if ((seed > 100) && (seed < 200)) {
+                    //console.log("direction correction")
+                    hummel.direction += getRandomInt(-2, 2);
+                }
+            }
+
+            hummel.direction += getRandomInt(-1, 1);
+
+            if (hummel.loopEnd > 0) {
+                //console.log(hummel.hummelID + ": loop action")
+                if (hummel.direction > hummel.loopEnd) {
+                    hummel.direction -= hummel.loopSpeed;
+                    if (hummel.direction < hummel.loopEnd) {
+                        hummel.direction = hummel.loopEnd;
+                    }
+                } else if (hummel.direction < hummel.loopEnd) {
+                    hummel.direction += hummel.loopSpeed;
+                    if (hummel.direction > hummel.loopEnd) {
+                        hummel.direction = hummel.loopEnd;
+                    }
+                }
+                if (hummel.direction == hummel.loopEnd) {
+                    hummel.loopEnd = 0;
+                }
+            }
+
+            if (hummel.speed > (maxSpeed / 2)) {
+                hummel.speed -= maxSpeed / 20;
+            } else if (hummel.speed < (maxSpeed / 2)) {
+                hummel.speed += maxSpeed / 20;
+            }
+
+            // do the movement
+            hummel.posX += (Math.cos((hummel.direction - 90) * (Math.PI / 180)) * (hummel.speed / 20));
+            hummel.posY += (Math.sin((hummel.direction - 90) * (Math.PI / 180)) * (hummel.speed / 20));
+
+            //  console.log(hummel.direction + ": "+ Math.cos((180 / Math.PI) * hummel.direction) + "/" + Math.sin((180 / Math.PI) * hummel.direction))
+
+            hummel.elements.hummel.style.left = hummel.posX + "px";
+            hummel.elements.hummel.style.top = hummel.posY + "px";
+            hummel.elements.hummel.style.transform = "rotate("+(hummel.direction - 45)+"deg)"
+        }
+    };
+
+    this.elements.hummel.addEventListener('mousedown', newHummel.mouseDownCallback);
+
+    hummeln.push(newHummel)
+    return newHummel;
+}
+
+function automaticMovement() {
+    for (let i = 0; i < hummeln.length; i++) {
+        if (hummeln[i].autoMove == true) {
+            // move the hummel
+            moveAction = hummeln[i].automaticMovementAction.bind(hummeln[i]);
+
+            moveAction();
+        } else {
+            console.log(hummeln[i].hummelID + " currently automove disabled");
+        }
     }
-    for (var i = 0; i < configs.length; i++) {
-        console.log("arduino found")
-        console.log(configs[i])
-        id = document.getElementById("arduino_id");
-        console.log(id)
-        id.innerHTML = configs[i].id
-        console.log(id)
-        devFile = document.getElementById("arduino_dev_file");
-        console.log(devFile)
-        devFile.innerHTML = configs[i].dev_file
-        saveID = document.getElementById("arduino_id_save");
-        btn = document.createElement("button")
-        btn.innerHTML = "Save"
-//        btn.onclick = sendData
-        saveID.innerHTML = "";
-        saveID.appendChild(btn);
-        //       addArduino(configs[i])
-
-        ledPin = document.getElementById("circle_led_pin");
-        ledPinEl = document.createElement("input");
-        ledPinEl.type = "number"
-        ledPinEl.value = configs[i].circle.pin.led_pin
-        ledPinEl.addEventListener('input', ledCirclePinUpdate);
-        ledPin.innerHTML = ""
-        ledPin.appendChild(ledPinEl)
-
-        numLeds = document.getElementById("circle_num_leds");
-        numLedsEl = document.createElement("input");
-        numLedsEl.type = "number"
-        numLedsEl.value = configs[i].circle.pin.num_leds
-        numLeds.innerHTML = ""
-        numLeds.appendChild(numLedsEl)
-    }
+    setTimeout(automaticMovement, 40);
 }
 
-function ledCirclePinUpdate(e) {
-    sendHummelCommand("api/ado/255/circle/pin/led_pin", "led_pin", e.target.value)
-}
-
-function setupCallbacks() {
-    console.log("setup callbacks")
-    setupStripeHandler("1_radial1", palette1Stripe1Update, base1Stripe1Update)
-    setupStripeHandler("1_radial2", palette1Stripe2Update, base1Stripe2Update)
-    setupStripeHandler("1_radial3", palette1Stripe3Update, base1Stripe3Update)
-    setupStripeHandler("1_radial4", palette1Stripe4Update, base1Stripe4Update)
-    setupStripeHandler("2_radial1", palette2Stripe1Update, base2Stripe1Update)
-    setupStripeHandler("2_radial2", palette2Stripe2Update, base2Stripe2Update)
-    setupStripeHandler("2_radial3", palette2Stripe3Update, base2Stripe3Update)
-    setupStripeHandler("2_radial4", palette2Stripe4Update, base2Stripe4Update)
-    setupAllHandler(paletteAllUpdate, baseAllUpdate)
-}
-
-function setupAllHandler(paletteCallback, baseCallback) {
-    stripeID = "all"
-    console.log(stripeID)
-    for (let i = 1; i < 17; i++) {
-        document.getElementById(stripeID + "_led" + i).addEventListener('input', paletteCallback);
-    }
-    document.getElementById(stripeID + "_speed").addEventListener('input', baseCallback);
-    document.getElementById(stripeID + "_direction").addEventListener('input', baseCallback);
-
-}
-
-function setupStripeHandler(stripeID, paletteCallback, baseCallback) {
-    for (let i = 1; i < 17; i++) {
-        document.getElementById(stripeID + "_led" + i).addEventListener('input', paletteCallback);
-    }
-    document.getElementById(stripeID + "_speed").addEventListener('input', baseCallback);
-    document.getElementById(stripeID + "_direction").addEventListener('input', baseCallback);
-}
-
-function palette1Stripe1Update(e) {
-    paletteUpdate("1_radial1","1/radial1")
-}
-
-function palette1Stripe2Update(e) {
-    paletteUpdate("1_radial2","1/radial2")
-}
-
-function palette1Stripe3Update(e) {
-    paletteUpdate("1_radial3","1/radial3")
-}
-
-function palette1Stripe4Update(e) {
-    paletteUpdate("1_radial4","1/radial4")
-}
-
-function palette2Stripe1Update(e) {
-    paletteUpdate("2_radial1","2/radial1")
-}
-
-function palette2Stripe2Update(e) {
-    paletteUpdate("2_radial2","2/radial2")
-}
-
-function palette2Stripe3Update(e) {
-    paletteUpdate("2_radial3","2/radial3")
-}
-
-function palette2Stripe4Update(e) {
-    paletteUpdate("2_radial4","2/radial4")
-}
-
-function base1Stripe1Update(e) {
-    baseUpdate("1_radial1","1/radial1")
-}
-
-function base1Stripe2Update(e) {
-    baseUpdate("1_radial2","1/radial2")
-}
-
-function base1Stripe3Update(e) {
-    baseUpdate("1_radial3","1/radial3")
-}
-
-function base1Stripe4Update(e) {
-    baseUpdate("1_radial4", "1/radial4")
-}
-
-function base2Stripe1Update(e) {
-    baseUpdate("2_radial1", "2/radial1")
-}
-
-function base2Stripe2Update(e) {
-    baseUpdate("2_radial2", "2/radial2")
-}
-
-function base2Stripe3Update(e) {
-    baseUpdate("2_radial3","2/radial3")
-}
-
-function base2Stripe4Update(e) {
-    baseUpdate("2_radial4","2/radial4")
-}
-
-function paletteAllUpdate(e) {
-    console.log("aa")
-    for (let id = 1; id < 3; id++) {
-        for (let stripCnt = 1; stripCnt < 5; stripCnt++) {
-            ep = id + "/radial" + stripCnt
-            paletteUpdate("all",ep)
+function findHummel(el) {
+    for (let i = 0; i < hummeln.length; i++) {
+        if (el.className == hummeln[i].hummelID) {
+            return hummeln[i];
         }
     }
 }
 
-function baseAllUpdate(e) {
-    for (let id = 1; id < 3; id++) {
-        for (let stripCnt = 1; stripCnt < 5; stripCnt++) {
-            ep = id + "/radial" + stripCnt
-            baseUpdate("all",ep)
-        }
+function createHummelElements(parentElement, hummelID) {
+    const hummelEl = document.createElement("div");
+    hummelEl.setAttribute('class', hummelID)
+    parentElement.appendChild(hummelEl);
+
+    const hummelBodyEl = document.createElement("img");
+    hummelBodyEl.setAttribute('class', hummelID + '_body');
+    hummelBodyEl.setAttribute('src', 'assets/img/hummel.gif');
+
+    hummelEl.appendChild(hummelBodyEl);
+
+    return {hummel: hummelEl, body: hummelBodyEl};
+}
+
+function createHummelStyle(hummelID, x, y) {
+    const style = document.createElement("style");
+
+    style.innerHTML = "\n"
+
+    style.innerHTML += "\n"
+    style.innerHTML += "." + hummelID + "{\n"
+    style.innerHTML += "    width:50px;\n"
+    style.innerHTML += "    height:50px;\n"
+    style.innerHTML += "    left:" + x + "%;\n"
+    style.innerHTML += "    top:" + y + "%;\n"
+    style.innerHTML += "    position:absolute;\n"
+//    style.innerHTML += "    background:#0000ff;\n"
+    style.innerHTML += "    cursor:move;\n"
+    style.innerHTML += "}\n"
+
+    // add hummel body style
+    style.innerHTML += "\n"
+    style.innerHTML += "." + hummelID + "_body {\n"
+    style.innerHTML += "    width:"+hummelImageSize+"px;\n"
+    style.innerHTML += "    height:"+hummelImageSize+"px;\n"
+    style.innerHTML += "    left:5px;\n"
+    style.innerHTML += "    top:5px;\n"
+//    style.innerHTML += "    background:#ff0000;\n"
+    style.innerHTML += "    animation-name: " + hummelID + "_floating;\n"
+    style.innerHTML += "    animation-duration: 10s;\n"
+    style.innerHTML += "    animation-iteration-count: infinite;\n"
+    style.innerHTML += "    animation-direction: alternate;\n"
+    style.innerHTML += "    animation-timing-function: ease-in-out;\n"
+    style.innerHTML += "}\n"
+
+    // add keyframes for individual hummel floating
+    style.innerHTML += "\n"
+    style.innerHTML += "@keyframes " + hummelID + "_floating {\n";
+    for (n = 0; n < 11; ++n) {
+        style.innerHTML += randomTranslate(n * 10);
     }
-}
-
-function paletteUpdate(stripeID, ep) {
-    console.log("mark")
-    jsonData = '{ "palette": [';
-    for (let i = 1; i < 17; i++) {
-        const rgb = w3color(document.getElementById(stripeID + "_led" + i).value);
-        const hsv = rgbToHsv(rgb.red, rgb.green, rgb.blue)
-        jsonData += '{"id": ' + i + ', "h": ' + Math.round(hsv.h) + ', "s": ' + Math.round(hsv.s) + ', "v": ' + Math.round(hsv.v) + '}'
-        if (i != 16) {
-            jsonData += `,`
-        }
-    }
-    jsonData += ']}';
-    console.log(jsonData)
-    sendHummelCommandPalette("api/ado/" + ep + "/palette", jsonData)
-}
-
-function baseUpdate(stripeID, ep) {
-    console.log("mark")
-    const speed = document.getElementById(stripeID + "_speed");
-    const direction = document.getElementById(stripeID + "_direction");
-    jsonDataSpeed = '{ "movement_speed": ' + (speed.value == "" ? 0 : speed.value) + '}';
-    jsonDataDirection = '{ "movement_direction": ' + (direction.checked ? "true" : "false") + '}';
-    console.log(jsonDataDirection)
-    console.log(jsonDataSpeed)
-    sendHummelCommandPalette("api/ado/" + ep + "/base/movement/speed", jsonDataSpeed)
-    sendHummelCommandPalette("api/ado/" + ep + "/base/movement/direction", jsonDataDirection)
+    style.innerHTML += "}\n";
+    document.head.appendChild(style);
 }
 
 
-function addArduino(config) {
-    const arduinos = document.getElementById("hummel_arduinos");
-    const arduinoTemplate = document.getElementById("arduino_template");
-    console.log(arduinoTemplate)
-    // arduinoID = arduinoTemplate.getElementById("arduino_id")
-    // arduinoDevFile = arduinoTemplate.getElementById("arduino_dev_file")
-    arduino = document.createElement("div");
-    addArduinoIdElement(arduino, config.id)
-    arduinos.appendChild(arduinos, arduino)
-}
+function initialize() {
+    const wiese = document.querySelector('.hummel_wiese');
 
-function addArduinoIdElement(parent, arduinoId) {
-    const e = document.getElementById("arduino_id");
-    console.log(e)
-    e.value = arduinoId;
-}
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
 
-function sendHummelCommand(api, fieldName, value) {
-    console.log("sendHummelCommand");
-    data = '{ "' + fieldName + '": ' + value + '}'
-    var url = window.location.origin + "/" + api;
-    fetch(url, {method: 'post', body: data, headers: {'content-type': 'JSON'}});
-}
-
-function sendHummelCommandPalette(api, jsonData) {
-    console.log("sendHummelCommandPalette");
-    var url = window.location.origin + "/" + api;
-    fetch(url, {method: 'post', body: jsonData, headers: {'content-type': 'JSON'}});
-}
-
-// function addArduinoIdElement(parent, arduinoId) {
-//     const e = document.getElementById("uint8_t_element");
-//     console.log(e)
-//     key = e.querySelector(`#key`)
-//     console.log(key)
-//     key = innerHTML= "ArduinoID";
-//     e.querySelector(`#value`).value= arduinoId;
-//     var clone = document.importNode(e.content, true);
-//     parent.appendChild(clone)
-// }
-
-/**
- * @func hsl2hsv
- * @desc Return an HSV color from an HSL color
- * @param {Number} h - Hue Angle (0 - 255)
- * @param {Number} s - Saturation (0 - 1)
- * @param {Number} l - Lightness (0 - 1)
- * @return {ArrayHSV}
- * @example
- * hsl2hsv(0, 100, 50)
- * @link https://gist.github.com/defims/0ca2ef8832833186ed396a2f8a204117
- */
-// function hsl2hsv(hslH, hslS, hslL) {
-//     //  const hsv1 = (hslS * (hslL < 0.5 ? hslL : 1 - hslL) / 100);
-//     //  const hsvS = hsv1 === 0 ? 0 : 2 * hsv1 / (hslL + hsv1);
-//     //  const hsvV = hslL + hsv1;
-//     // const fixedH = (hslH * 255) / 360
-//     // const fixedS = (hsvS)
-//     // const fixedV = (hsvV)
-//     // return [ fixedH, fixedS, fixedV ];
-//     const hsv1 = hslS * (hslL < 50 ? hslL : 100 - hslL) / 100;
-//     const hsvS = hsv1 === 0 ? 0 : 2 * hsv1 / (hslL + hsv1) * 100;
-//     const hsvV = hslL + hsv1;
-//     return [ hslH, hsvS, hsvV ];
-// }
-
-function rgbToHsv(r, g, b) {
-    r /= 255, g /= 255, b /= 255;
-
-    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-    var h, s, v = max;
-
-    var d = max - min;
-    s = max == 0 ? 0 : d / max;
-
-    if (max == min) {
-        h = 0; // achromatic
-    } else {
-        switch (max) {
-            case r:
-                h = (g - b) / d + (g < b ? 6 : 0);
-                break;
-            case g:
-                h = (b - r) / d + 2;
-                break;
-            case b:
-                h = (r - g) / d + 4;
-                break;
-        }
-
-        h /= 6;
-    }
-
-    return {h: h * 255, s: s * 255, v: v * 255};
-}
-
-/**
- * @func hsv2hsl
- * @desc Return an HSL color from an HSV color
- * @param {Number} h - Hue Angle (0 - 360)
- * @param {Number} s - Saturation (0 - 100)
- * @param {Number} v - Value (0 - 100)
- * @return {ArrayHSL}
- * @example
- * hsv2hsl(0, 0, 0) // => [0, 100, 50]
- * @link https://gist.github.com/defims/0ca2ef8832833186ed396a2f8a204117
- */
-function hsv2hsl(hsvH, hsvS, hsvV) {
-    const hslL = (200 - hsvS) * hsvV / 100;
-    const [hslS, hslV] = [
-        hslL === 0 || hslL === 200 ? 0 : hsvS * hsvV / 100 / (hslL <= 100 ? hslL : 200 - hslL) * 100,
-        hslL * 5 / 10
-    ];
-
-    const fixedH = (hsvH * 360) / 256
-    const fixedS = (hslS * 100) / 256
-    const fixedV = (hslV * 100) / 256
-    return [fixedH, fixedS, fixedV];
-}
-
-
-//// MOVEABLES
-
-
-
-$("#start").click(function () {
-});
-
-function addCss() {
-    const floating = document.querySelector('.box1');
-    const keyFrames = document.createElement("style");
-    keyFrames.type = 'text/css';
-    keyFrames.innerHTML = `\
-  @keyframes floating {\
-    0% { transform: translate(0px,  0px); }\
-    5% { transform: translate(0px,  0px); }\
-    10% { transform: translate(0px,  0px); }\
-    15% { transform: translate(0px,  0px); }\
-    20% { transform: translate(0px,  0px); }\
-    25% { transform: translate(0px,  0px); }\
-    30% { transform: translate(0px,  0px); }\
-    35% { transform: translate(0px,  0px); }\
-    40% { transform: translate(-7px,  4px); }\
-    45% { transform: translate(15px,  -3px); }\
-    50% { transform: translate(-8px,  15px); }\
-    55% { transform: translate(3px,  3px); }\
-    60% { transform: translate(1px,  -5px); }\
-    65% { transform: translate(-15px, 14px); }\
-    70% { transform: translate(8px, 3px); }\
-    75% { transform: translate(-3x,  15px); }\
-    80% { transform: translate(15px,  3px); }\
-    85% { transform: translate(-2px,  -13px); }\
-    90% { transform: translate(9px,  4px); }\
-    95% { transform: translate(-5px,  9px); }\
-    100% { transform: translate(-0px, -0px); }\
-  }\
-`;
-    console.log("aasdf")
-    floating.appendChild(keyFrames);
-}
-
-addCss();
-
-
-el1 = document.querySelector('.box1');
-el2 = document.querySelector('.box2');
-
-let newPosX1 = 0, newPosY1 = 0, startPosX1 = 0, startPosY1 = 0;
-
-let newPosX2 = 0, newPosY2 = 0, startPosX2 = 0, startPosY2 = 0;
-
-
-// when the user clicks down on the element
-el1.addEventListener('mousedown', function(e){
-    e.preventDefault();
-
-    // get the starting position of the cursor
-    startPosX1 = e.clientX;
-    startPosY1 = e.clientY;
-
-    document.addEventListener('mousemove', mouseMove1);
-
-    document.addEventListener('mouseup', function(){
-        document.removeEventListener('mousemove', mouseMove1);
-    });
-
-});
-
-// when the user clicks down on the element
-el2.addEventListener('mousedown', function(e){
-    e.preventDefault();
-
-    // get the starting position of the cursor
-    startPosX2 = e.clientX;
-    startPosY2 = e.clientY;
-
-    document.addEventListener('mousemove', mouseMove2);
-
-    document.addEventListener('mouseup', function(){
-        document.removeEventListener('mousemove', mouseMove2);
-    });
-
-});
-
-
-
-
-function mouseMove1(e) {
-    // calculate the new position
-    newPosX1 = startPosX1 - e.clientX;
-    newPosY1 = startPosY1 - e.clientY;
-
-    // with each move we also want to update the start X and Y
-    startPosX1 = e.clientX;
-    startPosY1 = e.clientY;
-
-    // set the element's new position:
-    el1.style.top = (el1.offsetTop - newPosY1) + "px";
-    el1.style.left = (el1.offsetLeft - newPosX1) + "px";
-}
-
-function mouseMove2(e) {
-    // calculate the new position
-    newPosX2 = startPosX2 - e.clientX;
-    newPosY2 = startPosY2 - e.clientY;
-
-    // with each move we also want to update the start X and Y
-    startPosX2 = e.clientX;
-    startPosY2 = e.clientY;
-
-    // set the element's new position:
-    el2.style.top = (el2.offsetTop - newPosY2) + "px";
-    el2.style.left = (el2.offsetLeft - newPosX2) + "px";
+    setTimeout(automaticMovement, 40);
 }
