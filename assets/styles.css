@@ -8,17 +8,3 @@
     overflow:hidden;
 }
 
-.hummel_wiese .hummel_drone{
-    width:50px;
-    height:50px;
-    left:50px;
-    top:50px;
-    position:absolute;
-    background:#0000ff;
-    cursor:move;
-    animation-name: floating;
-    animation-duration: 10s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    animation-timing-function: ease-in-out;
-}

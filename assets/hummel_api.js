@@ -4,8 +4,8 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function randomTranslate(b) {
-    return b + "% { transform: translate(" + getRandomInt(0, 10) + "px, " + getRandomInt(0, 10) + "px); }\n"
+function randomTranslate(b, min, max) {
+    return b + "% { transform: translate(" + getRandomInt(min, max) + "px, " + getRandomInt(min, max) + "px); }\n"
 }
 
 let newPosX = 0, newPosY = 0, startPosX = 0, startPosY = 0;
@@ -18,6 +18,7 @@ const maxSpeed = 100;
 const borderSizeLeftPercent = 2;
 const borderSizeTopPercent = 2;
 const hummelImageSize = 40;
+const flowerImageSize = 180;
 
 function createHummel(parentElement) {
     hummelCnt += 1;
@@ -64,7 +65,7 @@ function createHummel(parentElement) {
             hummel.autoMove = false;
             document.addEventListener('mousemove', moveCallback);
 
-            mouseUpCallback = function() {
+            mouseUpCallback = function () {
                 document.removeEventListener('mousemove', moveCallback);
                 document.removeEventListener('mouseup', mouseUpCallback);
                 hummel.autoMove = true;
@@ -138,7 +139,7 @@ function createHummel(parentElement) {
                     } else {
                         hummel.direction -= loopValue;
                     }
-                    hummel.loopSpeed = getRandomInt(3,10);
+                    hummel.loopSpeed = getRandomInt(3, 10);
                     hummel.loopEnd = getRandomInt(1, 360);
                     console.log(hummel.hummelID + ": do a loop with " + loopValue)
                 } else if ((seed > 100) && (seed < 200)) {
@@ -181,7 +182,7 @@ function createHummel(parentElement) {
 
             hummel.elements.hummel.style.left = hummel.posX + "px";
             hummel.elements.hummel.style.top = hummel.posY + "px";
-            hummel.elements.hummel.style.transform = "rotate("+(hummel.direction - 45)+"deg)"
+            hummel.elements.hummel.style.transform = "rotate(" + (hummel.direction - 45) + "deg)"
         }
     };
 
@@ -189,6 +190,18 @@ function createHummel(parentElement) {
 
     hummeln.push(newHummel)
     return newHummel;
+}
+
+function createFlower(parentElement, flowerID) {
+    xPercent = getRandomInt(5, 85);
+    yPercent = getRandomInt(5, 85);
+
+    x = (parentElement.offsetWidth / 100) * xPercent;
+    y = (parentElement.offsetHeight / 100) * yPercent;
+
+    elements = createFlowerElements(parentElement, flowerID);
+    styles = createFlowerStyle(flowerID, xPercent, yPercent);
+
 }
 
 function automaticMovement() {
@@ -241,15 +254,17 @@ function createHummelStyle(hummelID, x, y) {
     style.innerHTML += "    position:absolute;\n"
 //    style.innerHTML += "    background:#0000ff;\n"
     style.innerHTML += "    cursor:move;\n"
+    style.innerHTML += "    z-index: 3;\n"
     style.innerHTML += "}\n"
 
     // add hummel body style
     style.innerHTML += "\n"
     style.innerHTML += "." + hummelID + "_body {\n"
-    style.innerHTML += "    width:"+hummelImageSize+"px;\n"
-    style.innerHTML += "    height:"+hummelImageSize+"px;\n"
+    style.innerHTML += "    width:" + hummelImageSize + "px;\n"
+    style.innerHTML += "    height:" + hummelImageSize + "px;\n"
     style.innerHTML += "    left:5px;\n"
     style.innerHTML += "    top:5px;\n"
+//    style.innerHTML += "    z-index: 3;\n"
 //    style.innerHTML += "    background:#ff0000;\n"
     style.innerHTML += "    animation-name: " + hummelID + "_floating;\n"
     style.innerHTML += "    animation-duration: 10s;\n"
@@ -262,12 +277,70 @@ function createHummelStyle(hummelID, x, y) {
     style.innerHTML += "\n"
     style.innerHTML += "@keyframes " + hummelID + "_floating {\n";
     for (n = 0; n < 11; ++n) {
-        style.innerHTML += randomTranslate(n * 10);
+        style.innerHTML += randomTranslate(n * 10, 0, 10);
     }
     style.innerHTML += "}\n";
     document.head.appendChild(style);
 }
 
+function createFlowerElements(parentElement, flowerID) {
+    const flowerEl = document.createElement("div");
+    flowerEl.setAttribute('class', flowerID)
+    parentElement.appendChild(flowerEl);
+
+    const flowerAnchorEl = document.createElement("a");
+    flowerAnchorEl.setAttribute('href', "flower/" + flowerID);
+    flowerEl.appendChild(flowerAnchorEl);
+
+    const flowerBodyEl = document.createElement("img");
+    flowerBodyEl.setAttribute('class', flowerID + '_body');
+    flowerBodyEl.setAttribute('src', 'assets/img/flower.gif');
+    flowerAnchorEl.appendChild(flowerBodyEl);
+
+    return {flower: flowerEl, body: flowerBodyEl};
+}
+
+function createFlowerStyle(flowerID, x, y) {
+    const style = document.createElement("style");
+
+    style.innerHTML = "\n"
+
+    style.innerHTML += "\n"
+    style.innerHTML += "." + flowerID + "{\n"
+    style.innerHTML += "    width:200px;\n"
+    style.innerHTML += "    height:200px;\n"
+    style.innerHTML += "    left:" + x + "%;\n"
+    style.innerHTML += "    top:" + y + "%;\n"
+    style.innerHTML += "    position:absolute;\n"
+    style.innerHTML += "    z-index: 2;\n"
+//    style.innerHTML += "    background:#0000ff;\n"
+    style.innerHTML += "}\n"
+
+    // add hummel body style
+    style.innerHTML += "\n"
+    style.innerHTML += "." + flowerID + "_body {\n"
+    style.innerHTML += "    width:" + flowerImageSize + "px;\n"
+    style.innerHTML += "    height:" + flowerImageSize + "px;\n"
+    style.innerHTML += "    left:5px;\n"
+    style.innerHTML += "    top:5px;\n"
+//    style.innerHTML += "    z-index: 2;\n"
+    // style.innerHTML += "    background:#ff0000;\n"
+    style.innerHTML += "    animation-name: " + flowerID + "_floating;\n"
+    style.innerHTML += "    animation-duration: 20s;\n"
+    style.innerHTML += "    animation-iteration-count: infinite;\n"
+    style.innerHTML += "    animation-direction: alternate;\n"
+    style.innerHTML += "    animation-timing-function: ease-in-out;\n"
+    style.innerHTML += "}\n"
+
+    // add keyframes for individual hummel floating
+    style.innerHTML += "\n"
+    style.innerHTML += "@keyframes " + flowerID + "_floating {\n";
+    for (n = 0; n < 11; ++n) {
+        style.innerHTML += randomTranslate(n * 10, 0, 20);
+    }
+    style.innerHTML += "}\n";
+    document.head.appendChild(style);
+}
 
 function initialize() {
     const wiese = document.querySelector('.hummel_wiese');
@@ -275,23 +348,24 @@ function initialize() {
     createHummel(wiese);
     createHummel(wiese);
     createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
 
+    createFlower(wiese, "flower123");
     setTimeout(automaticMovement, 40);
 }
