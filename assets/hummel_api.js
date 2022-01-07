@@ -229,6 +229,7 @@ function findHummel(el) {
 function createHummelElements(parentElement, hummelID) {
     const hummelEl = document.createElement("div");
     hummelEl.setAttribute('class', hummelID)
+
     parentElement.appendChild(hummelEl);
 
     const hummelBodyEl = document.createElement("img");
@@ -271,6 +272,7 @@ function createHummelStyle(hummelID, x, y) {
     style.innerHTML += "    animation-iteration-count: infinite;\n"
     style.innerHTML += "    animation-direction: alternate;\n"
     style.innerHTML += "    animation-timing-function: ease-in-out;\n"
+ //   style.innerHTML += "    box-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;\n"
     style.innerHTML += "}\n"
 
     // add keyframes for individual hummel floating
@@ -348,23 +350,23 @@ function initialize() {
     createHummel(wiese);
     createHummel(wiese);
     createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
 
     createFlower(wiese, "flower123");
     setTimeout(automaticMovement, 40);
