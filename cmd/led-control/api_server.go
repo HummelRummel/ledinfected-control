@@ -65,6 +65,7 @@ func (o *apiServer) registerRestAPIEndpoints() {
 func (o *apiServer) registerWebEndpoints() {
 	o.engine.Static("/assets", "./assets")
 	o.engine.StaticFile("/", "./html/index.html")
+	o.engine.StaticFile("/flower", "./html/flower123.html")
 }
 
 func (o *apiServer) getCallbackArduino(c *gin.Context) (*hummelapi.HummelArduino, error) {

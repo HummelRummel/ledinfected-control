@@ -289,7 +289,7 @@ function createFlowerElements(parentElement, flowerID) {
     parentElement.appendChild(flowerEl);
 
     const flowerAnchorEl = document.createElement("a");
-    flowerAnchorEl.setAttribute('href', "flower/" + flowerID);
+    flowerAnchorEl.setAttribute('href', "flower");
     flowerEl.appendChild(flowerAnchorEl);
 
     const flowerBodyEl = document.createElement("img");
