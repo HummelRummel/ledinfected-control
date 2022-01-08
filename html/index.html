@@ -4,7 +4,7 @@
     <title>HummelFlowerControlCentre</title>
     <meta charset="UTF-8"/>
     <!-- prevents some OSX rescale issues -->
-    <meta name="viewport" content="width=device-width; initial-scale=1.0">
+    <!--    <meta name="viewport" content="width=device-width; initial-scale=1.0">-->
     <link rel="stylesheet" type="text/css" href="assets/styles.css"/>
 </head>
 <body onload="initialize();">
@@ -12,7 +12,177 @@
 <script src="assets/hummel_api.js"></script>
 
 <div class="hummel_wiese">
-</div>
+    <div id="control_view">
+        <div class="selection_view">
+            <!-- Tab links -->
+            <div class="selection_tab tab">
+                <button id="selection_leds_btn" class="selection_tablinks"
+                        onclick="selectSelectionTab('selection_leds')">LEDs
+                </button>
+                <button id="selection_pattern_btn" class="selection_tablinks"
+                        onclick="selectSelectionTab('selection_pattern')">Pattern
+                </button>
+                <button id="close_btn" onclick="hideFlowerView()">Close</button>
+            </div>
+
+            <!-- Tab content -->
+            <div id="selection_leds" class="selection_tabcontent tabcontent">
+                <h3>LEDs</h3>
+                <div class="selection_pattern_field_area">
+                    <div class="selection_pattern_field_cluster">
+                        <div class="button_placeholder"></div>
+                        <button id="led_field_2" class="round_button"
+                                onclick="toggleSelectedElement('led_field_2')"></button>
+                        <button id="led_field_3" class="round_button"
+                                onclick="toggleSelectedElement('led_field_3')"></button>
+                        <div class="button_placeholder"></div>
+                    </div>
+                    <div class="selection_pattern_field_cluster">
+                        <button id="led_field_1" class="round_button"
+                                onclick="toggleSelectedElement('led_field_1')"></button>
+                        <div class="button_placeholder"></div>
+                        <div class="button_placeholder"></div>
+                        <button id="led_field_4" class="round_button"
+                                onclick="toggleSelectedElement('led_field_4')"></button>
+                    </div>
+                    <div class="selection_pattern_field_cluster">
+                        <button id="led_field_8" class="round_button"
+                                onclick="toggleSelectedElement('led_field_8')"></button>
+                        <div class="button_placeholder"></div>
+                        <div class="button_placeholder"></div>
+                        <button id="led_field_5" class="round_button"
+                                onclick="toggleSelectedElement('led_field_5')"></button>
+
+                    </div>
+                    <div class="selection_pattern_field_cluster">
+                        <div class="button_placeholder"></div>
+                        <button id="led_field_7" class="round_button"
+                                onclick="toggleSelectedElement('led_field_7')"></button>
+                        <button id="led_field_6" class="round_button"
+                                onclick="toggleSelectedElement('led_field_6')"></button>
+                        <div class="button_placeholder"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="selection_pattern" class="selection_tabcontent tabcontent">
+                <h3>PATTERN</h3>
+                <div class="selection_pattern_field_area">
+                    <div class="selection_pattern_field_cluster">
+                        <button id="pattern_field_1" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_1')"></button>
+                        <button id="pattern_field_2" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_2')"></button>
+                        <button id="pattern_field_3" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_3')"></button>
+                        <button id="pattern_field_4" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_4')"></button>
+                    </div>
+                    <div class="selection_pattern_field_cluster">
+                        <button id="pattern_field_5" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_5')"></button>
+                        <button id="pattern_field_6" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_6')"></button>
+                        <button id="pattern_field_7" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_7')"></button>
+                        <button id="pattern_field_8" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_8')"></button>
+                    </div>
+                    <div class="selection_pattern_field_cluster">
+                        <button id="pattern_field_9" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_9')"></button>
+                        <button id="pattern_field_10" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_10')"></button>
+                        <button id="pattern_field_11" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_11')"></button>
+                        <button id="pattern_field_12" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_12')"></button>
+                    </div>
+                    <div class="selection_pattern_field_cluster">
+                        <button id="pattern_field_13" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_13')"></button>
+                        <button id="pattern_field_14" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_14')"></button>
+                        <button id="pattern_field_15" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_15')"></button>
+                        <button id="pattern_field_16" class="round_button"
+                                onclick="toggleSelectedElement('pattern_field_16')"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="parameter_view">
+            <!-- Tab links -->
+            <div class="parameter_tab tab">
+                <button id="parameter_ctrl_btn" class="parameter_tablinks"
+                        onclick="selectParameterTab('parameter_ctrl')">Ctrl
+                </button>
+                <button id="parameter_presets_btn" class="parameter_tablinks"
+                        onclick="selectParameterTab('parameter_presets')">Presets
+                </button>
+                <button id="parameter_admin_btn" class="parameter_tablinks"
+                        onclick="selectParameterTab('parameter_admin')">Admin
+                </button>
+            </div>
+
+            <!-- Tab content -->
+            <div id="parameter_ctrl" class="parameter_tabcontent tabcontent">
+                <h3>CTRL</h3>
+                <div class="flex_display">
+                    <button id="parameter_ctrl_h" class="round_button parameter_ctrl_select"
+                            onclick="selectParameterCtrlElement('parameter_ctrl_h')">H
+                    </button>
+                    <button id="parameter_ctrl_s" class="round_button parameter_ctrl_select"
+                            onclick="selectParameterCtrlElement('parameter_ctrl_s')">S
+                    </button>
+                    <button id="parameter_ctrl_v" class="round_button parameter_ctrl_select"
+                            onclick="selectParameterCtrlElement('parameter_ctrl_v')">V
+                    </button>
+                    <button id="parameter_ctrl_speed" class="round_button parameter_ctrl_select"
+                            onclick="selectParameterCtrlElement('parameter_ctrl_speed')">Speed
+                    </button>
+                    <button id="parameter_ctrl_overlay" class="round_button parameter_ctrl_select"
+                            onclick="selectParameterCtrlElement('parameter_ctrl_overlay')">Overlay
+                    </button>
+                </div>
+                <div class="flex_display">
+
+                    <input type="range" id="parameter_ctrl_slider" name="arduino2_rad1_num_leds"
+                           min="0" max="255">
+                    </dev>
+
+                </div>
+                <div id="parameter_presets" class="parameter_tabcontent tabcontent">
+                    <h3>PRESETS</h3>
+                    <p>Tokyo is the capital of Japan.</p>
+                </div>
+                <div id="parameter_admin" class="parameter_tabcontent tabcontent">
+                    <h3>ADMIN</h3>
+                    <input type="number" id="arduino1_id" name="arduino1_id"
+                           min="1" max="255">
+                    <label for="arduino1_id">Arduino1 ID</label>
+                    <input type="number" id="arduino1_rad1_led_pin" name="arduino1_rad1_led_pin"
+                           min="0" max="255">
+                    <label for="arduino1_rad1_led_pin">Arduino1 Radial1 LED pin</label>
+                    <input type="number" id="arduino1_rad1_num_leds" name="arduino1_rad1_num_leds"
+                           min="0" max="255">
+                    <label for="arduino1_rad1_num_leds">Arduino1 Radial1 num LEDs</label>
+
+
+                    <input type="number" id="arduino2_id" name="arduino2_id"
+                           min="1" max="255">
+                    <label for="arduino2_id">Arduino2 ID</label>
+                    <input type="number" id="arduino2_rad1_led_pin" name="arduino2_rad1_led_pin"
+                           min="0" max="255">
+                    <label for="arduino2_rad1_led_pin">Arduino2 Radial1 LED pin</label>
+                    <input type="number" id="arduino2_rad1_num_leds" name="arduino2_rad1_num_leds"
+                           min="0" max="255">
+                    <label for="arduino2_rad1_num_leds">Arduino2 Radial1 num LEDs</label>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

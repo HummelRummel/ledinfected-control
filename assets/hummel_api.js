@@ -12,6 +12,8 @@ let newPosX = 0, newPosY = 0, startPosX = 0, startPosY = 0;
 
 let hummelCnt = 0;
 
+let mouseButtonIsDown = false;
+
 hummeln = [];
 
 const maxSpeed = 100;
@@ -53,6 +55,8 @@ function createHummel(parentElement) {
         imageSize: hummelImageSize,
 
         mouseDownCallback: function (e) {
+            mouseButtonIsDown = true;
+
             e.preventDefault();
             hummel = findHummel(this);
 
@@ -66,6 +70,7 @@ function createHummel(parentElement) {
             document.addEventListener('mousemove', moveCallback);
 
             mouseUpCallback = function () {
+                mouseButtonIsDown = false;
                 document.removeEventListener('mousemove', moveCallback);
                 document.removeEventListener('mouseup', mouseUpCallback);
                 hummel.autoMove = true;
@@ -212,7 +217,10 @@ function automaticMovement() {
 
             moveAction();
         } else {
-            console.log(hummeln[i].hummelID + " currently automove disabled");
+            if (mouseButtonIsDown == false) {
+                hummeln[i].autoMove = true;
+                console.log(hummeln[i].hummelID + " fix autmovement");
+            }
         }
     }
     setTimeout(automaticMovement, 40);
@@ -285,13 +293,36 @@ function createHummelStyle(hummelID, x, y) {
     document.head.appendChild(style);
 }
 
+function toggleSelectedElement(elementID) {
+    el = document.getElementById(elementID);
+    el.classList.toggle("selected")
+}
+
+function showFlowerView(flowerID) {
+    document.getElementById("selection_leds_btn").click();
+    document.getElementById("parameter_ctrl_btn").click();
+
+    style = document.getElementById('control_view').style;
+
+    style.animation = "fadeInEffect 1s";
+    style.display = "block";
+}
+
+function hideFlowerView() {
+    style = document.getElementById('control_view').style;
+
+    style.animation = "fadeOutEffect 1s";
+    setTimeout(function(){style.display = "none";}, 900);
+}
+
 function createFlowerElements(parentElement, flowerID) {
     const flowerEl = document.createElement("div");
     flowerEl.setAttribute('class', flowerID)
     parentElement.appendChild(flowerEl);
 
-    const flowerAnchorEl = document.createElement("a");
-    flowerAnchorEl.setAttribute('href', "flower");
+    const flowerAnchorEl = document.createElement("div");
+    flowerAnchorEl.setAttribute('onclick', "showFlowerView('"+flowerID+"')");
+    //flowerAnchorEl.setAttribute('href', "flower");
     flowerEl.appendChild(flowerAnchorEl);
 
     const flowerBodyEl = document.createElement("img");
@@ -347,27 +378,82 @@ function createFlowerStyle(flowerID, x, y) {
 function initialize() {
     const wiese = document.querySelector('.hummel_wiese');
 
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
+    // createHummel(wiese);
 
     createFlower(wiese, "flower123");
     setTimeout(automaticMovement, 40);
+}
+
+function selectParameterCtrlElement(id) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    tabcontent = document.getElementsByClassName("parameter_ctrl_select");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove("selected");
+    }
+
+    document.getElementById(id).classList.add("selected");
+}
+
+function selectSelectionTab(tabID) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("selection_tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("selection_tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabID).style.display = "block";
+    document.getElementById(tabID+"_btn").className += " active";
+}
+
+
+function selectParameterTab(tabID) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("parameter_tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("parameter_tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabID).style.display = "block";
+    document.getElementById(tabID+"_btn").className += " active";
 }
