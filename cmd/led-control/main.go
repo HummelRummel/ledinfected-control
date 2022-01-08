@@ -2,10 +2,18 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sync"
 )
 
 func main() {
+
+	argsWithProg := os.Args
+
+	customComDev := ""
+	if len(argsWithProg) > 1 {
+		customComDev = argsWithProg[1]
+	}
 	//connection, err := hummelapi.NewHummelArduinoConnection("/dev/tty.usbserial-1440")
 	//if err != nil {
 	//	fmt.Printf("failed to open serial port: %s", err)
@@ -23,7 +31,7 @@ func main() {
 
 	//router.Run("localhost:8080")
 
-	apiSrv, err := newApiServer()
+	apiSrv, err := newApiServer(customComDev)
 	if err != nil {
 		fmt.Printf("failed to create api server: %s", err)
 		return

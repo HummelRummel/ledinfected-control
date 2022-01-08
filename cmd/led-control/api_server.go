@@ -13,15 +13,18 @@ import (
 
 type (
 	apiServer struct {
-		arduinos []*hummelapi.HummelArduino
+		arduinos        []*hummelapi.HummelArduino
+		customSerialDev string
 
 		engine *gin.Engine
 		stop_  chan struct{}
 	}
 )
 
-func newApiServer() (*apiServer, error) {
+func newApiServer(customSerialDev string) (*apiServer, error) {
 	o := &apiServer{
+		customSerialDev: customSerialDev,
+
 		engine: gin.Default(),
 		stop_:  make(chan struct{}),
 	}
@@ -170,7 +173,7 @@ func (o *apiServer) setStripeSetupCallback(c *gin.Context) {
 		config.SubStripes[1].NumLEDs, config.SubStripes[1].Offset,
 		config.SubStripes[2].NumLEDs, config.SubStripes[2].Offset,
 		config.SubStripes[3].NumLEDs, config.SubStripes[3].Offset,
-		); err != nil {
+	); err != nil {
 		fmt.Printf("failed to set setup: %s\n", err)
 		c.String(http.StatusBadRequest, "failed to set setup")
 		return
@@ -254,15 +257,21 @@ func (o *apiServer) arduinoConnectionHandler() {
 	for {
 		select {
 		case <-ticker.C:
-			// check the OSX device files
-			matches, err := filepath.Glob("/dev/tty.usbserial*")
-			if err != nil {
-				// check the linux device files
-				matches, err = filepath.Glob("/dev/ttyUSB*")
+			var matches []string
+			if o.customSerialDev != "" {
+				matches = []string{o.customSerialDev}
+			} else {
+				var err error
+				// check the OSX device files
+				matches, err = filepath.Glob("/dev/tty.usbserial*")
 				if err != nil {
-					// try again in 10 sec
-					time.Sleep(time.Second * 10)
-					continue
+					// check the linux device files
+					matches, err = filepath.Glob("/dev/ttyUSB*")
+					if err != nil {
+						// try again in 10 sec
+						time.Sleep(time.Second * 10)
+						continue
+					}
 				}
 			}
 
