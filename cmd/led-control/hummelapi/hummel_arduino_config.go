@@ -20,7 +20,9 @@ type (
 		VirtualLen uint8                                             `json:"virtual_len"`
 		SubStripes [4]HummelArduinoLedStripePinConfigSubStripeConfig `json:"sub_stripes"`
 	}
+	//fixme refactoring needed arduino config and control objects should be unified
 	HummelArduinoLedStripePinConfigSubStripeConfig struct {
+		Index   uint8 `json:"index"` // Index of the line in the stripe
 		NumLEDs uint8 `json:"num_leds"`
 		Offset  uint8 `json:"offset"`
 	}
@@ -28,6 +30,7 @@ type (
 		Brightness        uint8 `json:"brightness"`
 		MovementSpeed     uint8 `json:"movement_speed"`
 		MovementDirection bool  `json:"movement_direction"`
+		SpeedCorrection   uint8 `json:"speed_correction"`
 	}
 	HummelArduinoLedStripePaletteConfig struct {
 		Palette [16]CHSV `json:"palette"`

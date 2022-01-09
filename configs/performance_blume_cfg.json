@@ -1,0 +1,109 @@
+{
+  "id": "PerformanceBlume1",
+  "img_base_id": "pbv1",
+  "position": {
+    "x": 40,
+    "y": 40
+  },
+  "led_config": {
+    "SpeedCorrection": 0,
+    "cricle_stripes": [
+      {
+        "arduino_id": 1,
+        "stripe_id": "",
+        "led_line_setups": null,
+        "is_virtual": true
+      }
+    ],
+    "raadial_stripes": [
+      {
+        "arduino_id": 1,
+        "stripe_id": "radial1",
+        "led_line_setups": [
+          { "index": 0, "num_leds": 8, "led_offset": 0 },
+          { "index": 1, "num_leds": 5, "led_offset": 3 },
+          { "index": 2, "num_leds": 8, "led_offset": 0 },
+          { "index": 3, "num_leds": 5, "led_offset": 3 }
+        ],
+        "radial_pos": 0
+      },
+      {
+        "arduino_id": 1,
+        "stripe_id": "radial2",
+        "led_line_setups": [
+          { "index": 0, "num_leds": 8, "led_offset": 0 },
+          { "index": 1, "num_leds": 5, "led_offset": 3 },
+          { "index": 2, "num_leds": 8, "led_offset": 0 },
+          { "index": 3, "num_leds": 5, "led_offset": 3 }
+        ],
+        "radial_pos": 1
+      },
+      {
+        "arduino_id": 1,
+        "stripe_id": "radial3",
+        "led_line_setups": [
+          { "index": 0, "num_leds": 8, "led_offset": 0 },
+          { "index": 1, "num_leds": 5, "led_offset": 3 },
+          { "index": 2, "num_leds": 8, "led_offset": 0 },
+          { "index": 3, "num_leds": 5, "led_offset": 3 }
+        ],
+        "radial_pos": 2
+      },
+      {
+        "arduino_id": 1,
+        "stripe_id": "radial4",
+        "led_line_setups": [
+          { "index": 0, "num_leds": 8, "led_offset": 0 },
+          { "index": 1, "num_leds": 5, "led_offset": 3 },
+          { "index": 2, "num_leds": 8, "led_offset": 0 },
+          { "index": 3, "num_leds": 5, "led_offset": 3 }
+        ],
+        "radial_pos": 3
+      },
+      {
+        "arduino_id": 2,
+        "stripe_id": "radial1",
+        "led_line_setups": [
+          { "index": 0, "num_leds": 8, "led_offset": 0 },
+          { "index": 1, "num_leds": 5, "led_offset": 3 },
+          { "index": 2, "num_leds": 8, "led_offset": 0 },
+          { "index": 3, "num_leds": 5, "led_offset": 3 }
+        ],
+        "radial_pos": 4
+      },
+      {
+        "arduino_id": 2,
+        "stripe_id": "radial2",
+        "led_line_setups": [
+          { "index": 0, "num_leds": 8, "led_offset": 0 },
+          { "index": 1, "num_leds": 5, "led_offset": 3 },
+          { "index": 2, "num_leds": 8, "led_offset": 0 },
+          { "index": 3, "num_leds": 5, "led_offset": 3 }
+        ],
+        "radial_pos": 5
+      },
+      {
+        "arduino_id": 2,
+        "stripe_id": "radial3",
+        "led_line_setups": [
+          { "index": 0, "num_leds": 8, "led_offset": 0 },
+          { "index": 1, "num_leds": 5, "led_offset": 3 },
+          { "index": 2, "num_leds": 8, "led_offset": 0 },
+          { "index": 3, "num_leds": 5, "led_offset": 3 }
+        ],
+        "radial_pos": 6
+      },
+      {
+        "arduino_id": 2,
+        "stripe_id": "radial4",
+        "led_line_setups": [
+          { "index": 0, "num_leds": 8, "led_offset": 0 },
+          { "index": 1, "num_leds": 5, "led_offset": 3 },
+          { "index": 2, "num_leds": 8, "led_offset": 0 },
+          { "index": 3, "num_leds": 5, "led_offset": 3 }
+        ],
+        "radial_pos": 7
+      }
+    ]
+  }
+}
