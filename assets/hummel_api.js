@@ -223,7 +223,6 @@ function automaticMovement() {
             }
         }
     }
-    setTimeout(automaticMovement, 40);
 }
 
 function findHummel(el) {
@@ -280,7 +279,7 @@ function createHummelStyle(hummelID, x, y) {
     style.innerHTML += "    animation-iteration-count: infinite;\n"
     style.innerHTML += "    animation-direction: alternate;\n"
     style.innerHTML += "    animation-timing-function: ease-in-out;\n"
- //   style.innerHTML += "    box-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;\n"
+    //   style.innerHTML += "    box-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;\n"
     style.innerHTML += "}\n"
 
     // add keyframes for individual hummel floating
@@ -312,17 +311,53 @@ function hideFlowerView() {
     style = document.getElementById('control_view').style;
 
     style.animation = "fadeOutEffect 1s";
-    setTimeout(function(){style.display = "none";}, 900);
+    setTimeout(function () {
+        style.display = "none";
+    }, 900);
+}
+
+function createFlowerControlElements(parentElement, objectID) {
+    const ctrlView = document.createElement("div");
+    ctrlView.setAttribute('id', "controlView_" + objectID)
+    ctrlView.setAttribute('data-object-id', objectID)
+    parentElement.appendChild(ctrlView);
+
+    const selectView = document.createElement("div");
+    selectView.classList.add("selection_tab_" + objectID, "tab");
+    selectView.setAttribute('data-object-id', objectID)
+    ctrlView.appendChild(selectView);
+
+    const selLedBtn = document.createElement("button");
+    selLedBtn.setAttribute('id', "selection_leds_btn_" + objectID)
+    selLedBtn.classList.add("selection_tablinks_" + objectID);
+    selLedBtn.setAttribute('onclick', "selectSelectionTab('selection_leds', " + objectID + ")")
+    selLedBtn.innerHTML = "LEDs";
+    selectView.appendChild(selLedBtn);
+
+    const selPatternBtn = document.createElement("button");
+    selPatternBtn.setAttribute('id', "selection_pattern_btn_" + objectID)
+    selPatternBtn.classList.add("selection_tablinks_" + objectID);
+    selPatternBtn.setAttribute('onclick', "selectSelectionTab('selection_pattern', " + objectID + ")")
+    selPatternBtn.innerHTML = "Pattern";
+    selectView.appendChild(selPatternBtn);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.setAttribute('onclick', "hideFlowerView()")
+    closeBtn.innerHTML = "Close";
+    selectView.appendChild(closeBtn);
+
+
 }
 
 function createFlowerElements(parentElement, flowerID) {
+    // createFlowerControlElements(parentElement, flowerID);
+
     const flowerEl = document.createElement("div");
     flowerEl.setAttribute('class', flowerID)
     parentElement.appendChild(flowerEl);
 
     const flowerAnchorEl = document.createElement("div");
-    flowerAnchorEl.setAttribute('onclick', "showFlowerView('"+flowerID+"')");
-    //flowerAnchorEl.setAttribute('href', "flower");
+    flowerAnchorEl.setAttribute('onclick', "showFlowerView('" + flowerID + "')");
     flowerEl.appendChild(flowerAnchorEl);
 
     const flowerBodyEl = document.createElement("img");
@@ -378,9 +413,9 @@ function createFlowerStyle(flowerID, x, y) {
 function initialize() {
     const wiese = document.querySelector('.hummel_wiese');
 
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
+    createHummel(wiese);
     // createHummel(wiese);
     // createHummel(wiese);
     // createHummel(wiese);
@@ -400,7 +435,117 @@ function initialize() {
     // createHummel(wiese);
 
     createFlower(wiese, "flower123");
-    setTimeout(automaticMovement, 40);
+    setInterval(automaticMovement, 40);
+}
+
+function updateObject() {
+    var obj = new Object();
+    obj.id = "pfv1";
+    obj.led_config = new Object();
+    obj.led_config.radial_stripes = [];
+
+    tabcontent = document.getElementsByClassName("parameter_ctrl_select");
+    for (i = 0; i < tabcontent.length; i++) {
+        if (tabcontent[i].classList.contains("selected") == true) {
+            selectedCtrlType = tabcontent[i].getAttribute("data-ctrl-type")
+            break;
+        }
+    }
+
+    slider = document.getElementById("parameter_ctrl_slider");
+    newValue = slider.value;
+
+    var selectedSegments = [];
+    tabcontent = document.getElementsByClassName("led_select_field");
+    for (i = 0; i < tabcontent.length; i++) {
+        if (tabcontent[i].classList.contains("selected") == true) {
+            selectedSegments.push(tabcontent[i].getAttribute("data-id"))
+        }
+    }
+
+    var selectedPatternIndecies = [];
+    tabcontent = document.getElementsByClassName("pattern_select_field");
+    for (i = 0; i < tabcontent.length; i++) {
+        if (tabcontent[i].classList.contains("selected") == true) {
+            selectedPatternIndecies.push(parseInt(tabcontent[i].getAttribute("data-id")));
+        }
+    }
+    for (si = 0; si < selectedSegments.length; si++) {
+        stripeObj = new Object();
+        stripeObj.stripe_name = selectedSegments[si];
+        stripeObj.config = new Object();
+
+
+        if (selectedCtrlType == "h") {
+            stripeObj.config.palette = new Object();
+            stripeObj.config.palette.palette = [];
+            for (pi = 0; pi < selectedPatternIndecies.length; pi++) {
+                newPatternEntry = new Object();
+                newPatternEntry.id = selectedPatternIndecies[pi];
+                newPatternEntry.h = newValue * 1;
+                stripeObj.config.palette.palette.push(newPatternEntry);
+            }
+            fillMissingPaletteEntries(stripeObj.config.palette)
+        } else if (selectedCtrlType == "s") {
+            stripeObj.config.palette = new Object();
+            stripeObj.config.palette.palette = [];
+            for (pi = 0; pi < selectedPatternIndecies.length; pi++) {
+                newPatternEntry = new Object();
+                newPatternEntry.id = selectedPatternIndecies[pi];
+                newPatternEntry.s = newValue * 1;
+                stripeObj.config.palette.palette.push(newPatternEntry);
+            }
+            fillMissingPaletteEntries(stripeObj.config.palette)
+        } else if (selectedCtrlType == "v") {
+            stripeObj.config.palette = new Object();
+            stripeObj.config.palette.palette = [];
+            for (pi = 0; pi < selectedPatternIndecies.length; pi++) {
+                newPatternEntry = new Object();
+                newPatternEntry.id = selectedPatternIndecies[pi];
+                newPatternEntry.v = newValue * 1;
+                stripeObj.config.palette.palette.push(newPatternEntry);
+            }
+            fillMissingPaletteEntries(stripeObj.config.palette)
+        } else if (selectedCtrlType == "speed") {
+            stripeObj.config.base = new Object();
+            absSpeed = newValue;
+            if (absSpeed < 0) {
+                stripeObj.config.base.movement_speed = absSpeed * -1;
+                stripeObj.config.base.movement_direction = false;
+            } else {
+                stripeObj.config.base.movement_speed = absSpeed * 1;
+                stripeObj.config.base.movement_direction = true;
+            }
+        } else if (selectedCtrlType == "overlay") {
+
+        }
+
+        // and now add the config
+        obj.led_config.radial_stripes.push(stripeObj);
+    }
+
+    console.log(JSON.stringify(obj.led_config))
+    post("api/object/" + obj.id + "/stripe", obj.led_config);
+}
+
+function post(url, data) {
+    return fetch(url, {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+}
+
+function fillMissingPaletteEntries(palette) {
+    for (i = 1; i < 17; i++) {
+        found = false
+        for (pi = 0; pi < palette.palette.length; pi++) {
+            if ( palette.palette[pi].id == i ) {
+                found = true
+            }
+        }
+        if ( found == false ) {
+            newPatternEntry = new Object();
+            newPatternEntry.id = i
+            palette.palette.push(newPatternEntry)
+        }
+    }
 }
 
 function selectParameterCtrlElement(id) {
@@ -412,6 +557,14 @@ function selectParameterCtrlElement(id) {
         tabcontent[i].classList.remove("selected");
     }
 
+    slider = document.getElementById("parameter_ctrl_slider");
+    if (id == "parameter_ctrl_speed") {
+        slider.min = -2
+        slider.max = 2
+    } else if ((id == "parameter_ctrl_h") || (id == "parameter_ctrl_s") || (id == "parameter_ctrl_v")) {
+        slider.min = 0
+        slider.max = 255
+    }
     document.getElementById(id).classList.add("selected");
 }
 
@@ -433,7 +586,7 @@ function selectSelectionTab(tabID) {
 
     // Show the current tab, and add an "active" class to the button that opened the tab
     document.getElementById(tabID).style.display = "block";
-    document.getElementById(tabID+"_btn").className += " active";
+    document.getElementById(tabID + "_btn").className += " active";
 }
 
 
@@ -455,5 +608,5 @@ function selectParameterTab(tabID) {
 
     // Show the current tab, and add an "active" class to the button that opened the tab
     document.getElementById(tabID).style.display = "block";
-    document.getElementById(tabID+"_btn").className += " active";
+    document.getElementById(tabID + "_btn").className += " active";
 }

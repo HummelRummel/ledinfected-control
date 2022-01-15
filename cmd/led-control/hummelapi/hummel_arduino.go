@@ -6,8 +6,8 @@ type (
 	HummelArduino struct {
 		connection *HummelArduinoConnection
 
-		CircleStripe  HummelArduinoLedStripe
-		RadialStripes [4]HummelArduinoLedStripe
+		CircleStripe  *HummelArduinoLedStripe
+		RadialStripes [4]*HummelArduinoLedStripe
 	}
 )
 
@@ -18,10 +18,10 @@ func NewHummelArduino(devFile string) (*HummelArduino, error) {
 	}
 	o := &HummelArduino{
 		connection:    connection,
-		CircleStripe:  HummelArduinoLedStripe{
+		CircleStripe:  &HummelArduinoLedStripe{
 			connection: connection, stripeType: hummelCommandTypeCircle, setupType: hummelCommandTypeSetupCircle,
 		},
-		RadialStripes: [4]HummelArduinoLedStripe{
+		RadialStripes: [4]*HummelArduinoLedStripe{
 			{connection: connection, stripeType: hummelCommandTypeRadial1, setupType: hummelCommandTypeSetupRadial1},
 			{connection: connection, stripeType: hummelCommandTypeRadial2, setupType: hummelCommandTypeSetupRadial2},
 			{connection: connection, stripeType: hummelCommandTypeRadial3, setupType: hummelCommandTypeSetupRadial3},
@@ -29,7 +29,43 @@ func NewHummelArduino(devFile string) (*HummelArduino, error) {
 		},
 	}
 
+	config, err := o.GetConfig()
+	if err != nil {
+		fmt.Printf("failed to get config for arduino %d connected to %s", connection.GetId(), devFile)
+	}
+
+	for _, s:= range o.RadialStripes {
+		for _, cs:=range config.Radials {
+			stripeType := uint8(0);
+			if cs.StripeID == nil {
+				fmt.Printf("stripeID not set")
+				continue
+			}
+			stripeType = stripeIDToStripeType(*cs.StripeID)
+			if s.stripeType == stripeType {
+				s.currentConfig = cs
+				break
+			}
+
+		}
+	}
+
 	return o, nil
+}
+
+func stripeIDToStripeType(stripeID string) uint8 {
+	var stripeType uint8
+	switch stripeID {
+	case "radial1":
+		stripeType = hummelCommandTypeRadial1
+	case "radial2":
+		stripeType = hummelCommandTypeRadial2
+	case "radial3":
+		stripeType = hummelCommandTypeRadial3
+	case "radial4":
+		stripeType = hummelCommandTypeRadial4
+	}
+	return stripeType
 }
 
 func (o *HummelArduino) Close() {
@@ -84,16 +120,18 @@ func (o *HummelArduino) GetConfig() (*HummelArduinoConfig, error) {
 		}
 
 		return &HummelArduinoLedStripeConfig{
-			StripeID: stripeID,
+			StripeID: &stripeID,
 			Pin:      pinConfig,
 			Base:     baseConfig,
 			Palette:  palette,
 		}, nil
 	}
 
+	devFile := o.GetDevFile();
+	id := response.data[0];
 	c := &HummelArduinoConfig{
-		DevFile: o.GetDevFile(),
-		ID:      response.data[0],
+		DevFile: &devFile,
+		ID:      &id,
 	}
 
 	c.Circle, err = readNextStripeConfig("circle", stripBaseOffset+0)

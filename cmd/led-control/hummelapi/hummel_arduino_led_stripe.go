@@ -6,7 +6,7 @@ type (
 		stripeType uint8
 		setupType  uint8
 
-//		config *HummelArduinoLedStripeConfig
+		currentConfig *HummelArduinoLedStripeConfig
 	}
 )
 
@@ -36,7 +36,50 @@ func (o *HummelArduinoLedStripe) SetConfig(speed uint8, directionBool bool, brig
 	return nil
 }
 
+func (o *HummelArduinoLedStripe) fillMissing(palette *HummelArduinoLedStripePaletteConfig) {
+	nullVal := uint8(0);
+	for _,e:=range palette.Palette {
+		if e.H == nil {
+			if o.currentConfig == nil {
+				e.H = &nullVal;
+			} else {
+				hsv := o.currentConfig.Palette.getHSVByID(e.ID)
+				if hsv != nil {
+					e.H = hsv.H
+				} else {
+					e.H = &nullVal
+				}
+			}
+		}
+		if e.S == nil {
+			if o.currentConfig == nil {
+				e.S = &nullVal;
+			} else {
+				hsv := o.currentConfig.Palette.getHSVByID(e.ID)
+				if hsv != nil {
+					e.S = hsv.S
+				} else {
+					e.S = &nullVal
+				}
+			}
+		}
+		if e.V == nil {
+			if o.currentConfig == nil {
+				e.V = &nullVal;
+			} else {
+				hsv := o.currentConfig.Palette.getHSVByID(e.ID)
+				if hsv != nil {
+					e.V = hsv.V
+				} else {
+					e.V = &nullVal
+				}
+			}
+		}
+	}
+}
+
 func (o *HummelArduinoLedStripe) SetPaletteCHSV(palette *HummelArduinoLedStripePaletteConfig) error {
+	o.fillMissing(palette)
 	_, err := o.connection.HummelCommand(o.stripeType, hummelCommandCodePaletteCHSV, palette.getBytes())
 	if err != nil {
 		return err

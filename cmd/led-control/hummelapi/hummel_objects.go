@@ -17,8 +17,25 @@ type (
 	}
 )
 
+func (o *KnownObjects) UpdateArduino(arduino *HummelArduino) {
+	for _, obj := range o.objs {
+		for _, stripe := range obj.ControlObject.LEDConfig.RadialStripes {
+			if *stripe.ArduinoID != arduino.GetID() {
+				continue
+			}
+			for _, arduinoStrip := range arduino.RadialStripes {
+				if arduinoStrip.stripeType == stripeIDToStripeType(*stripe.Config.StripeID) {
+					stripe.Config.Base = arduinoStrip.currentConfig.Base
+					stripe.Config.Pin = arduinoStrip.currentConfig.Pin
+					stripe.Config.Palette = arduinoStrip.currentConfig.Palette
+				}
+			}
+		}
+	}
+}
+
 func GetKnownObject() (*KnownObjects, error) {
-	matches, err := filepath.Glob("./config/*.json")
+	matches, err := filepath.Glob("./configs/*.json")
 	if err != nil {
 		return nil, err
 	}

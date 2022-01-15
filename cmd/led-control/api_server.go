@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/nbmoa/led-control/cmd/led-control/hummelapi"
@@ -74,6 +75,7 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.GET("/api/object/:Id", o.getObjectConfigByIDCallback)
 	//	o.engine.POST("/api/object/:Id/:Stripe/setup", o.setObjectStripeSetupCallback)
 	//	o.engine.POST("/api/object/:Id/:Stripe/setup/save", o.saveObjectStripeSetupCallback)
+	//  o.engine.POST("/api/object/:Id", o.setObjectConfigCallback)
 	o.engine.POST("/api/object/:Id/stripe", o.setObjectStripeConfigCallback)
 	o.engine.POST("/api/object/:Id/stripe/:StripeName/palette", o.setObjectStripePaletteConfigCallback)
 	//	o.engine.POST("/api/object/:Id/stripe/:StripeName/save", o.saveObjectStripeConfigCallback)
@@ -133,15 +135,15 @@ func (o *apiServer) getArdoinoAndStripe(arduinoID uint8, stripeID string) (*humm
 
 	switch stripeID {
 	case "circle":
-		return a, &a.CircleStripe, nil
+		return a, a.CircleStripe, nil
 	case "radial1":
-		return a, &a.RadialStripes[0], nil
+		return a, a.RadialStripes[0], nil
 	case "radial2":
-		return a, &a.RadialStripes[1], nil
+		return a, a.RadialStripes[1], nil
 	case "radial3":
-		return a, &a.RadialStripes[2], nil
+		return a, a.RadialStripes[2], nil
 	case "radial4":
-		return a, &a.RadialStripes[3], nil
+		return a, a.RadialStripes[3], nil
 	default:
 		return nil, nil, fmt.Errorf("stripe %s not suported", stripeID)
 	}
@@ -154,12 +156,12 @@ func (o *apiServer) getObjectAndStripe(objectID string, stripeName string) (*hum
 	}
 	for _, s := range obj.ControlObject.LEDConfig.CircleStripes {
 		if s.StripeName == stripeName {
-			return obj, &s, nil
+			return obj, s, nil
 		}
 	}
 	for _, s := range obj.ControlObject.LEDConfig.RadialStripes {
 		if s.StripeName == stripeName {
-			return obj, &s, nil
+			return obj, s, nil
 		}
 	}
 	return nil, nil, fmt.Errorf("stripe %s not found in object %s", stripeName, objectID)
@@ -199,7 +201,12 @@ func (o *apiServer) setArduinoIDCallback(c *gin.Context) {
 		return
 	}
 
-	err = a.SetID(arduinoConfig.ID)
+	if arduinoConfig.ID == nil {
+		fmt.Printf("arduino ID not set")
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+	err = a.SetID(*arduinoConfig.ID)
 	if err != nil {
 		fmt.Printf("failed to read config: %s\n", err)
 	}
@@ -267,11 +274,11 @@ func (o *apiServer) setArduinoStripeSetupCallback(c *gin.Context) {
 		return
 	}
 
-	if err := s.SetSetup(config.LedPin, config.VirtualLen,
-		config.SubStripes[0].NumLEDs, config.SubStripes[0].Offset,
-		config.SubStripes[1].NumLEDs, config.SubStripes[1].Offset,
-		config.SubStripes[2].NumLEDs, config.SubStripes[2].Offset,
-		config.SubStripes[3].NumLEDs, config.SubStripes[3].Offset,
+	if err := s.SetSetup(*config.LedPin, *config.VirtualLen,
+		*config.SubStripes[0].NumLEDs, *config.SubStripes[0].Offset,
+		*config.SubStripes[1].NumLEDs, *config.SubStripes[1].Offset,
+		*config.SubStripes[2].NumLEDs, *config.SubStripes[2].Offset,
+		*config.SubStripes[3].NumLEDs, *config.SubStripes[3].Offset,
 	); err != nil {
 		fmt.Printf("failed to set setup: %s\n", err)
 		c.String(http.StatusBadRequest, "failed to set setup")
@@ -307,47 +314,77 @@ func (o *apiServer) setArduinoStripeConfigCallback(c *gin.Context) {
 		return
 	}
 
-	if err := s.SetConfig(baseConfig.MovementSpeed, baseConfig.MovementDirection, baseConfig.Brightness); err != nil {
+	if err := s.SetConfig(*baseConfig.MovementSpeed, *baseConfig.MovementDirection, *baseConfig.Brightness); err != nil {
 		fmt.Printf("failed to set config: %s\n", err)
 	}
 	c.JSON(http.StatusOK, "{}")
 }
 
 func (o *apiServer) setObjectStripeConfigCallback(c *gin.Context) {
-	_, err := o.getCallbackObject(c)
+	obj, err := o.getCallbackObject(c)
 	if err != nil {
 		c.String(http.StatusNotFound, "")
 		return
 	}
+
+	body, _ := c.GetRawData()
 	var ledConfig hummelapi.HummelControlObjectLEDConfig
-	if err := c.BindJSON(&ledConfig); err != nil {
+	if err := json.Unmarshal(body, &ledConfig); err != nil {
+//	if err := c.BindJSON(&ledConfig); err != nil {
+		fmt.Printf("%s\n", err)
 		c.String(http.StatusBadRequest, "")
 		return
 	}
 
+	var errorString string
 	for _, circle := range ledConfig.CircleStripes {
-		_, s, err := o.getArdoinoAndStripe(circle.ArduinoID, circle.Config.StripeID)
+		_, s, err := o.getArdoinoAndStripe(*circle.ArduinoID, *circle.Config.StripeID)
 		if err != nil {
-			fmt.Printf("failed to get stripe: %s\n", err)
+			errorString += fmt.Sprintf("failed to get stripe for %d/%s: %s\n",circle.ArduinoID, circle.Config.StripeID, err)
 			continue
 		}
-		if err := s.SetConfig(circle.Config.Base.MovementSpeed, circle.Config.Base.MovementDirection, circle.Config.Base.Brightness); err != nil {
-			fmt.Printf("failed to set config: %s\n", err)
+		if err := s.SetConfig(*circle.Config.Base.MovementSpeed, *circle.Config.Base.MovementDirection, *circle.Config.Base.Brightness); err != nil {
+			errorString += fmt.Sprintf("failed to set config for %d/%s: %s\n",circle.ArduinoID, circle.Config.StripeID, err)
+		}
+		if circle.Config.Palette != nil {
+			if err := s.SetConfig(*circle.Config.Base.MovementSpeed, *circle.Config.Base.MovementDirection, *circle.Config.Base.Brightness); err != nil {
+				errorString += fmt.Sprintf("failed to set palette for %d/%s: %s\n",circle.ArduinoID, circle.Config.StripeID, err)
+			}
 		}
 	}
 	for _, radial := range ledConfig.RadialStripes {
-		_, s, err := o.getArdoinoAndStripe(radial.ArduinoID, radial.Config.StripeID)
+		radObj, err := obj.ControlObject.LEDConfig.GetRadialStripeByName(radial.StripeName)
 		if err != nil {
-			fmt.Printf("failed to get stripe: %s\n", err)
+			errorString += fmt.Sprintf("failed to find stripe in known objects %s: %s\n",radial.StripeName, err)
 			continue
 		}
-		if err := s.SetConfig(radial.Config.Base.MovementSpeed, radial.Config.Base.MovementDirection, radial.Config.Base.Brightness); err != nil {
-			fmt.Printf("failed to set config: %s\n", err)
+		if err := radObj.Fill(radial); err != nil {
+			errorString += fmt.Sprintf("failed to fill missing objects %s: %s\n",radial.StripeName, err)
+			continue
 		}
+		_, s, err := o.getArdoinoAndStripe(*radObj.ArduinoID, *radObj.Config.StripeID)
+		if err != nil {
+			errorString += fmt.Sprintf("failed to get stripe for %d/%s: %s\n",radial.ArduinoID, radial.Config.StripeID, err)
+			continue
+		}
+		if err := s.SetConfig(*radial.Config.Base.MovementSpeed, *radial.Config.Base.MovementDirection, *radial.Config.Base.Brightness); err != nil {
+			errorString += fmt.Sprintf("failed to set config for %d/%s: %s\n",radial.ArduinoID, radial.Config.StripeID, err)
+		}
+		if radial.Config.Palette != nil {
+			if err := s.SetPaletteCHSV(radial.Config.Palette); err != nil {
+				errorString += fmt.Sprintf("failed to set palette for %d/%s: %s\n",radial.ArduinoID, radial.Config.StripeID, err)
+			}
+		}
+		radObj.Config = radial.Config
 	}
 
-	c.JSON(http.StatusOK, "{}")
+	if errorString != "" {
+		c.JSON(http.StatusExpectationFailed, errorString)
+	} else {
+		c.JSON(http.StatusOK, "{}")
+	}
 }
+
 
 func (o *apiServer) saveArduinoStripeConfigCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
@@ -390,7 +427,7 @@ func (o *apiServer) setObjectStripePaletteConfigCallback(c *gin.Context) {
 		return
 	}
 
-	_, s, err := o.getArdoinoAndStripe(so.ArduinoID, so.Config.StripeID)
+	_, s, err := o.getArdoinoAndStripe(*so.ArduinoID, *so.Config.StripeID)
 
 	var paletteConfig hummelapi.HummelArduinoLedStripePaletteConfig
 	if err := c.BindJSON(&paletteConfig); err != nil {
@@ -448,6 +485,7 @@ func (o *apiServer) arduinoConnectionHandler() {
 					if err != nil {
 						fmt.Printf("failed to get arduino: %s\n", err)
 					} else {
+						o.knownObjects.UpdateArduino(arduino)
 						o.arduinos = append(o.arduinos, arduino)
 					}
 				}
