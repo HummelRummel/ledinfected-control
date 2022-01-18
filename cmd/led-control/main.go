@@ -39,7 +39,7 @@ func main() {
 	//		Y: 40,
 	//	},
 	//	LEDConfig: hummelapi.HummelControlObjectLEDConfig{
-	//		SpeedCorrection: 0,
+	//		PatternCorrection: 0,
 	//		CircleStripes: []hummelapi.HummelControlObjectLEDCircleStripe{
 	//			{
 	//				ArduinoID:     1,

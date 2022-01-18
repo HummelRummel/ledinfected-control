@@ -1,4 +1,0 @@
-package hummelapi
-
-const (
-)

@@ -194,6 +194,7 @@ function createHummel(parentElement) {
     this.elements.hummel.addEventListener('mousedown', newHummel.mouseDownCallback);
 
     hummeln.push(newHummel)
+
     return newHummel;
 }
 
@@ -410,29 +411,16 @@ function createFlowerStyle(flowerID, x, y) {
     document.head.appendChild(style);
 }
 
+function generateHummeln(x,wiese){
+    for (let i = 0; i < x; i++) {
+        createHummel(wiese);
+
+    }
+}
 function initialize() {
     const wiese = document.querySelector('.hummel_wiese');
+    generateHummeln(15,wiese)
 
-    createHummel(wiese);
-    createHummel(wiese);
-    createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
-    // createHummel(wiese);
 
     createFlower(wiese, "flower123");
     setInterval(automaticMovement, 40);

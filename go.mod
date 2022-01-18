@@ -3,6 +3,7 @@ module github.com/nbmoa/led-control
 go 1.17
 
 require (
+	github.com/Lobaro/slip v0.0.0-20170904164317-88dcb78414ea
 	github.com/gin-gonic/gin v1.7.7
 	go.bug.st/serial v1.3.3
 )

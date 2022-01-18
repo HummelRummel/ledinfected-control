@@ -140,3 +140,54 @@ table {
 .flex_display {
     display: flex;
 }
+
+#bigBox {
+    position:absolute;
+    width:200px;
+    height:200px;
+    top:50%;
+    left:50%;
+    margin:-100px 0 0 -120px;
+    animation:bigBoxAnimation 6s linear infinite;
+}
+.bumblebees {
+    position:absolute;
+    top:60%;
+    left:50%;
+    width:40px;
+    height:40px;
+    background-image: url("img/hummel.gif");
+    margin:-20px 0 0 -20px;
+    animation:boxAnimation 20.95s cubic-bezier(0.02, 0.01, 0.31, 1) infinite;
+}
+#box2 {
+    animation:boxAnimation 30.2s cubic-bezier(0.02, 0.01, 0.31, 1) infinite;
+    transform:matrix(-1,0,0,1,0,0);
+}
+#box3 {
+    animation:boxAnimation 40.2s cubic-bezier(0.02, 0.01, 0.31, 1) infinite;
+    transform:matrix(-1,0,0,1,0,0);
+}
+#box4 {
+    animation:boxAnimation 60.2s cubic-bezier(0.02, 0.01, 0.31, 1) infinite;
+    transform:matrix(-1,0,1,1,0,-1);
+}
+.bumblebees {
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    background-image: url("img/hummel.gif");
+    border-radius:100%;
+    animation:spanAnimation 3s cubic-bezier(0.3, 0.27, 0.07, 1.64) infinite;
+    box-shadow:rgba(255,255,255,1) 0 0 20px 2px;
+}
+@keyframes bigBoxAnimation {
+    100% {transform:rotate(360deg);}
+}
+@keyframes boxAnimation{
+    50% {transform:translateY(-150px);}
+}
+@keyframes spanAnimation {
+    50% {transform:translateX(-150px)}
+}

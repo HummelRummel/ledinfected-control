@@ -1,3 +1,5 @@
+github.com/Lobaro/slip v0.0.0-20170904164317-88dcb78414ea h1:lpHJkBxATbHlFRPGlD7/gU1LTyMNMkhpYKxCUT7Ynx0=
+github.com/Lobaro/slip v0.0.0-20170904164317-88dcb78414ea/go.mod h1:r5Qh0dZbKfQ+1KRK78WRCeStYKOIGr/cF/QrkjtH88s=
 github.com/creack/goselect v0.1.2 h1:2DNy14+JPjRBgPzAd1thbQp4BSIihxcBf0IXhQXDRa0=
 github.com/creack/goselect v0.1.2/go.mod h1:a/NhLweNvqIYMuxcMOuWY516Cimucms3DglDzQP3hKY=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
