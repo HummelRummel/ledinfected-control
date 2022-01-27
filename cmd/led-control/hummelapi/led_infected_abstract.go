@@ -161,7 +161,7 @@ func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeCo
 				found = true
 			}
 		}
-		if found {
+		if !found {
 			return fmt.Errorf("could not found stripe %s", id)
 		}
 	}
@@ -174,7 +174,7 @@ func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeCo
 		arduinoConnection := selectedStripes[0].arduinoStrip.connection
 		arduinoID := selectedStripes[0].Setup.ArduinoID
 		stripeMask := uint8(0)
-		for i := len(selectedStripes) - 1; i <= 0; i-- {
+		for i := len(selectedStripes) - 1; i >= 0; i-- {
 			if selectedStripes[i].Setup.ArduinoID == arduinoID {
 				stripeMask += (1 << selectedStripes[i].Setup.ArduinoStripeID)
 				selectedStripes = append(selectedStripes[:i], selectedStripes[i+1:]...)
@@ -198,8 +198,8 @@ func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripe
 				found = true
 			}
 		}
-		if found {
-			return fmt.Errorf("could not found stripe %s", id)
+		if !found {
+			return fmt.Errorf("could not find stripe %s", id)
 		}
 	}
 
@@ -211,7 +211,7 @@ func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripe
 		arduinoConnection := selectedStripes[0].arduinoStrip.connection
 		arduinoID := selectedStripes[0].Setup.ArduinoID
 		stripeMask := uint8(0)
-		for i := len(selectedStripes) - 1; i <= 0; i-- {
+		for i := len(selectedStripes) - 1; i >= 0; i-- {
 			if selectedStripes[i].Setup.ArduinoID == arduinoID {
 				stripeMask += (1 << selectedStripes[i].Setup.ArduinoStripeID)
 				selectedStripes = append(selectedStripes[:i], selectedStripes[i+1:]...)

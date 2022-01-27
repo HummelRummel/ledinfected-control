@@ -107,23 +107,25 @@ func (o *apiServer) setAbstractStripeConfigMultiCallback(c *gin.Context) {
 func (o *apiServer) setAbstractStripePaletteByIDCallback(c *gin.Context) {
 	_, s, err := o.getCallbackAbstractAndStripe(c)
 	if err != nil {
-		c.String(http.StatusNotFound, "")
+		c.String(http.StatusNotFound, "%s", err)
 		return
 	}
 
 	data := &hummelapi.LEDInfectedArduinoConfigStripePalette{}
 	if err := c.BindJSON(data); err != nil {
-		c.String(http.StatusBadRequest, "")
+		c.String(http.StatusBadRequest, "%s", err)
 		return
 	}
 	s.SetPalette(data)
+	c.String(http.StatusBadRequest, "%s", err)
+
 	c.JSON(http.StatusOK, "{}")
 }
 
 func (o *apiServer) setAbstractStripePaletteMultiCallback(c *gin.Context) {
 	a, err := o.getCallbackAbstract(c)
 	if err != nil {
-		c.String(http.StatusNotFound, "")
+		c.String(http.StatusNotFound, "%s", err)
 		return
 	}
 	type multiSelect struct {
@@ -132,11 +134,14 @@ func (o *apiServer) setAbstractStripePaletteMultiCallback(c *gin.Context) {
 	}
 	data := &multiSelect{}
 	if err := c.BindJSON(data); err != nil {
-		c.String(http.StatusBadRequest, "")
+		c.String(http.StatusBadRequest, "%s", err)
 		return
 	}
 
-	a.SetPalette(data.Palette, data.StripeIDs...)
+	if err := a.SetPalette(data.Palette, data.StripeIDs...); err != nil {
+		c.String(http.StatusBadRequest, "%s", err)
+		return
+	}
 	c.JSON(http.StatusOK, "{}")
 }
 
