@@ -9,7 +9,7 @@ const (
 
 type (
 	LEDInfectedArduinoConfigGlobalSetup struct {
-		ID         uint8  `json:"arduinoID"`
+		ID         uint8  `json:"arduino_id"`
 		NumStripes uint8  `json:"num_stripes"`
 		DevFile    string `json:"dev_file"`
 	}
@@ -39,9 +39,9 @@ type (
 
 func (o *LEDInfectedArduinoConfigStripeSetup) getBytes() []byte {
 	var buf []byte
-	buf[0] = o.LedPin
-	buf[1] = o.StripeType
-	buf[2] = o.VirtualLen
+	buf = append(buf, o.LedPin)
+	buf = append(buf, o.StripeType)
+	buf = append(buf, o.VirtualLen)
 	for _, subStripe := range o.SubStripes {
 		buf = append(buf,
 			subStripe.NumLEDs,
@@ -60,6 +60,7 @@ func castConfigStripeSetup(buf []byte) (*LEDInfectedArduinoConfigStripeSetup, er
 	}
 
 	for i := 0; i < 4; i++ {
+		o.SubStripes[i].Index = uint8(i)
 		o.SubStripes[i].NumLEDs = buf[3+(i*3)]
 		o.SubStripes[i].Offset = buf[4+(i*3)]
 		o.SubStripes[i].RadialPos = buf[5+(i*3)]
@@ -69,9 +70,9 @@ func castConfigStripeSetup(buf []byte) (*LEDInfectedArduinoConfigStripeSetup, er
 
 func (o *LEDInfectedArduinoConfigStripeConfig) getBytes() []byte {
 	var buf []byte
-	buf[0] = o.Brightness
-	buf[1] = uint8(o.MovementSpeed)
-	buf[2] = uint8(o.PatternCorrection)
+	buf = append(buf, o.Brightness)
+	buf = append(buf, uint8(o.MovementSpeed))
+	buf = append(buf, uint8(o.PatternCorrection))
 	return buf
 }
 
@@ -85,7 +86,7 @@ func castConfigStripeConfig(buf []byte) (*LEDInfectedArduinoConfigStripeConfig, 
 
 func (o *LEDInfectedArduinoConfigStripePalette) getHSVByID(id uint8) *CHSV {
 	for _, e := range o.Palette {
-		if e.ID == id {
+		if e.Index == id {
 			return e
 		}
 	}
@@ -95,8 +96,9 @@ func (o *LEDInfectedArduinoConfigStripePalette) getHSVByID(id uint8) *CHSV {
 func (o *LEDInfectedArduinoConfigStripePalette) getBytes() []byte {
 	var sortedPaletteCHSV [16]*CHSV
 	for i := 0; i < 16; i++ {
-		sortedPaletteCHSV[o.Palette[i].ID-1] = o.Palette[i]
+		sortedPaletteCHSV[o.Palette[i].Index-1] = o.Palette[i]
 	}
+
 	var paletteBytes []byte
 	for i := 0; i < 16; i++ {
 		paletteBytes = append(paletteBytes, *sortedPaletteCHSV[i].H, *sortedPaletteCHSV[i].S, *sortedPaletteCHSV[i].V)
@@ -109,10 +111,10 @@ func castConfigStripePalatte(buf []byte) (*LEDInfectedArduinoConfigStripePalette
 	for i := 0; i < 16; i++ {
 		byteBaseIndex := i * 3
 		o.Palette[i] = &CHSV{
-			ID: uint8(i + 1),
-			H:  &buf[byteBaseIndex],
-			S:  &buf[byteBaseIndex+1],
-			V:  &buf[byteBaseIndex+2],
+			Index: uint8(i + 1),
+			H:     &buf[byteBaseIndex],
+			S:     &buf[byteBaseIndex+1],
+			V:     &buf[byteBaseIndex+2],
 		}
 	}
 	return o, nil

@@ -3,194 +3,186 @@
 <head>
     <title>HummelFlowerControlCentre</title>
     <meta charset="UTF-8"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/maphilight/1.4.0/jquery.maphilight.min.js"></script>
+
     <!-- prevents some OSX rescale issues -->
     <!--    <meta name="viewport" content="width=device-width; initial-scale=1.0">-->
     <link rel="stylesheet" type="text/css" href="assets/styles.css"/>
 </head>
-<body onload="initialize();">
+<!--<body onload="initialize();initializeUI();">-->
+<body onload="initializeUI();">
+
+<map name="imgmap-flower">
+    <area target="_blank" alt="radial1" title="radial1" coords="84,59,99,58,116,66,123,50,122,27,118,15,104,9,89,10,77,16,73,24,76,37,78,50" shape="poly">
+    <area target="_blank" alt="radial2" title="radial2" coords="121,75,130,51,129,31,154,31,161,40,162,60,155,70" shape="poly">
+    <area target="_blank" alt="radial3" title="radial3" coords="123,81,152,79,160,81,169,98,168,112,161,113,146,113,123,100" shape="poly">
+    <area target="_blank" alt="radial4" title="radial4" coords="111,113,119,106,158,119,153,135,138,142,119,140,112,136" shape="poly">
+    <area target="_blank" alt="radial5" title="radial5" coords="105,115,104,142,100,150,87,158,75,156,63,145,65,132,72,118,75,111,90,113" shape="poly">
+    <area target="_blank" alt="radial6" title="radial6" coords="37,107,51,109,68,106,67,113,61,124,59,140,52,141,37,130" shape="poly">
+    <area target="_blank" alt="radial7" title="radial7" coords="63,77,60,88,66,99,49,102,29,101,18,83,22,65,48,70" shape="poly">
+    <area target="_blank" alt="radial8" title="radial8" coords="43,27,69,42,77,61,65,68,50,65,33,51,31,44,35,31" shape="poly">
+    <area target="_blank" alt="toggle" title="toggle" coords="91,86,21" shape="circle">
+</map>
+
+
 <script src="assets/w3color.js"></script>
 <script src="assets/hummel_api.js"></script>
 
-<div class="hummel_wiese">
-    <div id="control_view">
-        <div class="selection_view">
-            <!-- Tab links -->
-            <div class="selection_tab tab">
-                <button id="selection_leds_btn" class="selection_tablinks"
-                        onclick="selectSelectionTab('selection_leds')">LEDs
-                </button>
-                <button id="selection_pattern_btn" class="selection_tablinks"
-                        onclick="selectSelectionTab('selection_pattern')">Pattern
-                </button>
-                <button id="close_btn" onclick="hideFlowerView()">Close</button>
-            </div>
+<!--<div class="hummel_wiese">-->
+<!--</div>-->
 
-            <!-- Tab content -->
-            <div id="selection_leds" class="selection_tabcontent tabcontent">
-                <h3>LEDs</h3>
-                <div class="selection_pattern_field_area">
-                    <div class="selection_pattern_field_cluster">
-                        <div class="button_placeholder"></div>
-                        <button id="led_field_2" class="round_button led_select_field" data-id="radial2"
-                                onclick="toggleSelectedElement('led_field_2')"></button>
-                        <button id="led_field_3" class="round_button led_select_field" data-id="radial3"
-                                onclick="toggleSelectedElement('led_field_3')"></button>
-                        <div class="button_placeholder"></div>
-                    </div>
-                    <div class="selection_pattern_field_cluster">
-                        <button id="led_field_1" class="round_button led_select_field" data-id="radial1"
-                                onclick="toggleSelectedElement('led_field_1')"></button>
-                        <div class="button_placeholder"></div>
-                        <div class="button_placeholder"></div>
-                        <button id="led_field_4" class="round_button led_select_field" data-id="radial4"
-                                onclick="toggleSelectedElement('led_field_4')"></button>
-                    </div>
-                    <div class="selection_pattern_field_cluster">
-                        <button id="led_field_8" class="round_button led_select_field" data-id="radial8"
-                                onclick="toggleSelectedElement('led_field_8')"></button>
-                        <div class="button_placeholder"></div>
-                        <div class="button_placeholder"></div>
-                        <button id="led_field_5" class="round_button led_select_field" data-id="radial5"
-                                onclick="toggleSelectedElement('led_field_5')"></button>
 
-                    </div>
-                    <div class="selection_pattern_field_cluster">
-                        <div class="button_placeholder"></div>
-                        <button id="led_field_7" class="round_button led_select_field" data-id="radial7"
-                                onclick="toggleSelectedElement('led_field_7')"></button>
-                        <button id="led_field_6" class="round_button led_select_field" data-id="radial6"
-                                onclick="toggleSelectedElement('led_field_6')"></button>
-                        <div class="button_placeholder"></div>
-                    </div>
+
+<div id="control_view_template">
+    <div class="selection_view">
+        <!-- Tab links -->
+        <div class="selection_tab tab">
+            <button class="selection_leds_btn selection_tablinks"
+                    onclick="selectSelectionTab('selection_leds')">LEDs
+            </button>
+            <button class="selection_pattern_btn selection_tablinks"
+                    onclick="selectSelectionTab('selection_pattern')">Pattern
+            </button>
+            <button class="close_btn">Close</button>
+        </div>
+
+        <!-- Tab content -->
+        <div class="selection_leds selection_tabcontent tabcontent">
+            <h3>LEDs</h3>
+            <div class="selection_pattern_field_area">
+                <div class="selection_pattern_field_cluster">
+                    <div class="button_placeholder"></div>
+                    <button class="led_field_2 round_button led_select_field" data-id="radial2"
+                            onclick="toggleSelectedElement('led_field_2')"></button>
+                    <button class="led_field_3 round_button led_select_field" data-id="radial3"
+                            onclick="toggleSelectedElement('led_field_3')"></button>
+                    <div class="button_placeholder"></div>
                 </div>
-            </div>
+                <div class="selection_pattern_field_cluster">
+                    <button class="led_field_1 round_button led_select_field" data-id="radial1"
+                            onclick="toggleSelectedElement('led_field_1')"></button>
+                    <div class="button_placeholder"></div>
+                    <div class="button_placeholder"></div>
+                    <button class="led_field_4 round_button led_select_field" data-id="radial4"
+                            onclick="toggleSelectedElement('led_field_4')"></button>
+                </div>
+                <div class="selection_pattern_field_cluster">
+                    <button class="led_field_8 round_button led_select_field" data-id="radial8"
+                            onclick="toggleSelectedElement('led_field_8')"></button>
+                    <div class="button_placeholder"></div>
+                    <div class="button_placeholder"></div>
+                    <button class="led_field_5 round_button led_select_field" data-id="radial5"
+                            onclick="toggleSelectedElement('led_field_5')"></button>
 
-            <div id="selection_pattern" class="selection_tabcontent tabcontent">
-                <h3>PATTERN</h3>
-                <div class="selection_pattern_field_area">
-                    <div class="selection_pattern_field_cluster">
-                        <button id="pattern_field_1" class="round_button pattern_select_field" data-id="1"
-                                onclick="toggleSelectedElement('pattern_field_1')"></button>
-                        <button id="pattern_field_2" class="round_button pattern_select_field" data-id="2"
-                                onclick="toggleSelectedElement('pattern_field_2')"></button>
-                        <button id="pattern_field_3" class="round_button pattern_select_field" data-id="3"
-                                onclick="toggleSelectedElement('pattern_field_3')"></button>
-                        <button id="pattern_field_4" class="round_button pattern_select_field" data-id="4"
-                                onclick="toggleSelectedElement('pattern_field_4')"></button>
-                    </div>
-                    <div class="selection_pattern_field_cluster">
-                        <button id="pattern_field_5" class="round_button pattern_select_field" data-id="5"
-                                onclick="toggleSelectedElement('pattern_field_5')"></button>
-                        <button id="pattern_field_6" class="round_button pattern_select_field" data-id="6"
-                                onclick="toggleSelectedElement('pattern_field_6')"></button>
-                        <button id="pattern_field_7" class="round_button pattern_select_field" data-id="7"
-                                onclick="toggleSelectedElement('pattern_field_7')"></button>
-                        <button id="pattern_field_8" class="round_button pattern_select_field" data-id="8"
-                                onclick="toggleSelectedElement('pattern_field_8')"></button>
-                    </div>
-                    <div class="selection_pattern_field_cluster">
-                        <button id="pattern_field_9" class="round_button pattern_select_field" data-id="9"
-                                onclick="toggleSelectedElement('pattern_field_9')"></button>
-                        <button id="pattern_field_10" class="round_button pattern_select_field" data-id="10"
-                                onclick="toggleSelectedElement('pattern_field_10')"></button>
-                        <button id="pattern_field_11" class="round_button pattern_select_field" data-id="11"
-                                onclick="toggleSelectedElement('pattern_field_11')"></button>
-                        <button id="pattern_field_12" class="round_button pattern_select_field" data-id="12"
-                                onclick="toggleSelectedElement('pattern_field_12')"></button>
-                    </div>
-                    <div class="selection_pattern_field_cluster">
-                        <button id="pattern_field_13" class="round_button pattern_select_field" data-id="13"
-                                onclick="toggleSelectedElement('pattern_field_13')"></button>
-                        <button id="pattern_field_14" class="round_button pattern_select_field" data-id="14"
-                                onclick="toggleSelectedElement('pattern_field_14')"></button>
-                        <button id="pattern_field_15" class="round_button pattern_select_field" data-id="15"
-                                onclick="toggleSelectedElement('pattern_field_15')"></button>
-                        <button id="pattern_field_16" class="round_button pattern_select_field" data-id="16"
-                                onclick="toggleSelectedElement('pattern_field_16')"></button>
-                    </div>
+                </div>
+                <div class="selection_pattern_field_cluster">
+                    <div class="button_placeholder"></div>
+                    <button class="led_field_7 round_button led_select_field" data-id="radial7"
+                            onclick="toggleSelectedElement('led_field_7')"></button>
+                    <button class="led_field_6 round_button led_select_field" data-id="radial6"
+                            onclick="toggleSelectedElement('led_field_6')"></button>
+                    <div class="button_placeholder"></div>
                 </div>
             </div>
         </div>
-        <div class="parameter_view">
-            <!-- Tab links -->
-            <div class="parameter_tab tab">
-                <button id="parameter_ctrl_btn" class="parameter_tablinks"
-                        onclick="selectParameterTab('parameter_ctrl')">Ctrl
-                </button>
-                <button id="parameter_presets_btn" class="parameter_tablinks"
-                        onclick="selectParameterTab('parameter_presets')">Presets
-                </button>
-                <button id="parameter_admin_btn" class="parameter_tablinks"
-                        onclick="selectParameterTab('parameter_admin')">Admin
-                </button>
-            </div>
 
-            <!-- Tab content -->
-            <div id="parameter_ctrl" class="parameter_tabcontent tabcontent">
-                <h3>CTRL</h3>
-                <div class="flex_display">
-                    <button id="parameter_ctrl_h" class="round_button parameter_ctrl_select" data-ctrl-type="h"
-                            onclick="selectParameterCtrlElement('parameter_ctrl_h')">H
-                    </button>
-                    <button id="parameter_ctrl_s" class="round_button parameter_ctrl_select" data-ctrl-type="s"
-                            onclick="selectParameterCtrlElement('parameter_ctrl_s')">S
-                    </button>
-                    <button id="parameter_ctrl_v" class="round_button parameter_ctrl_select" data-ctrl-type="v"
-                            onclick="selectParameterCtrlElement('parameter_ctrl_v')">V
-                    </button>
-                    <button id="parameter_ctrl_speed" class="round_button parameter_ctrl_select" data-ctrl-type="speed"
-                            onclick="selectParameterCtrlElement('parameter_ctrl_speed')">Speed
-                    </button>
-                    <button id="parameter_ctrl_overlay" class="round_button parameter_ctrl_select" data-ctrl-type="overlay"
-                            onclick="selectParameterCtrlElement('parameter_ctrl_overlay')">Overlay
-                    </button>
+        <div class="selection_pattern selection_tabcontent tabcontent">
+            <h3>PATTERN</h3>
+            <div class="selection_pattern_field_area">
+                <div class="selection_pattern_field_cluster">
+                    <button class="pattern_field_1 round_button pattern_select_field" data-id="1"
+                            onclick="toggleSelectedElement('pattern_field_1')"></button>
+                    <button class="pattern_field_2 round_button pattern_select_field" data-id="2"
+                            onclick="toggleSelectedElement('pattern_field_2')"></button>
+                    <button class="pattern_field_3 round_button pattern_select_field" data-id="3"
+                            onclick="toggleSelectedElement('pattern_field_3')"></button>
+                    <button class="pattern_field_4 round_button pattern_select_field" data-id="4"
+                            onclick="toggleSelectedElement('pattern_field_4')"></button>
                 </div>
-                <div class="flex_display">
-
-                    <input type="range" id="parameter_ctrl_slider" name="arduino2_rad1_num_leds"
-                           min="0" max="255" oninput="updateObject();">
-                    </dev>
-
+                <div class="selection_pattern_field_cluster">
+                    <button class="pattern_field_5 round_button pattern_select_field" data-id="5"
+                            onclick="toggleSelectedElement('pattern_field_5')"></button>
+                    <button class="pattern_field_6 round_button pattern_select_field" data-id="6"
+                            onclick="toggleSelectedElement('pattern_field_6')"></button>
+                    <button class="pattern_field_7 round_button pattern_select_field" data-id="7"
+                            onclick="toggleSelectedElement('pattern_field_7')"></button>
+                    <button class="pattern_field_8 round_button pattern_select_field" data-id="8"
+                            onclick="toggleSelectedElement('pattern_field_8')"></button>
                 </div>
-                <div id="parameter_presets" class="parameter_tabcontent tabcontent">
-                    <h3>PRESETS</h3>
-                    <p>Tokyo is the capital of Japan.</p>
+                <div class="selection_pattern_field_cluster">
+                    <button class="pattern_field_9 round_button pattern_select_field" data-id="9"
+                            onclick="toggleSelectedElement('pattern_field_9')"></button>
+                    <button class="pattern_field_10 round_button pattern_select_field" data-id="10"
+                            onclick="toggleSelectedElement('pattern_field_10')"></button>
+                    <button class="pattern_field_11 round_button pattern_select_field" data-id="11"
+                            onclick="toggleSelectedElement('pattern_field_11')"></button>
+                    <button class="pattern_field_12 round_button pattern_select_field" data-id="12"
+                            onclick="toggleSelectedElement('pattern_field_12')"></button>
                 </div>
-                <div id="parameter_admin" class="parameter_tabcontent tabcontent">
-                    <h3>ADMIN</h3>
-                    <input type="number" id="arduino1_id" name="arduino1_id"
-                           min="1" max="255">
-                    <label for="arduino1_id">Arduino1 ID</label>
-                    <input type="number" id="arduino1_rad1_led_pin" name="arduino1_rad1_led_pin"
-                           min="0" max="255">
-                    <label for="arduino1_rad1_led_pin">Arduino1 Radial1 LED pin</label>
-                    <input type="number" id="arduino1_rad1_num_leds" name="arduino1_rad1_num_leds"
-                           min="0" max="255">
-                    <label for="arduino1_rad1_num_leds">Arduino1 Radial1 num LEDs</label>
-
-
-                    <input type="number" id="arduino2_id" name="arduino2_id"
-                           min="1" max="255">
-                    <label for="arduino2_id">Arduino2 ID</label>
-                    <input type="number" id="arduino2_rad1_led_pin" name="arduino2_rad1_led_pin"
-                           min="0" max="255">
-                    <label for="arduino2_rad1_led_pin">Arduino2 Radial1 LED pin</label>
-                    <input type="number" id="arduino2_rad1_num_leds" name="arduino2_rad1_num_leds"
-                           min="0" max="255">
-                    <label for="arduino2_rad1_num_leds">Arduino2 Radial1 num LEDs</label>
-
+                <div class="selection_pattern_field_cluster">
+                    <button class="pattern_field_13 round_button pattern_select_field" data-id="13"
+                            onclick="toggleSelectedElement('pattern_field_13')"></button>
+                    <button class="pattern_field_14 round_button pattern_select_field" data-id="14"
+                            onclick="toggleSelectedElement('pattern_field_14')"></button>
+                    <button class="pattern_field_15 round_button pattern_select_field" data-id="15"
+                            onclick="toggleSelectedElement('pattern_field_15')"></button>
+                    <button class="pattern_field_16 round_button pattern_select_field" data-id="16"
+                            onclick="toggleSelectedElement('pattern_field_16')"></button>
                 </div>
             </div>
         </div>
     </div>
+    <div class="parameter_view">
+        <!-- Tab links -->
+        <div class="parameter_tab tab">
+            <button class="parameter_ctrl_btn parameter_tablinks"
+                    onclick="selectParameterTab('parameter_ctrl')">Ctrl
+            </button>
+            <button class="parameter_presets_btn parameter_tablinks"
+                    onclick="selectParameterTab('parameter_presets')">Presets
+            </button>
+            <button class="parameter_admin_btn parameter_tablinks"
+                    onclick="selectParameterTab('parameter_admin')">Admin
+            </button>
+        </div>
 
-    <div id="bigBox">
-        <div class="bumblebees" id="box"></div>
-        <div class="bumblebees" id="box1"></div>
-        <div class="bumblebees" id="box2"></div>
-        <div class="bumblebees" id="box3"></div>
+        <!-- Tab content -->
+        <div class="parameter_ctrl parameter_tabcontent tabcontent">
+            <h3>CTRL</h3>
+            <div class="flex_display">
+                <button class="parameter_ctrl_h round_button parameter_ctrl_select" data-ctrl-type="h"
+                        onclick="selectParameterCtrlElement('parameter_ctrl_h')">H
+                </button>
+                <button class="parameter_ctrl_s round_button parameter_ctrl_select" data-ctrl-type="s"
+                        onclick="selectParameterCtrlElement('parameter_ctrl_s')">S
+                </button>
+                <button class="parameter_ctrl_v round_button parameter_ctrl_select" data-ctrl-type="v"
+                        onclick="selectParameterCtrlElement('parameter_ctrl_v')">V
+                </button>
+                <button class="parameter_ctrl_speed round_button parameter_ctrl_select" data-ctrl-type="speed"
+                        onclick="selectParameterCtrlElement('parameter_ctrl_speed')">Speed
+                </button>
+                <button class="parameter_ctrl_overlay round_button parameter_ctrl_select"
+                        data-ctrl-type="overlay"
+                        onclick="selectParameterCtrlElement('parameter_ctrl_overlay')">Overlay
+                </button>
+            </div>
+            <div class="flex_display">
+
+                <input type="range" class="parameter_ctrl_slider"
+                       min="0" max="255" oninput="updateObject();">
+                </dev>
+
+            </div>
+            <div class="parameter_presets parameter_tabcontent tabcontent">
+                <h3>PRESETS</h3>
+            </div>
+            <div class="parameter_admin parameter_tabcontent tabcontent">
+                <h3>ADMIN</h3>
+            </div>
+        </div>
     </div>
-
-
+</div>
 </body>
 </html>

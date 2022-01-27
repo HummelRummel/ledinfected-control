@@ -14,7 +14,7 @@ import (
     ---------------------------
 
 	- Open serial connection (and wait till arduino is ready)
-	- After the connection is established the LEDInfectedArduinoConnection will read out the ID of the device (used to uniquely identify the devices)
+	- After the connection is established the LEDInfectedArduinoConnection will read out the Index of the device (used to uniquely identify the devices)
 	  This is also the mechanism to detect if its a device we are interested in
 	- Now the device is ready to accept commands
 
@@ -44,7 +44,7 @@ type (
 )
 
 func NewLEDInfectedArduinoConnection(devFile string) (*LEDInfectedArduinoConnection, error) {
-	port, err := serial.Open(devFile, &serial.Mode{})
+	port, err := serial.Open(devFile, &serial.Mode{BaudRate: 9600})
 	if err != nil {
 		return nil, fmt.Errorf("failed to opern serial: %s", err)
 	}
@@ -71,12 +71,12 @@ func NewLEDInfectedArduinoConnection(devFile string) (*LEDInfectedArduinoConnect
 	if err != nil {
 		time.Sleep(time.Second * 18)
 		o.Close()
-		return nil, fmt.Errorf("failed to read get ID: %s\n", err)
+		return nil, fmt.Errorf("failed to read get Index: %s\n", err)
 	}
 	o.arduinoID = globalSetup.ID
 	o.numStripes = globalSetup.NumStripes
 
-	fmt.Printf("new device with ID %d added\n", o.arduinoID)
+	fmt.Printf("new device with Index %d added\n", o.arduinoID)
 	return o, nil
 }
 
@@ -97,6 +97,9 @@ func (o *LEDInfectedArduinoConnection) readHandler() {
 			if o.stop {
 				return
 			}
+			fmt.Printf("failed to read: %s\n", err)
+			time.Sleep(time.Second)
+			continue
 		}
 
 		ledInfectedResponse, err := castLEDInfectedResponse(buf)
@@ -254,8 +257,8 @@ func (o *LEDInfectedArduinoConnection) StripeGetPalette(stripeID uint8) (*LEDInf
 	return castConfigStripePalatte(response.rspData)
 }
 
-func (o *LEDInfectedArduinoConnection) StripeSetupSave(stripeMask uint8) error {
-	_, err := o.sendInfectedCommand(stripeMask, ledInfectedCommandCodeStripeSaveSetup, nil)
+func (o *LEDInfectedArduinoConnection) StripeSetupSave(stripeID uint8) error {
+	_, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeSaveSetup, nil)
 	return err
 }
 

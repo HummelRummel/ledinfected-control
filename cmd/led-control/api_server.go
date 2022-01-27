@@ -14,8 +14,8 @@ type (
 	apiServer struct {
 		customSerialDev string
 
-		Arduinos  []*hummelapi.LEDInfectedArduino
-		Abstracts []*hummelapi.LEDInfectedAbstract
+		Arduinos  []*hummelapi.LEDInfectedArduino `json:"arduinos"`
+		Abstracts []*hummelapi.LEDInfectedAbstract `json:"abstracts"`
 
 		engine *gin.Engine
 		stop_  chan struct{}
@@ -23,7 +23,7 @@ type (
 )
 
 func newApiServer(customSerialDev string) (*apiServer, error) {
-	abstracts, err := hummelapi.GetAllLEDInfectedAbstracts("./config")
+	abstracts, err := hummelapi.GetAllLEDInfectedAbstracts("./configs")
 	if err != nil {
 		return nil, err
 	}
@@ -65,19 +65,24 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.GET("/api/arduino", o.getAllArduinosCallback)
 	o.engine.GET("/api/arduino/:ArduinoId", o.getArduinoByIDCallback)
 	o.engine.POST("/api/arduino/:ArduinoId/set_id", o.setArduinoIDCallback)
-	o.engine.POST("/api/arduino/:ArduinoId/:StripeId/setup", o.setArduinoStripeSetupCallback)
-	o.engine.POST("/api/arduino/:ArduinoId/:StripeId/setup/save", o.saveArduinoStripeSetupCallback)
-	o.engine.POST("/api/arduino/:ArduinoId/:StripeId/config", o.setArduinoStripeConfigCallback)
-	o.engine.POST("/api/arduino/:ArduinoId/:StripeId/config/palette", o.setArduinoStripePaletteConfigCallback)
-	o.engine.POST("/api/arduino/:ArduinoId/:StripeId/config/save", o.saveArduinoStripeConfigCallback)
+	o.engine.POST("/api/arduino/:ArduinoId/stripe/:StripeId/setup", o.setArduinoStripeSetupCallback)
+	o.engine.POST("/api/arduino/:ArduinoId/stripe/:StripeId/setup/save", o.saveArduinoStripeSetupCallback)
+	o.engine.POST("/api/arduino/:ArduinoId/stripe/:StripeId/config", o.setArduinoStripeConfigCallback)
+	o.engine.POST("/api/arduino/:ArduinoId/stripe/:StripeId/config/save", o.saveArduinoStripeConfigCallback)
+	o.engine.POST("/api/arduino/:ArduinoId/stripe/:StripeId/palette", o.setArduinoStripePaletteConfigCallback)
+	o.engine.POST("/api/arduino/:ArduinoId/stripe/:StripeId/palette/save", o.saveArduinoStripeConfigCallback)
 	o.engine.GET("/api/abstract", o.getAllAbstractsCallback)
 	o.engine.GET("/api/abstract/:AbstractId", o.getAbstractByIDCallback)
 	o.engine.POST("/api/abstract/:AbstractId/setup", o.setAbstractSetupCallback)
-	o.engine.POST("/api/abstract/:AbstractId/save", o.saveAbstractCallback)
+	o.engine.POST("/api/abstract/:AbstractId/setup/save", o.saveAbstractCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripes/config", o.setAbstractStripeConfigMultiCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripes/palette", o.setAbstractStripePaletteMultiCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/setup", o.setAbstractStripeSetupCallback)
-	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/config", o.setAbstractStripeConfigCallback)
-	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette", o.setAbstractStripePaletteCallback)
-	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/save", o.saveAbstractStripeCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/setup/save", o.saveAbstractCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/config", o.setAbstractStripeConfigByIDCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/config/save", o.saveAbstractStripeCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette", o.setAbstractStripePaletteByIDCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette/save", o.saveAbstractStripeCallback)
 }
 
 func (o *apiServer) registerWebEndpoints() {

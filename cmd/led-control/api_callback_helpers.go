@@ -60,7 +60,7 @@ func (o *apiServer) getCallbackAbstract(c *gin.Context) (*hummelapi.LEDInfectedA
 
 func (o *apiServer) getCallbackAbstractAndStripe(c *gin.Context) (*hummelapi.LEDInfectedAbstract, *hummelapi.LEDInfectedAbstractStripe, error) {
 	objectID := c.Param("AbstractId")
-	stripeID := c.Param("StripeName")
+	stripeID := c.Param("StripeId")
 
 	return o.getObjectAndStripe(objectID, stripeID)
 }

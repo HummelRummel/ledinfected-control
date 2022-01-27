@@ -6,7 +6,7 @@ import "fmt"
     LEDInfectedCommand protocol
     ----------------------
 
-	The controlling node sends commands, with the message structure defined below and the sending protocol ID
+	The controlling node sends commands, with the message structure defined below and the sending protocol Index
 	The receiving node, replaces the sending protocol arduinoID the consuming protocol arduinoID and its response data and sends it back.
 
 
@@ -16,7 +16,7 @@ import "fmt"
 // OUTDATED comment
  	Byte(s) | Value    | Description
   	--------|----------|---------------------------
-  	  1+2   | ProtoId  | Sending or consuming protocol ID twice to start the message
+  	  1+2   | ProtoId  | Sending or consuming protocol Index twice to start the message
       3+4   | LenData  | Length of the data of the message (including the cmd, the cmdId and optional data)
       5     | CmdId    | Running int to arduinoID the command response
       6     | Cmd      | Command for the client (Type | Cmd)

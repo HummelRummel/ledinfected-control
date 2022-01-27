@@ -38,7 +38,7 @@ func (o *apiServer) setArduinoIDCallback(c *gin.Context) {
 	}
 
 	if arduinoConfig.ID == nil {
-		fmt.Printf("arduino ID not set")
+		fmt.Printf("arduino Index not set")
 		c.String(http.StatusBadRequest, "")
 		return
 	}
@@ -65,6 +65,7 @@ func (o *apiServer) setArduinoStripeSetupCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, "{}")
 }
 
+
 func (o *apiServer) saveArduinoStripeSetupCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
@@ -74,7 +75,7 @@ func (o *apiServer) saveArduinoStripeSetupCallback(c *gin.Context) {
 
 	if err := s.SaveSetup(); err != nil {
 		fmt.Printf("failed to save setup: %s\n", err)
-		c.String(http.StatusBadRequest, "failed to save setup")
+		c.String(http.StatusBadRequest, "failed to save setup: %s", err)
 	}
 	c.JSON(http.StatusOK, "{}")
 }
@@ -110,7 +111,7 @@ func (o *apiServer) setArduinoStripePaletteConfigCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, "{}")
 }
 
-
+// fixme todo split it up into config and palette
 func (o *apiServer) saveArduinoStripeConfigCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {

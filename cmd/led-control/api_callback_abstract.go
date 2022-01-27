@@ -38,7 +38,6 @@ func (o *apiServer) setAbstractSetupCallback(c *gin.Context) {
 	return
 }
 
-
 func (o *apiServer) saveAbstractCallback(c *gin.Context) {
 	a, err := o.getCallbackAbstract(c)
 	if err != nil {
@@ -69,7 +68,7 @@ func (o *apiServer) setAbstractStripeSetupCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, "{}")
 }
 
-func (o *apiServer) setAbstractStripeConfigCallback(c *gin.Context) {
+func (o *apiServer) setAbstractStripeConfigByIDCallback(c *gin.Context) {
 	_, s, err := o.getCallbackAbstractAndStripe(c)
 	if err != nil {
 		c.String(http.StatusNotFound, "")
@@ -85,7 +84,27 @@ func (o *apiServer) setAbstractStripeConfigCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, "{}")
 }
 
-func (o *apiServer) setAbstractStripePaletteCallback(c *gin.Context) {
+func (o *apiServer) setAbstractStripeConfigMultiCallback(c *gin.Context) {
+	a, err := o.getCallbackAbstract(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	type multiSelect struct {
+		StripeIDs []string                                        `json:"stripe_ids"`
+		Config    *hummelapi.LEDInfectedArduinoConfigStripeConfig `json:"config"`
+	}
+	data := &multiSelect{}
+	if err := c.BindJSON(data); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	a.SetConfig(data.Config, data.StripeIDs...)
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setAbstractStripePaletteByIDCallback(c *gin.Context) {
 	_, s, err := o.getCallbackAbstractAndStripe(c)
 	if err != nil {
 		c.String(http.StatusNotFound, "")
@@ -98,6 +117,26 @@ func (o *apiServer) setAbstractStripePaletteCallback(c *gin.Context) {
 		return
 	}
 	s.SetPalette(data)
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setAbstractStripePaletteMultiCallback(c *gin.Context) {
+	a, err := o.getCallbackAbstract(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	type multiSelect struct {
+		StripeIDs []string                                         `json:"stripe_ids"`
+		Palette   *hummelapi.LEDInfectedArduinoConfigStripePalette `json:"palette"`
+	}
+	data := &multiSelect{}
+	if err := c.BindJSON(data); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	a.SetPalette(data.Palette, data.StripeIDs...)
 	c.JSON(http.StatusOK, "{}")
 }
 

@@ -32,7 +32,7 @@ func main() {
 	//router.Run("localhost:8080")
 
 	//obj := hummelapi.HummelControlObject{
-	//	ID:        "PerformanceBlume1",
+	//	Index:        "PerformanceBlume1",
 	//	ImgBaseID: "pbv1",
 	//	Position: hummelapi.HummelControlObjectPosition{
 	//		X: 40,

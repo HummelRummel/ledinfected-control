@@ -10,7 +10,7 @@ type (
 
 	LEDInfectedArduinoStripeConfig struct {
 		Setup   *LEDInfectedArduinoConfigStripeSetup   `json:"setup"`
-		Config  *LEDInfectedArduinoConfigStripeConfig  `json:"Config"`
+		Config  *LEDInfectedArduinoConfigStripeConfig  `json:"config"`
 		Palette *LEDInfectedArduinoConfigStripePalette `json:"palette"`
 	}
 )
@@ -61,7 +61,7 @@ func (o *LEDInfectedArduinoStripe) GetConfig() *LEDInfectedArduinoConfigStripeCo
 }
 
 func (o *LEDInfectedArduinoStripe) SetConfig(config *LEDInfectedArduinoConfigStripeConfig) error {
-	if err := o.connection.StripeSetConfig(o.StripeID, config); err != nil {
+	if err := o.connection.StripeSetConfig(1<<o.StripeID, config); err != nil {
 		return err
 	}
 	o.Config.Config = config
@@ -73,7 +73,7 @@ func (o *LEDInfectedArduinoStripe) GetConfigPalette() *LEDInfectedArduinoConfigS
 }
 
 func (o *LEDInfectedArduinoStripe) SetPalette(palette *LEDInfectedArduinoConfigStripePalette) error {
-	if err := o.connection.StripeSetPalette(o.StripeID, palette); err != nil {
+	if err := o.connection.StripeSetPalette(1<<o.StripeID, palette); err != nil {
 		return err
 	}
 	o.Config.Palette = palette
@@ -81,5 +81,5 @@ func (o *LEDInfectedArduinoStripe) SetPalette(palette *LEDInfectedArduinoConfigS
 }
 
 func (o *LEDInfectedArduinoStripe) Save() error {
-	return o.connection.StripeSave(o.StripeID)
+	return o.connection.StripeSave(1 << o.StripeID)
 }

@@ -9,16 +9,25 @@ import (
 
 type (
 	LEDInfectedAbstract struct {
-		AbstractID string                          `json:"abstractID"` // arduinoID of the LED abstract
-		Info       *LEDInfectedAbstractGlobalInfo  `json:"info"`       // info of the LED abstract (cannot be changed)
-		Setup      *LEDInfectedAbstractGlobalSetup `json:"setup"`      // setup of the LED abstract (configurable)
-		Stripes    []*LEDInfectedAbstractStripe    `json:"stripes"`    // stripes of the LED abstract
+		AbstractID string                          `json:"abstract_id"` // arduinoID of the LED abstract
+		Info       *LEDInfectedAbstractGlobalInfo  `json:"info"`        // info of the LED abstract (cannot be changed)
+		Setup      *LEDInfectedAbstractGlobalSetup `json:"setup"`       // setup of the LED abstract (configurable)
+		Stripes    []*LEDInfectedAbstractStripe    `json:"stripes"`     // stripes of the LED abstract
 	}
 
+	ImageDefinition struct {
+		Height  int    `json:"height"`
+		Width   int    `json:"width"`
+		ImgPath string `json:"img_path"`
+	}
+	AbstractImage struct {
+		Overview ImageDefinition `json:"overview"`
+		Select   ImageDefinition `json:"select"`
+	}
 	LEDInfectedAbstractGlobalInfo struct {
-		Name      string `json:"name"`        // human readable name of the abstract
-		ImgBaseID string `json:"img_base_id"` // arduinoID for selecting the correct object images
-		SrcFile   string `json:"src_file"`    // source file of the abstract
+		Name    string        `json:"name"`     // human readable name of the abstract
+		Image   AbstractImage `json:"image"`    // image definition for the abstract
+		SrcFile string        `json:"src_file"` // source file of the abstract
 	}
 
 	LEDInfectedAbstractGlobalSetup struct {
@@ -64,6 +73,9 @@ func GetAllLEDInfectedAbstracts(configDir string) ([]*LEDInfectedAbstract, error
 			fmt.Printf("failed to unmarshal %s: %s", m, err)
 			continue
 		}
+		if abstract.Info == nil {
+			return nil, fmt.Errorf("missing info field in %s", m)
+		}
 		abstract.Info.SrcFile = m
 		o = append(o, abstract)
 	}
@@ -75,7 +87,7 @@ func (o *LEDInfectedAbstract) UpdateArduino(arduino *LEDInfectedArduino) error {
 		if stripe.Setup.ArduinoID != arduino.GetID() {
 			continue
 		}
-		arduinoStripe, err := arduino.GetStripe(stripe.arduinoStrip.StripeID)
+		arduinoStripe, err := arduino.GetStripe(stripe.Setup.ArduinoStripeID)
 		if err != nil {
 			return err
 		}
@@ -99,6 +111,7 @@ func (o *LEDInfectedAbstract) ResetArduino(arduino *LEDInfectedArduino) error {
 	}
 	return nil
 }
+
 func (o *LEDInfectedAbstract) SetSetup(setup *LEDInfectedAbstractGlobalSetup) error {
 	o.Setup = setup
 	return nil
@@ -106,6 +119,18 @@ func (o *LEDInfectedAbstract) SetSetup(setup *LEDInfectedAbstractGlobalSetup) er
 
 func (o *LEDInfectedAbstract) Save() error {
 	bytes, err := json.Marshal(o)
+	if err != nil {
+		return fmt.Errorf("failed to marshal %s: %s", o.Info.SrcFile, err)
+	}
+
+	// now unmarshal it so we have a new struct, where we can remove the arduino config
+	abstract := &LEDInfectedAbstract{}
+	err = json.Unmarshal(bytes, abstract)
+	for i, _ := range abstract.Stripes {
+		abstract.Stripes[i].Config = nil
+	}
+	// and now marshal it again
+	bytes, err = json.MarshalIndent(o, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal %s: %s", o.Info.SrcFile, err)
 	}
@@ -122,6 +147,80 @@ func (o *LEDInfectedAbstract) Save() error {
 		return fmt.Errorf("failed to write %s: %s", o.Info.SrcFile, err)
 	}
 
+	return nil
+}
+
+func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeConfig, stripeIDs ...string) error {
+	selectedStripes := []*LEDInfectedAbstractStripe{}
+
+	for _, id := range stripeIDs {
+		found := false
+		for _, abStripe := range o.Stripes {
+			if abStripe.StripeID == id {
+				selectedStripes = append(selectedStripes, abStripe)
+				found = true
+			}
+		}
+		if found {
+			return fmt.Errorf("could not found stripe %s", id)
+		}
+	}
+
+	if len(selectedStripes) < 1 {
+		return fmt.Errorf("no stripe selected")
+	}
+
+	for len(selectedStripes) > 0 {
+		arduinoConnection := selectedStripes[0].arduinoStrip.connection
+		arduinoID := selectedStripes[0].Setup.ArduinoID
+		stripeMask := uint8(0)
+		for i := len(selectedStripes) - 1; i <= 0; i-- {
+			if selectedStripes[i].Setup.ArduinoID == arduinoID {
+				stripeMask += (1 << selectedStripes[i].Setup.ArduinoStripeID)
+				selectedStripes = append(selectedStripes[:i], selectedStripes[i+1:]...)
+			}
+		}
+		if err := arduinoConnection.StripeSetConfig(stripeMask, config); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripePalette, stripeIDs ...string) error {
+	selectedStripes := []*LEDInfectedAbstractStripe{}
+
+	for _, id := range stripeIDs {
+		found := false
+		for _, abStripe := range o.Stripes {
+			if abStripe.StripeID == id {
+				selectedStripes = append(selectedStripes, abStripe)
+				found = true
+			}
+		}
+		if found {
+			return fmt.Errorf("could not found stripe %s", id)
+		}
+	}
+
+	if len(selectedStripes) < 1 {
+		return fmt.Errorf("no stripe selected")
+	}
+
+	for len(selectedStripes) > 0 {
+		arduinoConnection := selectedStripes[0].arduinoStrip.connection
+		arduinoID := selectedStripes[0].Setup.ArduinoID
+		stripeMask := uint8(0)
+		for i := len(selectedStripes) - 1; i <= 0; i-- {
+			if selectedStripes[i].Setup.ArduinoID == arduinoID {
+				stripeMask += (1 << selectedStripes[i].Setup.ArduinoStripeID)
+				selectedStripes = append(selectedStripes[:i], selectedStripes[i+1:]...)
+			}
+		}
+		if err := arduinoConnection.StripeSetPalette(stripeMask, palette); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
