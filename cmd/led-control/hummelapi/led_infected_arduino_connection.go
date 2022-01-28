@@ -219,8 +219,8 @@ func (o *LEDInfectedArduinoConnection) StripeGetSetup(stripeID uint8) (*LEDInfec
 	if err != nil {
 		return nil, err
 	}
-	if response.rspDataLen != 15 {
-		return nil, fmt.Errorf("expected 14 data bytes but got: %d", response.rspDataLen)
+	if response.rspDataLen != 16 {
+		return nil, fmt.Errorf("expected 16 data bytes but got: %d", response.rspDataLen)
 	}
 	return castConfigStripeSetup(response.rspData)
 }
@@ -235,8 +235,8 @@ func (o *LEDInfectedArduinoConnection) StripeGetConfig(stripeID uint8) (*LEDInfe
 	if err != nil {
 		return nil, err
 	}
-	if response.rspDataLen != 3 {
-		return nil, fmt.Errorf("expected 3 data bytes but got: %d", response.rspDataLen)
+	if response.rspDataLen != 4 {
+		return nil, fmt.Errorf("expected 4 data bytes but got: %d", response.rspDataLen)
 	}
 	return castConfigStripeConfig(response.rspData)
 }

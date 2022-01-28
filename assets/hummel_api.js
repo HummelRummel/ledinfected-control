@@ -517,8 +517,21 @@ class AbstractControlParameterView {
             }
             obj.config.config.movement_speed = newValue;
         } else if (selectedCtrlType == "overlay") {
-            return;
-            ;
+            obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/config";
+            obj.config.stripe_ids = selectedStripes;
+            for (let i = 0; i < config.stripes.length; i++) {
+                if (config.stripes[i].stripe_id == selectedStripes[0]) {
+                    if ((config.stripes[i].config == null) || (config.stripes[i].config.config == null)) {
+                        continue;
+                    }
+                    obj.config.config = config.stripes[i].config.config;
+                    break;
+                }
+            }
+            if (obj.config.config == null) {
+                return;
+            }
+            obj.config.config.overlay_ratio = newValue;
         }
 
         console.log(JSON.stringify(obj))

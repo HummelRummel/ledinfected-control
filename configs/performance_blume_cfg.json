@@ -95,6 +95,15 @@
         "name": "radial stripe 8"
       },
       "config": null
+    },
+    {
+      "stripe_id": "circle",
+      "setup": {
+        "arduino_id": 1,
+        "arduino_stripe_id": 4,
+        "name": "virtual circle stripe"
+      },
+      "config": null
     }
   ]
 }

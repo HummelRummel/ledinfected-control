@@ -18,6 +18,7 @@ type (
 		LedPin     uint8                                           `json:"led_pin"`
 		StripeType uint8                                           `json:"stripe_type"`
 		VirtualLen uint8                                           `json:"virtual_len"`
+		OverlayID  uint8                                           `json:"overlay_id"`
 		SubStripes [4]LEDInfectedArduinoConfigStripeSetupSubStripe `json:"sub_stripes"`
 	}
 
@@ -31,6 +32,7 @@ type (
 		Brightness        uint8 `json:"brightness"`
 		MovementSpeed     int8  `json:"movement_speed"`
 		PatternCorrection int8  `json:"speed_correction"`
+		OverlayRatio      uint8 `json:"overlay_ratio"`
 	}
 	LEDInfectedArduinoConfigStripePalette struct {
 		Palette [16]*CHSV `json:"palette"`
@@ -42,6 +44,7 @@ func (o *LEDInfectedArduinoConfigStripeSetup) getBytes() []byte {
 	buf = append(buf, o.LedPin)
 	buf = append(buf, o.StripeType)
 	buf = append(buf, o.VirtualLen)
+	buf = append(buf, o.OverlayID)
 	for _, subStripe := range o.SubStripes {
 		buf = append(buf,
 			subStripe.NumLEDs,
@@ -57,13 +60,14 @@ func castConfigStripeSetup(buf []byte) (*LEDInfectedArduinoConfigStripeSetup, er
 		LedPin:     buf[0],
 		StripeType: buf[1],
 		VirtualLen: buf[2],
+		OverlayID:  buf[3],
 	}
 
 	for i := 0; i < 4; i++ {
 		o.SubStripes[i].Index = uint8(i)
-		o.SubStripes[i].NumLEDs = buf[3+(i*3)]
-		o.SubStripes[i].Offset = buf[4+(i*3)]
-		o.SubStripes[i].RadialPos = buf[5+(i*3)]
+		o.SubStripes[i].NumLEDs = buf[4+(i*3)]
+		o.SubStripes[i].Offset = buf[5+(i*3)]
+		o.SubStripes[i].RadialPos = buf[6+(i*3)]
 	}
 	return o, nil
 }
@@ -73,6 +77,7 @@ func (o *LEDInfectedArduinoConfigStripeConfig) getBytes() []byte {
 	buf = append(buf, o.Brightness)
 	buf = append(buf, uint8(o.MovementSpeed))
 	buf = append(buf, uint8(o.PatternCorrection))
+	buf = append(buf, uint8(o.OverlayRatio))
 	return buf
 }
 
@@ -81,6 +86,7 @@ func castConfigStripeConfig(buf []byte) (*LEDInfectedArduinoConfigStripeConfig, 
 		Brightness:        buf[0],
 		MovementSpeed:     int8(buf[1]),
 		PatternCorrection: int8(buf[2]),
+		OverlayRatio:      buf[3],
 	}, nil
 }
 

@@ -135,7 +135,7 @@ func (o *apiServer) arduinoConnectionHandler() {
 					fmt.Printf("trying to connect arduino connected via dev-file %s\n", devFile)
 					arduino, err := hummelapi.NewLEDInfectedArduino(devFile)
 					if err != nil {
-						fmt.Printf("failed to get arduino: %s\n", err)
+						fmt.Printf("xfailed to get arduino: %s\n", err)
 					} else {
 						for _, a := range o.Abstracts {
 							if err := a.UpdateArduino(arduino); err != nil {
