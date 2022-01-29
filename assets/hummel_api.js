@@ -84,7 +84,8 @@ class HTMLAbstractOverviewObject {
 
         // moving part
         this.abstractOverviewBodyEl = document.createElement("img");
-        this.abstractOverviewBodyEl.setAttribute('src', config.info.image.overview.img_path);
+        console.log(config.info);
+        this.abstractOverviewBodyEl.setAttribute('src', config.info.image.image_base_path + "/overview.png");
         // Image map currently disabled, probably also not needed for the overview
         //   this.abstractOverviewBodyEl.setAttribute('usemap', "#imgmap-flower");
         this.abstractOverviewBodyEl.style.width = config.info.image.overview.width + "px";
@@ -144,8 +145,8 @@ class AbstractControls {
         if (openInNewTab == true) {
             console.log("abstract open in new tab TBD")
         } else {
-            let config = overview.connection.get("/abstract/" + abstractID);
-            this.controls[0].showAbstract(overview.abstracts[i], config);
+            overview.abstracts[i].config = await overview.connection.get("/abstract/" + abstractID);
+            this.controls[0].showAbstract(overview.abstracts[i]);
         }
     }
 
@@ -176,9 +177,8 @@ class AbstractControlView {
         this.htmlParent.appendChild(this.htmlView);
     }
 
-    showAbstract(abstract, config) {
+    showAbstract(abstract) {
         this.linkedAbstract = abstract;
-        this.config = config;
         this.htmlView.id = "ctrlview_" + this.linkedAbstract.id;
         console.log(this.htmlView.getElementsByClassName("close_btn"));
         console.log("overview.controls.hide('" + this.linkedAbstract.id + "')");
@@ -409,6 +409,7 @@ class AbstractControlParameterView {
 
     updateParameter() {
         let config = this.parent.linkedAbstract.config;
+        console.log(this.parent.linkedAbstract);
         console.log(config);
 
         let selectedStripes = this.parent.selectionView.getSelectedStripes();

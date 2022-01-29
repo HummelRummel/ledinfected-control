@@ -15,14 +15,13 @@ type (
 		Stripes    []*LEDInfectedAbstractStripe    `json:"stripes"`     // stripes of the LED abstract
 	}
 
-	ImageDefinition struct {
-		Height  int    `json:"height"`
-		Width   int    `json:"width"`
-		ImgPath string `json:"img_path"`
+	ImageDimension struct {
+		Height int `json:"height"`
+		Width  int `json:"width"`
 	}
 	AbstractImage struct {
-		Overview ImageDefinition `json:"overview"`
-		Select   ImageDefinition `json:"select"`
+		ImageBasePath string         `json:"image_base_path"`
+		Overview      ImageDimension `json:"overview"`
 	}
 	LEDInfectedAbstractGlobalInfo struct {
 		Name    string        `json:"name"`     // human readable name of the abstract
@@ -177,6 +176,7 @@ func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeCo
 		for i := len(selectedStripes) - 1; i >= 0; i-- {
 			if selectedStripes[i].Setup.ArduinoID == arduinoID {
 				stripeMask += (1 << selectedStripes[i].Setup.ArduinoStripeID)
+				selectedStripes[i].Config.Config = config
 				selectedStripes = append(selectedStripes[:i], selectedStripes[i+1:]...)
 			}
 		}
@@ -214,6 +214,7 @@ func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripe
 		for i := len(selectedStripes) - 1; i >= 0; i-- {
 			if selectedStripes[i].Setup.ArduinoID == arduinoID {
 				stripeMask += (1 << selectedStripes[i].Setup.ArduinoStripeID)
+				selectedStripes[i].Config.Palette = palette
 				selectedStripes = append(selectedStripes[:i], selectedStripes[i+1:]...)
 			}
 		}
