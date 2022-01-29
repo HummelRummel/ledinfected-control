@@ -203,7 +203,7 @@ class HTMLAbstractStripeViewObject {
     constructor(parent, stripes, config) {
         this.baseEl = document.createElement("div");
         this.baseEl.style.width = "100%";
-        this.baseEl.style.height = "100%";
+        this.baseEl.style.height = "90%";
         this.imageEl = document.createElement("img");
         this.imageEl.setAttribute('src', config.info.image.image_base_path + "/empty.png");
         this.imageEl.useMap = "#pvf1-map";

@@ -56,15 +56,15 @@ area {
     background-color: #ccc;
 }
 
-.parameter_view {
-    width: 100%;
-    height: 45%;
-}
+/*.parameter_view {*/
+/*    width: 100%;*/
+/*    height: 30%;*/
+/*}*/
 
-.selection_view {
-    width: 100%;
-    height: 45%;
-}
+/*.selection_view {*/
+/*    width: 100%;*/
+/*    height: 50%;*/
+/*}*/
 
 /* Style the tab content */
 .tabcontent {
