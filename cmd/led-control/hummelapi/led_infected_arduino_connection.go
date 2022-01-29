@@ -28,6 +28,8 @@ import (
 
 */
 
+const baudRate = 19200;
+
 type (
 	LEDInfectedArduinoConnection struct {
 		devFile string
@@ -44,7 +46,7 @@ type (
 )
 
 func NewLEDInfectedArduinoConnection(devFile string) (*LEDInfectedArduinoConnection, error) {
-	port, err := serial.Open(devFile, &serial.Mode{BaudRate: 9600})
+	port, err := serial.Open(devFile, &serial.Mode{BaudRate: baudRate})
 	if err != nil {
 		return nil, fmt.Errorf("failed to opern serial: %s", err)
 	}
