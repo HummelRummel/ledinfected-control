@@ -14,20 +14,20 @@ type (
 		Setup      *LEDInfectedAbstractGlobalSetup `json:"setup"`       // setup of the LED abstract (configurable)
 		Stripes    []*LEDInfectedAbstractStripe    `json:"stripes"`     // stripes of the LED abstract
 	}
-
-	ImageDimension struct {
-		Height int `json:"height"`
-		Width  int `json:"width"`
-	}
-	AbstractImage struct {
-		ImageBasePath string         `json:"image_base_path"`
-		Overview      ImageDimension `json:"overview"`
-	}
 	LEDInfectedAbstractGlobalInfo struct {
 		Name    string        `json:"name"`     // human readable name of the abstract
 		Image   AbstractImage `json:"image"`    // image definition for the abstract
 		SrcFile string        `json:"src_file"` // source file of the abstract
 	}
+	AbstractImage struct {
+		ImageBasePath string         `json:"image_base_path"`
+		Overview      ImageDimension `json:"overview"`
+	}
+	ImageDimension struct {
+		Height int `json:"height"`
+		Width  int `json:"width"`
+	}
+
 
 	LEDInfectedAbstractGlobalSetup struct {
 		Position *LEDInfectedAbstractGlobalPosition `json:"position"` // position on the hummel wiese

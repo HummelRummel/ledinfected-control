@@ -40,8 +40,6 @@ async function initializeUI() {
     document.head.appendChild(style);
 
     overview.initialize();
-
-    $('.map').maphilight();
 }
 
 class Abstract {
@@ -101,17 +99,121 @@ class HTMLAbstractOverviewObject {
     }
 }
 
+function toggleAllSelectedStripes() {
+    let noneSelected = true;
+    for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
+        if (overview.abstracts[0].config.stripes[i].config != null) {
+            if (overview.abstracts[0].stripeView.stripes[i].selected == true) {
+                noneSelected = false;
+            }
+        }
+    }
+    if (noneSelected == true) {
+        for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
+            overview.abstracts[0].stripeView.stripes[i].selected = true;
+        }
+    } else {
+        for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
+            overview.abstracts[0].stripeView.stripes[i].selected = false;
+        }
+    }
+    overview.abstracts[0].stripeView.updateBackground();
+}
+
+
+function toggleSelectedStripe(stripe_id) {
+    for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
+        if (overview.abstracts[0].config.stripes[i].config != null) {
+            if (overview.abstracts[0].stripeView.stripes[i].stripe_id == stripe_id) {
+                if (overview.abstracts[0].stripeView.stripes[i].selected == true) {
+                    overview.abstracts[0].stripeView.stripes[i].selected = false;
+                } else {
+                    overview.abstracts[0].stripeView.stripes[i].selected = true;
+                }
+                //    overview.abstracts[0].stripeView.stripes[i].selected != overview.abstracts[0].stripeView.stripes[i].selected;
+                overview.abstracts[0].stripeView.updateBackground();
+                return;
+            }
+        }
+    }
+}
 
 class AbstractStripeViewObject {
     constructor(parent, config) {
+        this.parent = parent;
+        this.stripes = [];
+        for (let i = 0; i < config.stripes.length; i++) {
+            let stripe = new Object();
+            stripe.stripe_id = config.stripes[i].stripe_id;
+            stripe.selected = false;
+            this.stripes.push(stripe);
+        }
         this.parent = parent
-        this.htmlEl = new HTMLAbstractOverviewObject(parent.htmlParent, config)
+        this.htmlObject = new HTMLAbstractStripeViewObject(this, this.stripes, config)
+        this.updateBackground();
+    }
+
+    updateBackground() {
+        let image_base_path = this.parent.config.info.image.image_base_path;
+
+        let backgroundString = "";
+        let noneSelected = true;
+        for (let i = 0; i < this.stripes.length; i++) {
+            if (this.parent.config.stripes[i].config != null) {
+                if (this.stripes[i].selected == true) {
+                    noneSelected = false;
+                    if (backgroundString != "") {
+                        backgroundString += ", ";
+                    }
+                    backgroundString += "url(" + image_base_path + "/" + this.stripes[i].stripe_id + "-selected.png)";
+                } else {
+                    if (backgroundString != "") {
+                        backgroundString += ", ";
+                    }
+                    backgroundString += "url(" + image_base_path + "/" + this.stripes[i].stripe_id + "-notselected.png)";
+                }
+            }
+        }
+
+        if ( noneSelected == true ) {
+            if (backgroundString != "") {
+                backgroundString += ", ";
+            }
+            backgroundString += "url(" + image_base_path + "/selected-all.png)";
+        } else {
+            if (backgroundString != "") {
+                backgroundString += ", ";
+            }
+            backgroundString += "url(" + image_base_path + "/notselected-all.png)";
+        }
+        if (backgroundString != "") {
+            backgroundString += ", ";
+        }
+        backgroundString += "url(" + image_base_path + "/background.png)"
+        console.log(backgroundString);
+        this.htmlObject.imageEl.style.backgroundImage = backgroundString
+    }
+
+    getHTMLElement() {
+        return this.htmlObject.baseEl;
     }
 }
 
 class HTMLAbstractStripeViewObject {
-    constructor(htmlParent, config) {
-        this.htmlParent = htmlParent;
+    constructor(parent, stripes, config) {
+        this.baseEl = document.createElement("div");
+        this.baseEl.style.width = "100%";
+        this.baseEl.style.height = "100%";
+        this.imageEl = document.createElement("img");
+        this.imageEl.setAttribute('src', config.info.image.image_base_path + "/empty.png");
+        this.imageEl.useMap = "#pvf1-map";
+        this.imageEl.style.maxHeight = "100%";
+        this.imageEl.style.width = "auto";
+        this.imageEl.style.backgroundSize = "contain"
+
+        this.baseEl.appendChild(this.imageEl);
+        // make the image map dynamic
+        $(this.imageEl).rwdImageMaps();
     }
 }
 
@@ -184,6 +286,7 @@ class AbstractControlView {
         console.log("overview.controls.hide('" + this.linkedAbstract.id + "')");
         this.htmlView.getElementsByClassName("close_btn")[0].setAttribute('onclick', "overview.controls.hide('" + this.linkedAbstract.id + "');");
         this.htmlView.getElementsByClassName("selection_leds_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_leds');");
+        this.htmlView.getElementsByClassName("selection_stripes_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_stripes');");
         this.htmlView.getElementsByClassName("selection_pattern_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_pattern');");
         this.htmlView.getElementsByClassName("parameter_ctrl_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_ctrl');");
         this.htmlView.getElementsByClassName("parameter_presets_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_presets');");
@@ -196,12 +299,16 @@ class AbstractControlView {
     }
 
     hide() {
+        let stripesSelectAbstract = this.htmlView.getElementsByClassName('selection_stripes')[0];
+        stripesSelectAbstract.removeChild(this.linkedAbstract.stripeView.getHTMLElement())
+
         this.linkedAbstract = null;
         this.config = null;
         this.htmlView.id = "";
         this.htmlView.style.animation = "fadeOutEffect 1s";
         //this.htmlView.style.display = "block";
         let style = this.htmlView.style
+
         setTimeout(function () {
             style.display = "none";
         }, 900);
@@ -217,7 +324,6 @@ function selectSelectionTab(abstractID, tabID) {
         }
     }
 }
-
 
 function selectParameterTab(abstractID, tabID) {
     for (let i = 0; i < overview.controls.controls.length; i++) {
@@ -276,6 +382,10 @@ class AbstractControlSelectionView {
                 }
             }
         }
+
+        let stripesSelectAbstract = this.htmlNode.getElementsByClassName('selection_stripes')[0];
+        stripesSelectAbstract.appendChild(this.linkedAbstract.stripeView.getHTMLElement());
+
         let ledPatternFields = this.htmlNode.getElementsByClassName('pattern_select_field');
         for (let i = 0; i < ledPatternFields.length; i++) {
             for (let j = 0; j < ledPatternFields[i].classList.length; j++) {
@@ -305,6 +415,10 @@ class AbstractControlSelectionView {
         // Show the current tab, and add an "active" class to the button that opened the tab
         this.htmlNode.getElementsByClassName(tabID)[0].style.display = "block";
         this.htmlNode.getElementsByClassName(tabID + "_btn")[0].className += " active";
+        // this is needed to update the dynamic image map
+        if (tabID == "selection_stripes") {
+            $(window).trigger('resize');
+        }
     }
 
     selectParameterTab(tabID) {

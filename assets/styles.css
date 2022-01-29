@@ -24,6 +24,10 @@
     overflow: hidden;
 }
 
+area {
+    cursor: pointer;
+}
+
 /* Style the tab */
 .tab {
     overflow: hidden;
@@ -54,12 +58,12 @@
 
 .parameter_view {
     width: 100%;
-    height: 50%;
+    height: 45%;
 }
 
 .selection_view {
     width: 100%;
-    height: 50%;
+    height: 45%;
 }
 
 /* Style the tab content */
