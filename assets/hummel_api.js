@@ -515,7 +515,7 @@ class AbstractControlParameterView {
         if (id == "parameter_ctrl_speed") {
             slider.min = -2
             slider.max = 2
-        } else if ((id == "parameter_ctrl_h") || (id == "parameter_ctrl_s") || (id == "parameter_ctrl_v")) {
+        } else {
             slider.min = 0
             slider.max = 255
         }
