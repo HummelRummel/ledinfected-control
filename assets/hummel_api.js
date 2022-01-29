@@ -249,6 +249,7 @@ class AbstractControls {
         } else {
             overview.abstracts[i].config = await overview.connection.get("/abstract/" + abstractID);
             this.controls[0].showAbstract(overview.abstracts[i]);
+            overview.abstracts[i].stripeView.updateBackground();
         }
     }
 
