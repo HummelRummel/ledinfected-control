@@ -14,7 +14,7 @@ type (
 	apiServer struct {
 		customSerialDev string
 
-		Arduinos  []*hummelapi.LEDInfectedArduino `json:"arduinos"`
+		Arduinos  []*hummelapi.LEDInfectedArduino  `json:"arduinos"`
 		Abstracts []*hummelapi.LEDInfectedAbstract `json:"abstracts"`
 
 		engine *gin.Engine
@@ -110,16 +110,12 @@ func (o *apiServer) arduinoConnectionHandler() {
 				matches = []string{o.customSerialDev}
 			} else {
 				var err error
-				// check the OSX device files
-				matches, err = filepath.Glob("/dev/tty.usbserial*")
+				matches, err = filepath.Glob(serialGlobPath)
+
 				if err != nil {
-					// check the linux device files
-					matches, err = filepath.Glob("/dev/ttyUSB*")
-					if err != nil {
-						// try again in 10 sec
-						time.Sleep(time.Second * 10)
-						continue
-					}
+					time.Sleep(time.Second * 10)
+					continue
+
 				}
 			}
 

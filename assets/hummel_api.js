@@ -68,8 +68,8 @@ class HTMLAbstractOverviewObject {
         this.abstractOverviewEl = document.createElement("div");
         this.abstractOverviewEl.classList.add('abstractBase', 'tooltip', config.abstract_id)
         this.abstractOverviewEl.setAttribute('onclick', "overview.controls.showAbstract('" + config.abstract_id + "');");
-        this.abstractOverviewEl.style.width = (config.info.image.overview.width + 40) + "px";
-        this.abstractOverviewEl.style.height = (config.info.image.overview.height + 40) + "px";
+        this.abstractOverviewEl.style.width = (config.info.image.overview.dimension.width + 40) + "px";
+        this.abstractOverviewEl.style.height = (config.info.image.overview.dimension.height + 40) + "px";
         this.abstractOverviewEl.style.left = config.setup.position.x + "px";
         this.abstractOverviewEl.style.top = config.setup.position.y + "px";
         this.abstractOverviewEl.style.position = "absolute";
@@ -85,9 +85,9 @@ class HTMLAbstractOverviewObject {
         console.log(config.info);
         this.abstractOverviewBodyEl.setAttribute('src', config.info.image.image_base_path + "/overview.png");
         // Image map currently disabled, probably also not needed for the overview
-        //   this.abstractOverviewBodyEl.setAttribute('usemap', "#imgmap-flower");
-        this.abstractOverviewBodyEl.style.width = config.info.image.overview.width + "px";
-        this.abstractOverviewBodyEl.style.height = config.info.image.overview.height + "px";
+        //  this.abstractOverviewBodyEl.setAttribute('usemap', "#imgmap-flower");
+        this.abstractOverviewBodyEl.style.width = config.info.image.overview.dimension.width + "px";
+        this.abstractOverviewBodyEl.style.height = config.info.image.overview.dimension.height + "px";
         this.abstractOverviewBodyEl.style.left = "10px";
         this.abstractOverviewBodyEl.style.top = "10px";
         this.abstractOverviewBodyEl.style.animationName = "animation_wind";
@@ -121,7 +121,7 @@ function toggleAllSelectedStripes() {
 }
 
 
-function toggleSelectedStripe(stripe_id) {
+function toggleSelectedStripeOld(stripe_id) {
     for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
         if (overview.abstracts[0].config.stripes[i].config != null) {
             if (overview.abstracts[0].stripeView.stripes[i].stripe_id == stripe_id) {
@@ -134,6 +134,37 @@ function toggleSelectedStripe(stripe_id) {
                 overview.abstracts[0].stripeView.updateBackground();
                 return;
             }
+        }
+    }
+}
+
+function toggleSelectedStripe(abstract_id, stripe_id) {
+    console.log("toggleSelectedStripe");
+    console.log(overview.abstracts)
+    for (let i = 0; i < overview.abstracts.length; i++) {
+        if (overview.abstracts[i].id == abstract_id) {
+            if (stripe_id == "all"){
+                let sel = false;
+                for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
+                    if (overview.abstracts[i].stripeView.stripes[j].selected == true) {
+                        sel = true;
+                    }
+                }
+                for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
+                    overview.abstracts[i].stripeView.stripes[j].selected = !sel;
+                }
+                overview.abstracts[i].stripeView.updateBackground();
+                return;
+            }
+            console.log(overview.abstracts[i].stripeView.stripes.length)
+            for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
+                if ( overview.abstracts[i].stripeView.stripes[j].stripe_id == stripe_id ) {
+                    overview.abstracts[i].stripeView.stripes[j].selected = !overview.abstracts[i].stripeView.stripes[j].selected;
+                    overview.abstracts[i].stripeView.updateBackground();
+                    return
+                }
+            }
+            return
         }
     }
 }
@@ -175,7 +206,7 @@ class AbstractStripeViewObject {
             }
         }
 
-        if ( noneSelected == true ) {
+        if (noneSelected == true) {
             if (backgroundString != "") {
                 backgroundString += ", ";
             }
@@ -201,15 +232,30 @@ class AbstractStripeViewObject {
 
 class HTMLAbstractStripeViewObject {
     constructor(parent, stripes, config) {
+        let imgMapName = config.abstract_id + "-map";
+        this.imgMap = document.createElement("map");
+        this.imgMap.setAttribute('name', imgMapName);
+        for (let i = 0; i < config.info.image.stripe_view.img_map.length; i++) {
+            var area = document.createElement("area");
+            area.setAttribute('target', "_blank");
+            area.setAttribute('shape', "poly");
+            area.setAttribute('alt', config.info.image.stripe_view.img_map[i].stripe_id);
+            area.setAttribute('title', config.info.image.stripe_view.img_map[i].stripe_id);
+            area.setAttribute('coords', config.info.image.stripe_view.img_map[i].area);
+            area.setAttribute('onclick', "toggleSelectedStripe('" + config.abstract_id + "','" + config.info.image.stripe_view.img_map[i].stripe_id + "');");
+            this.imgMap.appendChild(area);
+        }
+        document.body.appendChild(this.imgMap);
+
         this.baseEl = document.createElement("div");
         this.baseEl.style.width = "100%";
-        this.baseEl.style.height = "90%";
+        this.baseEl.style.height = "80%";
         this.imageEl = document.createElement("img");
         this.imageEl.setAttribute('src', config.info.image.image_base_path + "/empty.png");
-        this.imageEl.useMap = "#pvf1-map";
+        this.imageEl.useMap = "#"+imgMapName;
         this.imageEl.style.maxHeight = "100%";
-        this.imageEl.style.width = "auto";
-        this.imageEl.style.backgroundSize = "contain"
+        this.imageEl.style.maxWidth = "100%";
+        this.imageEl.style.backgroundSize = "contain";
 
         this.baseEl.appendChild(this.imageEl);
         // make the image map dynamic

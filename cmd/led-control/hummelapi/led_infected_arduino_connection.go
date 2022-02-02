@@ -46,7 +46,17 @@ type (
 )
 
 func NewLEDInfectedArduinoConnection(devFile string) (*LEDInfectedArduinoConnection, error) {
-	port, err := serial.Open(devFile, &serial.Mode{BaudRate: baudRate})
+	
+	port, err := serial.Open(devFile, &serial.Mode{})
+	mode := &serial.Mode{
+		BaudRate: baudRate,
+		Parity:   serial.NoParity,
+		DataBits: 8,
+		StopBits: serial.OneStopBit,
+	}
+	if err := port.SetMode(mode); err != nil {
+		return nil, fmt.Errorf("failed to set mode for serial port serial: %s", err)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to opern serial: %s", err)
 	}
