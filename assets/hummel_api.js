@@ -598,6 +598,7 @@ class AbstractControlParameterView {
         obj.config = new Object();
 
         if (selectedCtrlType == "h") {
+            document.getElementsByClassName("colorshow")[0].style.background = hsvToRgb(newValue / 255, 1, 1);
             obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
             obj.config.stripe_ids = selectedStripes;
             for (let i = 0; i < config.stripes.length; i++) {
@@ -620,6 +621,7 @@ class AbstractControlParameterView {
                 }
             }
         } else if (selectedCtrlType == "s") {
+            document.getElementsByClassName("colorshow")[0].style.background = hsvToRgb(1,newValue / 255,  1);
             obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
             obj.config.stripe_ids = selectedStripes;
             for (let i = 0; i < config.stripes.length; i++) {
@@ -642,6 +644,7 @@ class AbstractControlParameterView {
                 }
             }
         } else if (selectedCtrlType == "v") {
+            document.getElementsByClassName("colorshow")[0].style.background = hsvToRgb(1,1,newValue / 255);
             obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
             obj.config.stripe_ids = selectedStripes;
             for (let i = 0; i < config.stripes.length; i++) {
@@ -739,6 +742,52 @@ function randomTranslate(b, min, max) {
     return b + "% { transform: translate(" + getRandomInt(min, max) + "px, " + getRandomInt(min, max) + "px); }\n"
 }
 
+/**
+ * Converts an HSV color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+ * Assumes h, s, and v are contained in the set [0, 1] and
+ * returns r, g, and b in the set [0, 255].
+ *
+ * @param   Number  h       The hue
+ * @param   Number  s       The saturation
+ * @param   Number  v       The value
+ * @return  Array           The RGB representation
+ */
+function hsvToRgb(h, s, v) {
+    var r, g, b;
+
+    var i = Math.floor(h * 6);
+    var f = h * 6 - i;
+    var p = v * (1 - s);
+    var q = v * (1 - f * s);
+    var t = v * (1 - (1 - f) * s);
+
+    switch (i % 6) {
+        case 0:
+            r = v, g = t, b = p;
+            break;
+        case 1:
+            r = q, g = v, b = p;
+            break;
+        case 2:
+            r = p, g = v, b = t;
+            break;
+        case 3:
+            r = p, g = q, b = v;
+            break;
+        case 4:
+            r = t, g = p, b = v;
+            break;
+        case 5:
+            r = v, g = p, b = q;
+            break;
+    }
+
+    rValue = parseInt(r * 255);
+    gValue = parseInt(g * 255);
+    bValue = parseInt(b * 255);
+    return "#" + rValue.toString(16).padStart(2,"0") + gValue.toString(16).padStart(2,"0") + bValue.toString(16).padStart(2,"0");
+}
 
 // function selectSelectionTab(tabID) {
 //     // Declare all variables
