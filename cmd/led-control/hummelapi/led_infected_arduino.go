@@ -16,6 +16,7 @@ type (
 )
 
 func NewLEDInfectedArduino(devFile string) (*LEDInfectedArduino, error) {
+	fmt.Printf("MOA: newArduino on %s\n", devFile)
 	connection, err := NewLEDInfectedArduinoConnection(devFile)
 	if err != nil {
 		return nil, err
@@ -23,22 +24,28 @@ func NewLEDInfectedArduino(devFile string) (*LEDInfectedArduino, error) {
 	o := &LEDInfectedArduino{
 		connection: connection,
 	}
+	fmt.Printf("MOA: newArduino connection established\n")
 
+	//time.Sleep(time.Millisecond*1000)
 	setup, err := connection.globalGetSetup()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get setup of arduino connected to %s: %s", devFile, err)
 		time.Sleep(time.Second*10)
 		o.connection.Close()
 	}
+	fmt.Printf("MOA: newArduino setup: %s\n", setup)
+
 	o.Global = setup
 
 
 	for i := 0; i < int(setup.NumStripes); i++ {
+		fmt.Printf("MOA: get stripe[%d]\n", i)
 		stripe, err := newLEDInfectedArduinoStripe(o, uint8(i))
 		if err != nil {
 			o.connection.Close()
 			return nil, err
 		}
+		fmt.Printf("MOA: get stripe[%d] done\n", i)
 		o.Stripes = append(o.Stripes, stripe)
 	}
 

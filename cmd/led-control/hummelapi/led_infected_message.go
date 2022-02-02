@@ -73,6 +73,12 @@ type (
 	}
 )
 
+func (o*LEDInfectedResponse) String() string {
+	if o==nil {
+		return "nil"
+	}
+	return fmt.Sprintf("%code:%d, id: %d, dlen: %d", o.rspCode, o.rspCmdID, o.rspDataLen)
+}
 var nextCmdID = uint8(0)
 
 func newLEDInfectedCommand(cmdType byte, cmdCode byte, data []byte) (*LEDInfectedCommand, error) {

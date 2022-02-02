@@ -38,7 +38,7 @@ func (o *apiServer) setArduinoIDCallback(c *gin.Context) {
 	}
 
 	if arduinoConfig.ID == nil {
-		fmt.Printf("arduino Index not set")
+		fmt.Printf("arduino Index not set\n")
 		c.String(http.StatusBadRequest, "")
 		return
 	}

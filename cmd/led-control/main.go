@@ -273,7 +273,7 @@ func main() {
 
 	apiSrv, err := newApiServer(customComDev)
 	if err != nil {
-		fmt.Printf("failed to create api server: %s", err)
+		fmt.Printf("failed to create api server: %s\n", err)
 		return
 	}
 

@@ -1,5 +1,9 @@
 package hummelapi
 
+import (
+	"fmt"
+)
+
 type (
 	LEDInfectedArduinoStripe struct {
 		connection *LEDInfectedArduinoConnection
@@ -16,14 +20,20 @@ type (
 )
 
 func newLEDInfectedArduinoStripe(arduino *LEDInfectedArduino, stripeID uint8) (*LEDInfectedArduinoStripe, error) {
+	//time.Sleep(time.Millisecond*1000)
+	fmt.Printf("MOA: get stripe[%d] setup\n", stripeID)
 	setup, err := arduino.connection.StripeGetSetup(stripeID)
 	if err != nil {
 		return nil, err
 	}
+	//time.Sleep(time.Millisecond*1000)
+	fmt.Printf("MOA: get stripe[%d] config\n", stripeID)
 	config, err := arduino.connection.StripeGetConfig(stripeID)
 	if err != nil {
 		return nil, err
 	}
+	//time.Sleep(time.Millisecond*1000)
+	fmt.Printf("MOA: get stripe[%d] palette\n", stripeID)
 	palette, err := arduino.connection.StripeGetPalette(stripeID)
 	if err != nil {
 		return nil, err

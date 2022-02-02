@@ -79,13 +79,13 @@ func GetAllLEDInfectedAbstracts(configDir string) ([]*LEDInfectedAbstract, error
 	for _, m := range matches {
 		buf, err := os.ReadFile(m)
 		if err != nil {
-			fmt.Printf("failed to read %s: %s", m, err)
+			fmt.Printf("failed to read %s: %s\n", m, err)
 			continue
 		}
 		abstract := &LEDInfectedAbstract{}
 		err = json.Unmarshal(buf, abstract)
 		if err != nil {
-			fmt.Printf("failed to unmarshal %s: %s", m, err)
+			fmt.Printf("failed to unmarshal %s: %s\n", m, err)
 			continue
 		}
 
@@ -235,7 +235,7 @@ func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeCo
 				if arduino != nil {
 					arduinoStripe, err := arduino.GetStripe(arduinoStripeID)
 					if err != nil {
-						fmt.Printf("invalid stripe ID %d", arduinoStripeID)
+						fmt.Printf("invalid stripe ID %d\n", arduinoStripeID)
 						continue
 					}
 					arduinoStripe.Config.Config = config
@@ -281,7 +281,7 @@ func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripe
 				if arduino != nil {
 					arduinoStripe, err := arduino.GetStripe(arduinoStripeID)
 					if err != nil {
-						fmt.Printf("invalid stripe ID %d", arduinoStripeID)
+						fmt.Printf("invalid stripe ID %d\n", arduinoStripeID)
 						continue
 					}
 					arduinoStripe.Config.Palette = palette

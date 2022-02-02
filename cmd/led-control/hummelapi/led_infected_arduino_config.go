@@ -1,5 +1,7 @@
 package hummelapi
 
+import "fmt"
+
 const (
 	stripeTypeCircle        = 0
 	stripeTypeRadial        = 1
@@ -38,6 +40,10 @@ type (
 		Palette [16]*CHSV `json:"palette"`
 	}
 )
+
+func (o*LEDInfectedArduinoConfigGlobalSetup) String()string{
+	return fmt.Sprintf("id:%d, slen: %d, dev: %s",o.ID, o.NumStripes, o.DevFile)
+}
 
 func (o *LEDInfectedArduinoConfigStripeSetup) getBytes() []byte {
 	var buf []byte
