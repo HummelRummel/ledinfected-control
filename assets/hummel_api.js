@@ -143,7 +143,7 @@ function toggleSelectedStripe(abstract_id, stripe_id) {
     console.log(overview.abstracts)
     for (let i = 0; i < overview.abstracts.length; i++) {
         if (overview.abstracts[i].id == abstract_id) {
-            if (stripe_id == "all"){
+            if (stripe_id == "all") {
                 let sel = false;
                 for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
                     if (overview.abstracts[i].stripeView.stripes[j].selected == true) {
@@ -158,7 +158,7 @@ function toggleSelectedStripe(abstract_id, stripe_id) {
             }
             console.log(overview.abstracts[i].stripeView.stripes.length)
             for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
-                if ( overview.abstracts[i].stripeView.stripes[j].stripe_id == stripe_id ) {
+                if (overview.abstracts[i].stripeView.stripes[j].stripe_id == stripe_id) {
                     overview.abstracts[i].stripeView.stripes[j].selected = !overview.abstracts[i].stripeView.stripes[j].selected;
                     overview.abstracts[i].stripeView.updateBackground();
                     return
@@ -182,6 +182,16 @@ class AbstractStripeViewObject {
         this.parent = parent
         this.htmlObject = new HTMLAbstractStripeViewObject(this, this.stripes, config)
         this.updateBackground();
+    }
+
+    getSelectedStripes() {
+        let stripe_ids = [];
+        for (let i = 0; i < this.stripes.length; i++) {
+            if (this.stripes[i].selected == true) {
+                stripe_ids.push(this.stripes[i].stripe_id);
+            }
+        }
+        return stripe_ids;
     }
 
     updateBackground() {
@@ -252,7 +262,7 @@ class HTMLAbstractStripeViewObject {
         this.baseEl.style.height = "80%";
         this.imageEl = document.createElement("img");
         this.imageEl.setAttribute('src', config.info.image.image_base_path + "/empty.png");
-        this.imageEl.useMap = "#"+imgMapName;
+        this.imageEl.useMap = "#" + imgMapName;
         this.imageEl.style.maxHeight = "100%";
         this.imageEl.style.maxWidth = "100%";
         this.imageEl.style.backgroundSize = "contain";
@@ -332,9 +342,9 @@ class AbstractControlView {
         console.log(this.htmlView.getElementsByClassName("close_btn"));
         console.log("overview.controls.hide('" + this.linkedAbstract.id + "')");
         this.htmlView.getElementsByClassName("close_btn")[0].setAttribute('onclick', "overview.controls.hide('" + this.linkedAbstract.id + "');");
-        this.htmlView.getElementsByClassName("selection_leds_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_leds');");
         this.htmlView.getElementsByClassName("selection_stripes_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_stripes');");
         this.htmlView.getElementsByClassName("selection_pattern_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_pattern');");
+        this.htmlView.getElementsByClassName("selection_pattern_new_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_pattern_new');");
         this.htmlView.getElementsByClassName("parameter_ctrl_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_ctrl');");
         this.htmlView.getElementsByClassName("parameter_presets_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_presets');");
         this.htmlView.getElementsByClassName("parameter_admin_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_admin');");
@@ -420,15 +430,6 @@ class AbstractControlSelectionView {
 
     showAbstract(abstract) {
         this.linkedAbstract = abstract;
-
-        let ledSelectFields = this.htmlNode.getElementsByClassName('led_select_field');
-        for (let i = 0; i < ledSelectFields.length; i++) {
-            for (let j = 0; j < ledSelectFields[i].classList.length; j++) {
-                if ((ledSelectFields[i].classList[j] != 'round_button') && (ledSelectFields[i].classList[j] != 'led_select_field') && (ledSelectFields[i].classList[j] != 'selected')) {
-                    ledSelectFields[i].setAttribute('onclick', "toggleSelectedElement('" + this.linkedAbstract.id + "', '" + ledSelectFields[i].classList[j] + "');");
-                }
-            }
-        }
 
         let stripesSelectAbstract = this.htmlNode.getElementsByClassName('selection_stripes')[0];
         stripesSelectAbstract.appendChild(this.linkedAbstract.stripeView.getHTMLElement());
@@ -573,7 +574,7 @@ class AbstractControlParameterView {
         console.log(this.parent.linkedAbstract);
         console.log(config);
 
-        let selectedStripes = this.parent.selectionView.getSelectedStripes();
+        let selectedStripes = this.parent.linkedAbstract.stripeView.getSelectedStripes();
         let selectedPatternIndicies = this.parent.selectionView.getSelectedPatternIndices();
         if (selectedStripes.length == 0) {
             return;

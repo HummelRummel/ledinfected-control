@@ -4,10 +4,10 @@
     <title>HummelFlowerControlCentre</title>
     <meta charset="UTF-8"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<!--    <script src="https://unpkg.com/image-map/dist/image-map.js"></script>-->
     <script src="assets/jquery.rwdImageMaps.js"></script>
 
-<!--    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/maphilight/1.4.0/jquery.maphilight.min.js"></script>-->
+
+    <!--    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/maphilight/1.4.0/jquery.maphilight.min.js"></script>-->
 
     <!-- prevents some OSX rescale issues -->
     <!--    <meta name="viewport" content="width=device-width; initial-scale=1.0">-->
@@ -24,63 +24,19 @@
     <div class="selection_view">
         <!-- Tab links -->
         <div class="selection_tab tab">
-            <button class="selection_leds_btn selection_tablinks">LEDs
-            </button>
             <button class="selection_stripes_btn selection_tablinks">Stripes
             </button>
             <button class="selection_pattern_btn selection_tablinks">Pattern
+            </button>
+            <button class="selection_pattern_new_btn selection_tablinks">Pattern
             </button>
             <button class="close_btn">Close</button>
         </div>
 
         <!-- Tab content -->
-        <div class="selection_leds selection_tabcontent tabcontent">
-            <h3>LEDs</h3>
-            <div class="selection_pattern_field_area">
-                <div class="selection_pattern_field_cluster">
-                    <div class="button_placeholder"></div>
-                    <button class="led_field_2 round_button led_select_field" data-id="radial2"
-                            onclick="toggleSelectedElement('led_field_2')"></button>
-                    <button class="led_field_3 round_button led_select_field" data-id="radial3"
-                            onclick="toggleSelectedElement('led_field_3')"></button>
-                    <div class="button_placeholder"></div>
-                </div>
-                <div class="selection_pattern_field_cluster">
-                    <button class="led_field_1 round_button led_select_field" data-id="radial1"
-                            onclick="toggleSelectedElement('led_field_1')"></button>
-                    <div class="button_placeholder"></div>
-                    <div class="button_placeholder"></div>
-                    <button class="led_field_4 round_button led_select_field" data-id="radial4"
-                            onclick="toggleSelectedElement('led_field_4')"></button>
-                </div>
-                <div class="selection_pattern_field_cluster">
-                    <button class="led_field_8 round_button led_select_field" data-id="radial8"
-                            onclick="toggleSelectedElement('led_field_8')"></button>
-                    <div class="button_placeholder"></div>
-                    <div class="button_placeholder"></div>
-                    <button class="led_field_5 round_button led_select_field" data-id="radial5"
-                            onclick="toggleSelectedElement('led_field_5')"></button>
-
-                </div>
-                <div class="selection_pattern_field_cluster">
-                    <div class="button_placeholder"></div>
-                    <button class="led_field_7 round_button led_select_field" data-id="radial7"
-                            onclick="toggleSelectedElement('led_field_7')"></button>
-                    <button class="led_field_6 round_button led_select_field" data-id="radial6"
-                            onclick="toggleSelectedElement('led_field_6')"></button>
-                    <div class="button_placeholder"></div>
-                </div>
-                <div class="selection_pattern_field_cluster">
-                    <button class="led_field_circle round_button led_select_field" data-id="circle"
-                            onclick="toggleSelectedElement('led_field_circle')"></button>
-                    <div class="button_placeholder"></div>
-                    <div class="button_placeholder"></div>
-                    <div class="button_placeholder"></div>
-                </div>
-            </div>
-        </div>
-
         <div class="selection_stripes selection_tabcontent tabcontent">
+        </div>
+        <div class="selection_pattern_new selection_tabcontent tabcontent">
         </div>
 
         <div class="selection_pattern selection_tabcontent tabcontent">
