@@ -56,11 +56,12 @@ type (
 	LedInfectedAbstractStripeArduinoSetup struct {
 		ArduinoID       uint8 `json:"arduino_id"`
 		ArduinoStripeID uint8 `json:"arduino_stripe_id"`
+		Sync            uint8 `json:"sync"`
 	}
 
 	LEDInfectedAbstractStripeSetup struct {
-		Stripes []LedInfectedAbstractStripeArduinoSetup `json:"stripes"`
-		Name    string                                  `json:"name"` // human readable name of the stripe
+		ArduinoStripes []LedInfectedAbstractStripeArduinoSetup `json:"arduino_stripes"`
+		Name           string                                  `json:"name"` // human readable name of the stripe
 	}
 
 	LEDInfectedAbstractGlobalPosition struct {
@@ -104,7 +105,7 @@ func GetAllLEDInfectedAbstracts(configDir string) ([]*LEDInfectedAbstract, error
 
 func (o *LEDInfectedAbstract) UpdateArduino(arduino *LEDInfectedArduino) error {
 	for _, stripe := range o.Stripes {
-		for _, arduinoStripeSetup := range stripe.Setup.Stripes {
+		for _, arduinoStripeSetup := range stripe.Setup.ArduinoStripes {
 			if arduinoStripeSetup.ArduinoID != arduino.GetID() {
 				continue
 			}
@@ -123,7 +124,7 @@ func (o *LEDInfectedAbstract) UpdateArduino(arduino *LEDInfectedArduino) error {
 
 func (o *LEDInfectedAbstract) ResetArduino(arduino *LEDInfectedArduino) error {
 	for _, stripe := range o.Stripes {
-		for _, arduinoStripeSetup := range stripe.Setup.Stripes {
+		for _, arduinoStripeSetup := range stripe.Setup.ArduinoStripes {
 			if arduinoStripeSetup.ArduinoID != arduino.GetID() {
 				continue
 			}
@@ -211,7 +212,7 @@ func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeCo
 		found := false
 		for _, abStripe := range o.Stripes {
 			if abStripe.StripeID == id {
-				selectedStripes = append(selectedStripes, abStripe.Setup.Stripes...)
+				selectedStripes = append(selectedStripes, abStripe.Setup.ArduinoStripes...)
 				found = true
 			}
 		}
@@ -257,7 +258,7 @@ func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripe
 		found := false
 		for _, abStripe := range o.Stripes {
 			if abStripe.StripeID == id {
-				selectedStripes = append(selectedStripes, abStripe.Setup.Stripes...)
+				selectedStripes = append(selectedStripes, abStripe.Setup.ArduinoStripes...)
 				found = true
 			}
 		}
@@ -302,7 +303,7 @@ func (o *LEDInfectedAbstractStripe) SetSetup(setup *LEDInfectedAbstractStripeSet
 }
 
 func (o *LEDInfectedAbstractStripe) SetConfig(config *LEDInfectedArduinoConfigStripeConfig) error {
-	for _, s := range o.Setup.Stripes {
+	for _, s := range o.Setup.ArduinoStripes {
 		if _, stripe := o.parent.getArduinoStripeByID(s.ArduinoID, s.ArduinoStripeID); stripe != nil {
 			if err := stripe.SetConfig(config); err != nil {
 				return err
@@ -313,7 +314,7 @@ func (o *LEDInfectedAbstractStripe) SetConfig(config *LEDInfectedArduinoConfigSt
 }
 
 func (o *LEDInfectedAbstractStripe) SetPalette(palette *LEDInfectedArduinoConfigStripePalette) error {
-	for _, s := range o.Setup.Stripes {
+	for _, s := range o.Setup.ArduinoStripes {
 		if _, stripe := o.parent.getArduinoStripeByID(s.ArduinoID, s.ArduinoStripeID); stripe != nil {
 			if err := stripe.SetPalette(palette); err != nil {
 				return err
@@ -324,7 +325,7 @@ func (o *LEDInfectedAbstractStripe) SetPalette(palette *LEDInfectedArduinoConfig
 }
 
 func (o *LEDInfectedAbstractStripe) Save() error {
-	for _, s := range o.Setup.Stripes {
+	for _, s := range o.Setup.ArduinoStripes {
 		if _, stripe := o.parent.getArduinoStripeByID(s.ArduinoID, s.ArduinoStripeID); stripe != nil {
 			if err := stripe.Save(); err != nil {
 				return err

@@ -185,7 +185,7 @@ func (o *LEDInfectedArduinoConnection) sendInfectedCommand(cmdType byte, cmdCode
 
 		response, err := o.WaitRepsonse(cmd, time.Second)
 		if err != nil {
-			lastError = fmt.Sprintf("invalid response: %s", response, err)
+			lastError = fmt.Sprintf("invalid response: %s", err)
 			continue
 		}
 		return response, nil

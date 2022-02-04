@@ -26,6 +26,40 @@ class OverviewView {
 // instance of the base class
 overview = new OverviewView(document.body)
 
+function globalSyncAbstracts() {
+    let cmd = new Object();
+    cmd.arduinos = [];
+    for (let i = 0; i < overview.abstracts.length; i++) {
+        for (let j = 0; j < overview.abstracts[i].config.stripes.length; j++) {
+            console.log(overview.abstracts[i].config.stripes[j]);
+            for (let k = 0; k < overview.abstracts[i].config.stripes[j].setup.arduino_stripes.length; k++) {
+                let stripeArduinoID = overview.abstracts[i].config.stripes[j].setup.arduino_stripes[k].arduino_id;
+                let found = false;
+                for (let l = 0; l < cmd.arduinos.length; l++) {
+                    if (cmd.arduinos[l].arduino_id == stripeArduinoID) {
+                        found = true;
+                        let newStripeSync = new Object();
+                        newStripeSync.stripe_id = overview.abstracts[i].config.stripes[j].setup.arduino_stripes[k].arduino_stripe_id;
+                        newStripeSync.sync = overview.abstracts[i].config.stripes[j].setup.arduino_stripes[k].sync;
+                        cmd.arduinos[l].stripes.push(newStripeSync);
+                    }
+                }
+                if (!found) {
+                    let newArduinoSync = new Object();
+                    newArduinoSync.arduino_id = stripeArduinoID;
+                    newArduinoSync.stripes = [];
+                    let newStripeSync = new Object();
+                    newStripeSync.stripe_id = overview.abstracts[i].config.stripes[j].setup.arduino_stripes[k].arduino_stripe_id;
+                    newStripeSync.sync = overview.abstracts[i].config.stripes[j].setup.arduino_stripes[k].sync;
+                    newArduinoSync.stripes.push(newStripeSync);
+                    cmd.arduinos.push(newArduinoSync);
+                }
+            }
+        }
+    }
+    console.log(cmd);
+}
+
 // initialization of the UI
 async function initializeUI() {
     // create global styles
@@ -120,6 +154,47 @@ function toggleAllSelectedStripes() {
     overview.abstracts[0].stripeView.updateBackground();
 }
 
+function togglePatternSelect(id) {
+    let section = id.substring(0, 1);
+    let segment = parseInt(id.substring(2, 4)) - 1;
+
+    let fields = overview.controls.controls[0].selectionView.patternSelect.fields
+    if (section == "0") {
+        overview.controls.controls[0].selectionView.patternSelect.fields[segment].active = !fields[segment].active;
+    } else if (section == "1") {
+        if (fields[segment * 2].active || fields[segment * 2 + 1].active) {
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2].active = false;
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2 + 1].active = false;
+        } else {
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2].active = true;
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2 + 1].active = true;
+        }
+    } else if (section == "2") {
+        if (fields[segment * 4].active || fields[segment * 4 + 1].active || fields[segment * 4 + 2].active || fields[segment * 4 + 3].active) {
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4].active = false;
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 1].active = false;
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 2].active = false;
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 3].active = false;
+        } else {
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4].active = true;
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 1].active = true;
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 2].active = true;
+            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 3].active = true;
+        }
+    } else {
+        oneActive = false;
+        for (let i = 0; i < 16; i++) {
+            if (fields[i].active) {
+                oneActive = true;
+            }
+        }
+        for (let i = 0; i < 16; i++) {
+            overview.controls.controls[0].selectionView.patternSelect.fields[i].active = !oneActive;
+        }
+    }
+
+    overview.controls.controls[0].selectionView.patternSelect.updateBackground();
+}
 
 function toggleSelectedStripeOld(stripe_id) {
     for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
@@ -264,7 +339,7 @@ class HTMLAbstractStripeViewObject {
         this.imageEl.setAttribute('src', config.info.image.image_base_path + "/empty.png");
         this.imageEl.useMap = "#" + imgMapName;
         this.imageEl.style.maxHeight = "100%";
-        this.imageEl.style.maxWidth = "100%";
+        this.imageEl.style.maxWidth = "auto";
         this.imageEl.style.backgroundSize = "contain";
 
         this.baseEl.appendChild(this.imageEl);
@@ -426,6 +501,8 @@ class AbstractControlSelectionView {
     constructor(parent) {
         this.parent = parent;
         this.htmlNode = this.parent.htmlView;
+
+        this.patternSelect = new AbstractControlParameterSelectionView(this.parent)
     }
 
     showAbstract(abstract) {
@@ -442,6 +519,12 @@ class AbstractControlSelectionView {
                 }
             }
         }
+
+        /*
+        <!-- Image Map Generated by http://www.image-map.net/ -->
+<img src="background.png" usemap="#pattern-selection-map">
+
+         */
     }
 
     selectSelectionTab(tabID) {
@@ -467,6 +550,9 @@ class AbstractControlSelectionView {
         if (tabID == "selection_stripes") {
             $(window).trigger('resize');
         }
+        if (tabID == "selection_pattern_new") {
+            $(window).trigger('resize');
+        }
     }
 
     selectParameterTab(tabID) {
@@ -490,16 +576,18 @@ class AbstractControlSelectionView {
         this.htmlNode.getElementsByClassName(tabID + "_btn")[0].className += " active";
     }
 
-    getSelectedStripes() {
-        let selectedStripes = [];
-        const ledSelectFields = this.htmlNode.getElementsByClassName('led_select_field');
-        for (let i = 0; i < ledSelectFields.length; i++) {
-            if (ledSelectFields[i].classList.contains('selected')) {
-                selectedStripes.push(ledSelectFields[i].getAttribute("data-id"));
-            }
-        }
-        return selectedStripes;
-    }
+    // getSelectedStripes() {
+    //
+    //     let selectedStripes = [];
+    //     this.patternSelect.fields[i]
+    //     for (let i = 0; i < ledSelectFields.length; i++) {
+    //         this.patternSelect.fields[i].active
+    //         if (ledSelectFields[i].classList.contains('selected')) {
+    //             selectedStripes.push(i);
+    //         }
+    //     }
+    //     return selectedStripes;
+    // }
 
     selectAllStripes() {
 
@@ -511,10 +599,12 @@ class AbstractControlSelectionView {
 
     getSelectedPatternIndices() {
         let patternIndecies = [];
-        const patternSelectFields = this.htmlNode.getElementsByClassName('pattern_select_field');
-        for (let i = 0; i < patternSelectFields.length; i++) {
-            if (patternSelectFields[i].classList.contains('selected')) {
-                patternIndecies.push(parseInt(patternSelectFields[i].getAttribute("data-id")));
+
+        this.patternSelect.fields
+
+        for (let i = 0; i < 16; i++) {
+            if (this.patternSelect.fields[i].active) {
+                patternIndecies.push(i);
             }
         }
         return patternIndecies;
@@ -526,6 +616,79 @@ class AbstractControlSelectionView {
 
     unselectCompletePattern() {
 
+    }
+}
+
+class AbstractControlParameterSelectionView {
+    constructor(parent) {
+        this.parent = parent;
+        this.image_base_path = "/assets/img/pattern";
+
+        this.baseEl = document.createElement("div");
+        this.baseEl.style.width = "100%";
+        this.baseEl.style.height = "80%";
+        this.imageEl = document.createElement("img");
+        this.imageEl.setAttribute('src', this.image_base_path + "/empty.png");
+        this.imageEl.useMap = "#pattern-selection-map";
+        this.imageEl.style.maxHeight = "100%";
+        this.imageEl.style.maxWidth = "auto";
+        this.imageEl.style.backgroundSize = "contain";
+
+        this.baseEl.appendChild(this.imageEl);
+        let patternSelect = this.parent.htmlView.getElementsByClassName('selection_pattern_new')[0];
+        patternSelect.appendChild(this.baseEl);
+
+        // make the image map dynamic
+        $(this.imageEl).rwdImageMaps();
+        this.fields = [];
+        for (let i = 0; i < 16; i++) {
+            let f = new Object();
+            f.active = false;
+            this.fields.push(f);
+        }
+        this.updateBackground();
+    }
+
+
+    updateBackground() {
+        let backgroundString = "";
+        let noneSelected = true;
+        for (let i = 0; i < this.fields.length; i++) {
+            if (backgroundString != "") {
+                backgroundString += ", ";
+            }
+            if (this.fields[i].active) {
+                noneSelected = false;
+                backgroundString += "url(" + this.image_base_path + "/active_0_" + (i + 1).toString().padStart(2, '0') + ".png)";
+            } else {
+                backgroundString += "url(" + this.image_base_path + "/inactive_0_" + (i + 1).toString().padStart(2, '0') + ".png)";
+            }
+        }
+
+        for (let i = 0; i < 8; i++) {
+            if (this.fields[i * 2].active || this.fields[i * 2 + 1].active) {
+                backgroundString += ", url(" + this.image_base_path + "/inactive_1_" + (i + 1).toString().padStart(2, '0') + ".png)";
+            } else {
+                backgroundString += ", url(" + this.image_base_path + "/active_1_" + (i + 1).toString().padStart(2, '0') + ".png)";
+            }
+        }
+
+        for (let i = 0; i < 4; i++) {
+            if (this.fields[i * 4].active || this.fields[i * 4 + 1].active || this.fields[i * 4 + 2].active || this.fields[i * 4 + 3].active) {
+                backgroundString += ", url(" + this.image_base_path + "/inactive_2_" + (i + 1).toString().padStart(2, '0') + ".png)";
+            } else {
+                backgroundString += ", url(" + this.image_base_path + "/active_2_" + (i + 1).toString().padStart(2, '0') + ".png)";
+            }
+        }
+
+        if (noneSelected) {
+            backgroundString += ", url(" + this.image_base_path + "/active_3_01.png)";
+        } else {
+            backgroundString += ", url(" + this.image_base_path + "/inactive_3_01.png)";
+        }
+        backgroundString += ", url(" + this.image_base_path + "/background.png)"
+        console.log(backgroundString);
+        this.imageEl.style.backgroundImage = backgroundString
     }
 }
 
@@ -576,6 +739,8 @@ class AbstractControlParameterView {
 
         let selectedStripes = this.parent.linkedAbstract.stripeView.getSelectedStripes();
         let selectedPatternIndicies = this.parent.selectionView.getSelectedPatternIndices();
+        console.log(selectedStripes);
+        console.log(selectedPatternIndicies);
         if (selectedStripes.length == 0) {
             return;
         }
@@ -621,7 +786,7 @@ class AbstractControlParameterView {
                 }
             }
         } else if (selectedCtrlType == "s") {
-            document.getElementsByClassName("colorshow")[0].style.background = hsvToRgb(1,newValue / 255,  1);
+            document.getElementsByClassName("colorshow")[0].style.background = hsvToRgb(1, newValue / 255, 1);
             obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
             obj.config.stripe_ids = selectedStripes;
             for (let i = 0; i < config.stripes.length; i++) {
@@ -644,7 +809,7 @@ class AbstractControlParameterView {
                 }
             }
         } else if (selectedCtrlType == "v") {
-            document.getElementsByClassName("colorshow")[0].style.background = hsvToRgb(1,1,newValue / 255);
+            document.getElementsByClassName("colorshow")[0].style.background = hsvToRgb(1, 1, newValue / 255);
             obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
             obj.config.stripe_ids = selectedStripes;
             for (let i = 0; i < config.stripes.length; i++) {
@@ -786,7 +951,7 @@ function hsvToRgb(h, s, v) {
     rValue = parseInt(r * 255);
     gValue = parseInt(g * 255);
     bValue = parseInt(b * 255);
-    return "#" + rValue.toString(16).padStart(2,"0") + gValue.toString(16).padStart(2,"0") + bValue.toString(16).padStart(2,"0");
+    return "#" + rValue.toString(16).padStart(2, "0") + gValue.toString(16).padStart(2, "0") + bValue.toString(16).padStart(2, "0");
 }
 
 // function selectSelectionTab(tabID) {

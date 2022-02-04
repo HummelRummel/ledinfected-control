@@ -68,8 +68,9 @@
     {
       "stripe_id": "radial1",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 1,
             "arduino_stripe_id": 0
           }
@@ -81,8 +82,9 @@
     {
       "stripe_id": "radial2",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 1,
             "arduino_stripe_id": 1
           }
@@ -94,8 +96,9 @@
     {
       "stripe_id": "radial3",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 1,
             "arduino_stripe_id": 2
           }
@@ -107,8 +110,9 @@
     {
       "stripe_id": "radial4",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 1,
             "arduino_stripe_id": 3
           }
@@ -120,8 +124,9 @@
     {
       "stripe_id": "radial5",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 2,
             "arduino_stripe_id": 0
           }
@@ -133,8 +138,9 @@
     {
       "stripe_id": "radial6",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 2,
             "arduino_stripe_id": 1
           }
@@ -146,8 +152,9 @@
     {
       "stripe_id": "radial7",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 2,
             "arduino_stripe_id": 2
           }
@@ -159,8 +166,9 @@
     {
       "stripe_id": "radial8",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 2,
             "arduino_stripe_id": 3
           }
@@ -172,12 +180,14 @@
     {
       "stripe_id": "circle",
       "setup": {
-        "stripes": [
+        "arduino_stripes": [
           {
+            "sync": 0,
             "arduino_id": 1,
             "arduino_stripe_id": 4
           },
           {
+            "sync": 0,
             "arduino_id": 2,
             "arduino_stripe_id": 4
           }
