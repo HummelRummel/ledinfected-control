@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/nbmoa/led-control/cmd/led-control/hummelapi"
 	"net/http"
 	"path/filepath"
 	"sync"
 	"time"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/HummelRummel/ledinfected-controld/cmd/ledinfected-controld/hummelapi"
 )
 
 type (

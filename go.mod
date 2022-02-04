@@ -1,4 +1,4 @@
-module github.com/nbmoa/led-control
+module github.com/HummelRummel/ledinfected-controld
 
 go 1.17
 

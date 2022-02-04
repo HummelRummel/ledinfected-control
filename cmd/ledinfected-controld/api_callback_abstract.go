@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/nbmoa/led-control/cmd/led-control/hummelapi"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/HummelRummel/ledinfected-controld/cmd/ledinfected-controld/hummelapi"
 )
 
 func (o *apiServer) getAllAbstractsCallback(c *gin.Context) {

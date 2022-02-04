@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/nbmoa/led-control/cmd/led-control/hummelapi"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/HummelRummel/ledinfected-controld/cmd/ledinfected-controld/hummelapi"
 )
 
 func (o *apiServer) getAllArduinosCallback(c *gin.Context) {
@@ -64,7 +66,6 @@ func (o *apiServer) setArduinoStripeSetupCallback(c *gin.Context) {
 	s.SetSetup(data)
 	c.JSON(http.StatusOK, "{}")
 }
-
 
 func (o *apiServer) saveArduinoStripeSetupCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
