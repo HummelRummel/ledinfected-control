@@ -419,7 +419,6 @@ class AbstractControlView {
         this.htmlView.getElementsByClassName("close_btn")[0].setAttribute('onclick', "overview.controls.hide('" + this.linkedAbstract.id + "');");
         this.htmlView.getElementsByClassName("selection_stripes_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_stripes');");
         this.htmlView.getElementsByClassName("selection_pattern_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_pattern');");
-        this.htmlView.getElementsByClassName("selection_pattern_new_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_pattern_new');");
         this.htmlView.getElementsByClassName("parameter_ctrl_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_ctrl');");
         this.htmlView.getElementsByClassName("parameter_presets_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_presets');");
         this.htmlView.getElementsByClassName("parameter_admin_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_admin');");
@@ -550,7 +549,7 @@ class AbstractControlSelectionView {
         if (tabID == "selection_stripes") {
             $(window).trigger('resize');
         }
-        if (tabID == "selection_pattern_new") {
+        if (tabID == "selection_pattern") {
             $(window).trigger('resize');
         }
     }
@@ -635,7 +634,7 @@ class AbstractControlParameterSelectionView {
         this.imageEl.style.backgroundSize = "contain";
 
         this.baseEl.appendChild(this.imageEl);
-        let patternSelect = this.parent.htmlView.getElementsByClassName('selection_pattern_new')[0];
+        let patternSelect = this.parent.htmlView.getElementsByClassName('selection_pattern')[0];
         patternSelect.appendChild(this.baseEl);
 
         // make the image map dynamic
