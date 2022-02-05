@@ -228,6 +228,11 @@ func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeCo
 	for len(selectedStripes) > 0 {
 		arduinoID := selectedStripes[0].ArduinoID
 		arduino := o.getArduinoByID(arduinoID)
+		if arduino == nil {
+			fmt.Printf("arduino with ID %d not online, skipping stripe %d\n", arduinoID, selectedStripes[0].ArduinoStripeID)
+			selectedStripes = append(selectedStripes[:0], selectedStripes[1:]...)
+			continue
+		}
 		stripeMask := uint8(0)
 		for i := len(selectedStripes) - 1; i >= 0; i-- {
 			if selectedStripes[i].ArduinoID == arduinoID {
@@ -274,6 +279,11 @@ func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripe
 	for len(selectedStripes) > 0 {
 		arduinoID := selectedStripes[0].ArduinoID
 		arduino := o.getArduinoByID(arduinoID)
+		if arduino == nil {
+			fmt.Printf("arduino with ID %d not online, skipping stripe %d\n", arduinoID, selectedStripes[0].ArduinoStripeID)
+			selectedStripes = append(selectedStripes[:0], selectedStripes[1:]...)
+			continue
+		}
 		stripeMask := uint8(0)
 		for i := len(selectedStripes) - 1; i >= 0; i-- {
 			if selectedStripes[i].ArduinoID == arduinoID {

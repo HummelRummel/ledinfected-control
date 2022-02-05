@@ -3,6 +3,7 @@
 <head>
     <title>HummelFlowerControlCentre</title>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="assets/jquery.rwdImageMaps.js"></script>
 
@@ -55,23 +56,49 @@
         <!-- Tab content -->
         <div class="parameter_ctrl parameter_tabcontent tabcontent">
             <h3>CTRL</h3>
+            <svg width="100" height="100" viewBox="0 0 480 480" class="test_canvas">
+                <polygon points="243,21 268,24 291,29 323,36 298,91 280,83 258,81 242,80" style="fill:#4499ee" />
+                <image id="aa" href="/assets/img/pattern/background.png"/>
+            </svg>
             <div class="flex_display">
-                <button class="parameter_ctrl_h round_button parameter_ctrl_select" data-ctrl-type="h"
-                        onclick="selectParameterCtrlElement('parameter_ctrl_h')">H
-                </button>
-                <button class="parameter_ctrl_s round_button parameter_ctrl_select" data-ctrl-type="s"
-                        onclick="selectParameterCtrlElement('parameter_ctrl_s')">S
-                </button>
-                <button class="parameter_ctrl_v round_button parameter_ctrl_select" data-ctrl-type="v"
-                        onclick="selectParameterCtrlElement('parameter_ctrl_v')">V
-                </button>
-                <button class="parameter_ctrl_speed round_button parameter_ctrl_select" data-ctrl-type="speed"
-                        onclick="selectParameterCtrlElement('parameter_ctrl_speed')">Speed
-                </button>
-                <button class="parameter_ctrl_overlay round_button parameter_ctrl_select"
-                        data-ctrl-type="overlay"
-                        onclick="selectParameterCtrlElement('parameter_ctrl_overlay')">Overlay
-                </button>
+                <div class="parameter_slider_container">
+                    <div class="slidecontainer">
+                        <button class="parameter_ctrl_h round_button parameter_ctrl_select" data-ctrl-type="h"
+                                onclick="selectParameterCtrlElement('parameter_ctrl_h')">H
+                        </button>
+                        <input type="range" min="0" max="255" value="0" class="slider parameter_ctrl_slider_h"
+                               oninput="updateH();">
+                    </div>
+                    <div class="slidecontainer">
+                        <button class="parameter_ctrl_s round_button parameter_ctrl_select" data-ctrl-type="s"
+                                onclick="selectParameterCtrlElement('parameter_ctrl_s')">S
+                        </button>
+                        <input type="range" min="0" max="255" value="0" class="slider parameter_ctrl_slider_s"
+                               oninput="updateS();">
+                    </div>
+                    <div class="slidecontainer">
+                        <button class="parameter_ctrl_v round_button parameter_ctrl_select" data-ctrl-type="v"
+                                onclick="selectParameterCtrlElement('parameter_ctrl_v')">V
+                        </button>
+                        <input type="range" min="0" max="255" value="0" class="slider parameter_ctrl_slider_v"
+                               oninput="updateV();">
+                    </div>
+                    <div class="slidecontainer">
+                        <button class="parameter_ctrl_speed round_button parameter_ctrl_select" data-ctrl-type="speed"
+                                onclick="selectParameterCtrlElement('parameter_ctrl_speed')">Speed
+                        </button>
+                        <input type="range" min="-4" max="4" value="0" class="slider parameter_ctrl_slider_speed"
+                               oninput="updateSpeed();">
+                    </div>
+                    <div class="slidecontainer">
+                        <button class="parameter_ctrl_overlay round_button parameter_ctrl_select"
+                                data-ctrl-type="overlay"
+                                onclick="selectParameterCtrlElement('parameter_ctrl_overlay')">Overlay
+                        </button>
+                        <input type="range" min="0" max="255" value="0" class="slider parameter_ctrl_slider_overlay"
+                               oninput="updateOverlay();">
+                    </div>
+                </div>
             </div>
             <div class="flex_display">
                 <input type="range" class="parameter_ctrl_slider"
@@ -95,35 +122,65 @@
 </div>
 
 <map name="pattern-selection-map">
-    <area target="_blank" alt="0_01" title="0_01" onclick="togglePatternSelect('0_01');" coords="243,21,268,24,291,29,323,36,298,91,280,83,258,81,242,80" shape="poly">
-    <area target="_blank" alt="0_02" title="0_02" onclick="togglePatternSelect('0_02');" coords="322,38,347,50,367,62,394,85,354,124,332,110,318,101,304,91" shape="poly">
-    <area target="_blank" alt="0_03" title="0_03" onclick="togglePatternSelect('0_03');" coords="396,87,414,108,431,133,441,158,389,177,381,158,369,142,357,127" shape="poly">
-    <area target="_blank" alt="0_04" title="0_04" onclick="togglePatternSelect('0_04');" coords="391,183,444,161,452,184,456,210,461,239,403,238,399,208" shape="poly">
-    <area target="_blank" alt="0_05" title="0_05" onclick="togglePatternSelect('0_05');" coords="402,242,459,242,457,271,452,297,443,321,391,300,398,279,401,264" shape="poly">
-    <area target="_blank" alt="0_06" title="0_06" onclick="togglePatternSelect('0_06');" coords="390,303,440,323,432,347,416,370,397,393,355,352,379,323" shape="poly">
-    <area target="_blank" alt="0_07" title="0_07" onclick="togglePatternSelect('0_07');" coords="354,356,392,395,374,414,349,428,324,442,304,388,331,374" shape="poly">
-    <area target="_blank" alt="0_08" title="0_08" onclick="togglePatternSelect('0_08');" coords="302,390,320,441,297,452,273,458,241,458,242,401,273,398" shape="poly">
-    <area target="_blank" alt="0_09" title="0_09" onclick="togglePatternSelect('0_09');" coords="239,402,237,459,210,458,183,452,158,442,179,390,206,396" shape="poly">
-    <area target="_blank" alt="0_10" title="0_10" onclick="togglePatternSelect('0_10');" coords="179,388,154,442,114,421,85,397,128,355,147,374" shape="poly">
-    <area target="_blank" alt="0_11" title="0_11" onclick="togglePatternSelect('0_11');" coords="125,352,81,396,54,357,38,325,91,304,103,328" shape="poly">
-    <area target="_blank" alt="0_12" title="0_12" onclick="togglePatternSelect('0_12');" coords="21,241,81,239,83,271,94,301,35,323,24,283" shape="poly">
-    <area target="_blank" alt="0_13" title="0_13" onclick="togglePatternSelect('0_13');" coords="78,240,22,240,22,198,36,159,90,181,81,207" shape="poly">
-    <area target="_blank" alt="0_14" title="0_14" onclick="togglePatternSelect('0_14');" coords="39,153,57,117,84,85,125,126,103,151,92,178" shape="poly">
-    <area target="_blank" alt="0_15" title="0_15" onclick="togglePatternSelect('0_15');" coords="83,83,118,56,155,34,181,91,151,105,127,124" shape="poly">
-    <area target="_blank" alt="0_16" title="0_16" onclick="togglePatternSelect('0_16');" coords="162,38,199,21,237,19,239,80,209,81,183,88" shape="poly">
-    <area target="_blank" alt="1_01" title="1_01" onclick="togglePatternSelect('1_01');" coords="243,82,274,87,305,96,332,112,350,127,310,166,292,153,267,142,242,140" shape="poly">
-    <area target="_blank" alt="1_02" title="1_02" onclick="togglePatternSelect('1_02');" coords="353,130,373,157,386,181,395,214,396,237,343,239,338,213,330,191,313,170" shape="poly">
-    <area target="_blank" alt="1_03" title="1_03" onclick="togglePatternSelect('1_03');" coords="400,241,395,270,388,297,372,327,354,348,314,313,330,291,341,267,341,240" shape="poly">
-    <area target="_blank" alt="1_04" title="1_04" onclick="togglePatternSelect('1_04');" coords="309,313,350,356,329,370,302,386,268,394,242,396,243,342,267,340,291,329" shape="poly">
-    <area target="_blank" alt="1_05" title="1_05" onclick="togglePatternSelect('1_05');" coords="237,342,237,400,206,394,182,387,153,370,127,355,168,314,184,325,206,336" shape="poly">
-    <area target="_blank" alt="1_06" title="1_06" onclick="togglePatternSelect('1_06');" coords="126,351,105,326,94,300,84,267,83,243,138,242,143,271,155,295,167,311" shape="poly">
-    <area target="_blank" alt="1_07" title="1_07" onclick="togglePatternSelect('1_07');" coords="81,239,85,209,93,183,105,154,126,129,166,171,150,191,142,211,138,239" shape="poly">
-    <area target="_blank" alt="1_08" title="1_08" onclick="togglePatternSelect('1_08');" coords="129,126,155,107,180,93,212,85,240,83,238,138,207,142,186,154,169,167" shape="poly">
-    <area target="_blank" alt="2_01" title="2_01" onclick="togglePatternSelect('2_01');" coords="239,140,282,149,308,170,331,198,338,239,294,237,286,214,268,195,244,189" shape="poly">
-    <area target="_blank" alt="2_02" title="2_02" onclick="togglePatternSelect('2_02');" coords="292,242,338,242,331,279,311,308,281,332,241,339,242,292,265,287,285,269" shape="poly">
-    <area target="_blank" alt="2_03" title="2_03" onclick="togglePatternSelect('2_03');" coords="238,337,198,332,169,309,149,279,141,242,185,242,192,265,208,284,238,295" shape="poly">
-    <area target="_blank" alt="2_04" title="2_04" onclick="togglePatternSelect('2_04');" coords="141,238,147,204,168,169,205,147,239,140,239,185,211,196,193,212,187,240" shape="poly">
-    <area target="_blank" alt="3_01" title="3_01" onclick="togglePatternSelect('3_01');" coords="241,192,262,194,281,210,289,232,286,253,279,273,260,286,240,291,220,288,202,276,193,257,190,233,201,207,217,194" shape="poly">
+    <area target="_blank" alt="0_01" title="0_01" onclick="togglePatternSelect('0_01');"
+          coords="243,21,268,24,291,29,323,36,298,91,280,83,258,81,242,80" shape="poly">
+    <area target="_blank" alt="0_02" title="0_02" onclick="togglePatternSelect('0_02');"
+          coords="322,38,347,50,367,62,394,85,354,124,332,110,318,101,304,91" shape="poly">
+    <area target="_blank" alt="0_03" title="0_03" onclick="togglePatternSelect('0_03');"
+          coords="396,87,414,108,431,133,441,158,389,177,381,158,369,142,357,127" shape="poly">
+    <area target="_blank" alt="0_04" title="0_04" onclick="togglePatternSelect('0_04');"
+          coords="391,183,444,161,452,184,456,210,461,239,403,238,399,208" shape="poly">
+    <area target="_blank" alt="0_05" title="0_05" onclick="togglePatternSelect('0_05');"
+          coords="402,242,459,242,457,271,452,297,443,321,391,300,398,279,401,264" shape="poly">
+    <area target="_blank" alt="0_06" title="0_06" onclick="togglePatternSelect('0_06');"
+          coords="390,303,440,323,432,347,416,370,397,393,355,352,379,323" shape="poly">
+    <area target="_blank" alt="0_07" title="0_07" onclick="togglePatternSelect('0_07');"
+          coords="354,356,392,395,374,414,349,428,324,442,304,388,331,374" shape="poly">
+    <area target="_blank" alt="0_08" title="0_08" onclick="togglePatternSelect('0_08');"
+          coords="302,390,320,441,297,452,273,458,241,458,242,401,273,398" shape="poly">
+    <area target="_blank" alt="0_09" title="0_09" onclick="togglePatternSelect('0_09');"
+          coords="239,402,237,459,210,458,183,452,158,442,179,390,206,396" shape="poly">
+    <area target="_blank" alt="0_10" title="0_10" onclick="togglePatternSelect('0_10');"
+          coords="179,388,154,442,114,421,85,397,128,355,147,374" shape="poly">
+    <area target="_blank" alt="0_11" title="0_11" onclick="togglePatternSelect('0_11');"
+          coords="125,352,81,396,54,357,38,325,91,304,103,328" shape="poly">
+    <area target="_blank" alt="0_12" title="0_12" onclick="togglePatternSelect('0_12');"
+          coords="21,241,81,239,83,271,94,301,35,323,24,283" shape="poly">
+    <area target="_blank" alt="0_13" title="0_13" onclick="togglePatternSelect('0_13');"
+          coords="78,240,22,240,22,198,36,159,90,181,81,207" shape="poly">
+    <area target="_blank" alt="0_14" title="0_14" onclick="togglePatternSelect('0_14');"
+          coords="39,153,57,117,84,85,125,126,103,151,92,178" shape="poly">
+    <area target="_blank" alt="0_15" title="0_15" onclick="togglePatternSelect('0_15');"
+          coords="83,83,118,56,155,34,181,91,151,105,127,124" shape="poly">
+    <area target="_blank" alt="0_16" title="0_16" onclick="togglePatternSelect('0_16');"
+          coords="162,38,199,21,237,19,239,80,209,81,183,88" shape="poly">
+    <area target="_blank" alt="1_01" title="1_01" onclick="togglePatternSelect('1_01');"
+          coords="243,82,274,87,305,96,332,112,350,127,310,166,292,153,267,142,242,140" shape="poly">
+    <area target="_blank" alt="1_02" title="1_02" onclick="togglePatternSelect('1_02');"
+          coords="353,130,373,157,386,181,395,214,396,237,343,239,338,213,330,191,313,170" shape="poly">
+    <area target="_blank" alt="1_03" title="1_03" onclick="togglePatternSelect('1_03');"
+          coords="400,241,395,270,388,297,372,327,354,348,314,313,330,291,341,267,341,240" shape="poly">
+    <area target="_blank" alt="1_04" title="1_04" onclick="togglePatternSelect('1_04');"
+          coords="309,313,350,356,329,370,302,386,268,394,242,396,243,342,267,340,291,329" shape="poly">
+    <area target="_blank" alt="1_05" title="1_05" onclick="togglePatternSelect('1_05');"
+          coords="237,342,237,400,206,394,182,387,153,370,127,355,168,314,184,325,206,336" shape="poly">
+    <area target="_blank" alt="1_06" title="1_06" onclick="togglePatternSelect('1_06');"
+          coords="126,351,105,326,94,300,84,267,83,243,138,242,143,271,155,295,167,311" shape="poly">
+    <area target="_blank" alt="1_07" title="1_07" onclick="togglePatternSelect('1_07');"
+          coords="81,239,85,209,93,183,105,154,126,129,166,171,150,191,142,211,138,239" shape="poly">
+    <area target="_blank" alt="1_08" title="1_08" onclick="togglePatternSelect('1_08');"
+          coords="129,126,155,107,180,93,212,85,240,83,238,138,207,142,186,154,169,167" shape="poly">
+    <area target="_blank" alt="2_01" title="2_01" onclick="togglePatternSelect('2_01');"
+          coords="239,140,282,149,308,170,331,198,338,239,294,237,286,214,268,195,244,189" shape="poly">
+    <area target="_blank" alt="2_02" title="2_02" onclick="togglePatternSelect('2_02');"
+          coords="292,242,338,242,331,279,311,308,281,332,241,339,242,292,265,287,285,269" shape="poly">
+    <area target="_blank" alt="2_03" title="2_03" onclick="togglePatternSelect('2_03');"
+          coords="238,337,198,332,169,309,149,279,141,242,185,242,192,265,208,284,238,295" shape="poly">
+    <area target="_blank" alt="2_04" title="2_04" onclick="togglePatternSelect('2_04');"
+          coords="141,238,147,204,168,169,205,147,239,140,239,185,211,196,193,212,187,240" shape="poly">
+    <area target="_blank" alt="3_01" title="3_01" onclick="togglePatternSelect('3_01');"
+          coords="241,192,262,194,281,210,289,232,286,253,279,273,260,286,240,291,220,288,202,276,193,257,190,233,201,207,217,194"
+          shape="poly">
 </map>
 
 </body>

@@ -2,6 +2,7 @@ package hummelapi
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/Lobaro/slip"
@@ -41,6 +42,8 @@ type (
 
 		responseChan chan *LEDInfectedResponse
 		writer       *slip.Writer
+
+		serialLock sync.Mutex
 
 		stop bool
 	}
@@ -122,6 +125,7 @@ func (o *LEDInfectedArduinoConnection) readHandler() {
 			continue
 		}
 
+		fmt.Printf("RESPONSE: %s\n", ledInfectedResponse)
 		select {
 		case o.responseChan <- ledInfectedResponse:
 		case <-time.After(time.Second):
@@ -134,12 +138,15 @@ func (o *LEDInfectedArduinoConnection) WaitRepsonse(cmd *LEDInfectedCommand, tim
 	for {
 		select {
 		case response := <-o.responseChan:
+			if err := response.Check(); err != nil {
+				return nil, fmt.Errorf("response with invalid checksum received: %s", err)
+			}
 			if !cmd.IsResponse(response) {
-				fmt.Printf("response for wrong command (%d, expected %d)\n", response.rspCmdID, cmd.cmdID)
+				fmt.Printf("response for wrong command (%s, expected cmdID %d)\n", response, cmd.cmdID)
 				continue
 			}
 			if response.rspCode != ledInfectedResponseCodeSuccess {
-				return nil, fmt.Errorf("response not success: %d", response.rspCode)
+				return nil, fmt.Errorf("response not success: %s", response.getRspString())
 			}
 			return response, nil
 		case <-time.After(timeout):
@@ -168,16 +175,17 @@ func returnError(response *LEDInfectedResponse, msg string) error {
 	return nil
 }
 
-func (o *LEDInfectedArduinoConnection) sendInfectedCommand(cmdType byte, cmdCode byte, data []byte, retry int) (*LEDInfectedResponse, error) {
+func (o *LEDInfectedArduinoConnection) sendInfectedCommand(cmdType byte, cmdCode byte, data []byte, retries int) (*LEDInfectedResponse, error) {
+	o.serialLock.Lock()
+	defer o.serialLock.Unlock()
 	lastError := ""
-	for i := 0; i <= retry; i++ {
+	for i := 0; i < retries; i++ {
 		cmd, err := newLEDInfectedCommand(cmdType, cmdCode, data)
 		if err != nil {
-			lastError = fmt.Sprintf("invalid infected command: %s", err)
-			continue
+			return nil, fmt.Errorf("invalid infected command: %s", err)
 		}
 		buf := cmd.ToBytes()
-
+		fmt.Printf("Cmd: %X\n", buf)
 		if err := o.writer.WritePacket(buf); err != nil {
 			lastError = fmt.Sprintf("failed to write command: %s", err)
 			continue
@@ -185,6 +193,7 @@ func (o *LEDInfectedArduinoConnection) sendInfectedCommand(cmdType byte, cmdCode
 
 		response, err := o.WaitRepsonse(cmd, time.Second)
 		if err != nil {
+			fmt.Printf("invalid response: %s\n", err)
 			lastError = fmt.Sprintf("invalid response: %s", err)
 			continue
 		}
@@ -198,7 +207,7 @@ func (o *LEDInfectedArduinoConnection) GlobalGetSetup() LEDInfectedArduinoConfig
 }
 
 func (o *LEDInfectedArduinoConnection) SetArduinoID(newID uint8) error {
-	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSetSetup, []byte{newID}, 0)
+	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSetSetup, []byte{newID}, 5)
 	return err
 }
 
@@ -206,7 +215,7 @@ func (o *LEDInfectedArduinoConnection) GlobalSync(stripeTimestamps []uint8) erro
 	if len(stripeTimestamps) != int(o.numStripes) {
 		return fmt.Errorf("cannot sync, expected timestamps for %d stripes, got %d", o.numStripes, len(stripeTimestamps))
 	}
-	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSync, stripeTimestamps, 0)
+	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSync, stripeTimestamps, 5)
 	return err
 }
 
@@ -216,7 +225,7 @@ func (o *LEDInfectedArduinoConnection) GlobalSetupSave() error {
 }
 
 func (o *LEDInfectedArduinoConnection) globalGetSetup() (*LEDInfectedArduinoConfigGlobalSetup, error) {
-	response, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalGetSetup, nil, 3)
+	response, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalGetSetup, nil, 5)
 	if err != nil {
 		return nil, err
 	}
@@ -233,12 +242,12 @@ func (o *LEDInfectedArduinoConnection) globalGetSetup() (*LEDInfectedArduinoConf
 }
 
 func (o *LEDInfectedArduinoConnection) StripeSetSetup(stripeID uint8, setup *LEDInfectedArduinoConfigStripeSetup) error {
-	_, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeSetSetup, setup.getBytes(), 0)
+	_, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeSetSetup, setup.getBytes(), 5)
 	return err
 }
 
 func (o *LEDInfectedArduinoConnection) StripeGetSetup(stripeID uint8) (*LEDInfectedArduinoConfigStripeSetup, error) {
-	response, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeGetSetup, nil, 3)
+	response, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeGetSetup, nil, 5)
 	if err != nil {
 		return nil, err
 	}
@@ -249,12 +258,12 @@ func (o *LEDInfectedArduinoConnection) StripeGetSetup(stripeID uint8) (*LEDInfec
 }
 
 func (o *LEDInfectedArduinoConnection) StripeSetConfig(stripeMask uint8, config *LEDInfectedArduinoConfigStripeConfig) error {
-	_, err := o.sendInfectedCommand(stripeMask, ledInfectedCommandCodeStripeSetConfig, config.getBytes(), 0)
+	_, err := o.sendInfectedCommand(stripeMask, ledInfectedCommandCodeStripeSetConfig, config.getBytes(), 5)
 	return err
 }
 
 func (o *LEDInfectedArduinoConnection) StripeGetConfig(stripeID uint8) (*LEDInfectedArduinoConfigStripeConfig, error) {
-	response, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeGetConfig, nil, 3)
+	response, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeGetConfig, nil, 5)
 	if err != nil {
 		return nil, err
 	}
@@ -265,12 +274,12 @@ func (o *LEDInfectedArduinoConnection) StripeGetConfig(stripeID uint8) (*LEDInfe
 }
 
 func (o *LEDInfectedArduinoConnection) StripeSetPalette(stripeMask uint8, palette *LEDInfectedArduinoConfigStripePalette) error {
-	_, err := o.sendInfectedCommand(stripeMask, ledInfectedCommandCodeStripeSetPalette, palette.getBytes(), 0)
+	_, err := o.sendInfectedCommand(stripeMask, ledInfectedCommandCodeStripeSetPalette, palette.getBytes(), 20)
 	return err
 }
 
 func (o *LEDInfectedArduinoConnection) StripeGetPalette(stripeID uint8) (*LEDInfectedArduinoConfigStripePalette, error) {
-	response, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeGetPalette, nil, 3)
+	response, err := o.sendInfectedCommand(1<<stripeID, ledInfectedCommandCodeStripeGetPalette, nil, 5)
 	if err != nil {
 		return nil, err
 	}

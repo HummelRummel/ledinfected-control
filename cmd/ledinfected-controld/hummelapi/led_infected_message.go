@@ -46,10 +46,14 @@ const (
 	ledInfectedCommandCodeStripeSaveSetup  = 0xfd
 	ledInfectedCommandCodeStripeSave       = 0xff
 
-	ledInfectedResponseCodeSuccess        = 0xbb
-	ledInfectedResponseCodeUnknownCmdCode = 0x01
-	ledInfectedResponseCodeInvalidDataLen = 0x01
-	ledInfectedResponseCodeError          = 0xff
+	ledInfectedResponseCodeSuccess         = 0xbb
+	ledInfectedResponseCodeUnknownCmdCode  = 0x01
+	ledInfectedResponseCodeInvalidDataLen  = 0x02
+	ledInfectedResponseCodeInvalidCmdType  = 0x03
+	ledInfectedResponseCodeInvalidStripe   = 0x04
+	ledInfectedResponseCodeInvalidLen      = 0x05
+	ledInfectedResponseCodeInvalidChecksum = 0x06
+	ledInfectedResponseCodeError           = 0xff
 )
 
 func ledInfectedCommandTypeIndex(index uint8) uint8 {
@@ -70,21 +74,59 @@ type (
 		rspCmdID   uint8
 		rspDataLen uint8
 		rspData    []byte
+		checksum   uint16
 	}
 )
 
-func (o*LEDInfectedResponse) String() string {
-	if o==nil {
+func (o *LEDInfectedResponse) getRspString() string {
+	switch o.rspCode {
+	case ledInfectedResponseCodeSuccess:
+		return "SUCCESS"
+	case ledInfectedResponseCodeUnknownCmdCode:
+		return "UNKNOWN_CMD_CODE"
+	case ledInfectedResponseCodeInvalidDataLen:
+		return "INVALID_DATA_LENGTH"
+	case ledInfectedResponseCodeInvalidCmdType:
+		return "INVALID_CMD_TYPE"
+	case ledInfectedResponseCodeInvalidStripe:
+		return "INVALID_STRIPE"
+	case ledInfectedResponseCodeInvalidLen:
+		return "INVALID_LEN"
+	case ledInfectedResponseCodeInvalidChecksum:
+		return fmt.Sprintf("INVALID_CHECKSUM(%X,%X/%X,%X)", o.rspData[0], o.rspData[1], o.rspData[2], o.rspData[3])
+	case ledInfectedResponseCodeError:
+		return "ERROR"
+	}
+	return "UNKNOWN_ERROR"
+}
+
+func (o *LEDInfectedResponse) String() string {
+	if o == nil {
 		return "nil"
 	}
-	return fmt.Sprintf("%code:%d, id: %d, dlen: %d", o.rspCode, o.rspCmdID, o.rspDataLen)
+	return fmt.Sprintf("code:%s, id: %d, dlen: %d", o.getRspString(), o.rspCmdID, o.rspDataLen)
 }
+
+func (o *LEDInfectedResponse) Check() error {
+	var checksum uint16
+	checksum += uint16(o.rspCode)
+	checksum += uint16(o.rspCmdID)
+	checksum += uint16(o.rspDataLen)
+	for _, d := range o.rspData {
+		checksum += uint16(d)
+	}
+	if checksum != o.checksum {
+		return fmt.Errorf("checksum failed: calculated: %x, received: %x", checksum, o.checksum)
+	}
+	return nil
+}
+
 var nextCmdID = uint8(0)
 
 func newLEDInfectedCommand(cmdType byte, cmdCode byte, data []byte) (*LEDInfectedCommand, error) {
 	nextCmdID++
-	if len(data) > 60 {
-		return nil, fmt.Errorf("only 64 len data is allowed, with 4 bytes header this leaves a max of 60 (%d)", len(data))
+	if len(data) > 58 {
+		return nil, fmt.Errorf("only 64 len data is allowed, with 4 bytes header and 2 for the checksum, this leaves a max of 58 (%d)", len(data))
 	}
 	return &LEDInfectedCommand{
 		cmdType:    cmdType,
@@ -96,13 +138,14 @@ func newLEDInfectedCommand(cmdType byte, cmdCode byte, data []byte) (*LEDInfecte
 }
 
 func castLEDInfectedResponse(buf []byte) (*LEDInfectedResponse, error) {
-	if len(buf) < 3 {
+	if len(buf) < 5 {
 		return nil, fmt.Errorf("package too small for a response (%d)", len(buf))
 	}
 	var data []byte
 	if buf[2] > 0 {
-		data = buf[3:]
+		data = buf[3 : len(buf)-2]
 	}
+
 	if len(data) != int(buf[2]) {
 		return nil, fmt.Errorf("unexpected data len")
 	}
@@ -111,6 +154,7 @@ func castLEDInfectedResponse(buf []byte) (*LEDInfectedResponse, error) {
 		rspCmdID:   buf[1],
 		rspDataLen: buf[2],
 		rspData:    data,
+		checksum:   uint16(0xff&buf[len(buf)-1]) + (uint16(0xff&buf[len(buf)-2]) << 8),
 	}, nil
 }
 
@@ -127,5 +171,11 @@ func (o *LEDInfectedCommand) ToBytes() []byte {
 	if o.cmdDataLen > 0 {
 		cmdBytes = append(cmdBytes, o.cmdData...)
 	}
+	var checksum uint16
+	for _, b := range cmdBytes {
+		checksum += uint16(b)
+	}
+	cmdBytes = append(cmdBytes, uint8((checksum>>8)&0xff))
+	cmdBytes = append(cmdBytes, uint8(checksum&0xff))
 	return cmdBytes
 }
