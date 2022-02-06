@@ -193,7 +193,7 @@ function togglePatternSelect(id) {
         }
     }
 
-    overview.controls.controls[0].selectionView.patternSelect.updateBackground();
+    overview.controls.controls[0].selectionView.patternSelect.updateImage();
 }
 
 function toggleSelectedStripeOld(stripe_id) {
@@ -344,7 +344,6 @@ class HTMLAbstractStripeViewObject {
 
         this.baseEl.appendChild(this.imageEl);
         // make the image map dynamic
-        $(this.imageEl).rwdImageMaps();
     }
 }
 
@@ -501,7 +500,7 @@ class AbstractControlSelectionView {
         this.parent = parent;
         this.htmlNode = this.parent.htmlView;
 
-        this.patternSelect = new AbstractControlParameterSelectionView(this.parent)
+        this.patternSelect = new AbstractControlPatternSelectionView(this.parent)
     }
 
     showAbstract(abstract) {
@@ -547,10 +546,10 @@ class AbstractControlSelectionView {
         this.htmlNode.getElementsByClassName(tabID + "_btn")[0].className += " active";
         // this is needed to update the dynamic image map
         if (tabID == "selection_stripes") {
-            $(window).trigger('resize');
+          //  $(window).trigger('resize');
         }
         if (tabID == "selection_pattern") {
-            $(window).trigger('resize');
+          //  $(window).trigger('resize');
         }
     }
 
@@ -588,107 +587,276 @@ class AbstractControlSelectionView {
     //     return selectedStripes;
     // }
 
-    selectAllStripes() {
-
-    }
-
-    unselectAllStripes() {
-
-    }
 
     getSelectedPatternIndices() {
         let patternIndecies = [];
 
-        this.patternSelect.fields
+        this.patternSelect.images.segments_l0
 
         for (let i = 0; i < 16; i++) {
-            if (this.patternSelect.fields[i].active) {
+            if (this.patternSelect.images.segments_l0[i].state) {
                 patternIndecies.push(i);
             }
         }
         return patternIndecies;
     }
+}
 
-    selectCompletePattern() {
-
+class HSBColor {
+    constructor(h, s, b) {
+        this.hue = h;
+        this.saturation = s;
+        this.brightness = b;
     }
 
-    unselectCompletePattern() {
-
+    getStyleColor() {
+        return hsvToRgb(this.hue, this.saturation, this.brightness);
     }
 }
 
-class AbstractControlParameterSelectionView {
+class AbstractControlPatternSegment {
+    constructor(parent, id) {
+        this.parent = parent;
+        this.id = id;
+        this.active = false;
+    }
+
+    appendImage() {
+        this.active = this.parent.appendPicture("active_" + this.id);
+        this.active.style.pointerEvents = "none";
+        //this.active.addEventListener("click", this.toggleState, false);
+        this.inactive = this.parent.appendPicture("inactive_" + this.id);
+        this.inactive.style.pointerEvents = "none";
+        //this.inactive.addEventListener("click", this.toggleState, false);
+    }
+
+    appendColor(h, s, b) {
+        this.color = new HSBColor(h, s, b);
+    }
+
+    appendState(s) {
+        this.state = s;
+    }
+
+    updateColor() {
+        if (this.color != null) {
+//            this.area.style.setProperty("fill", this.color.getStyleColor());
+            this.area.style.fill = this.color.getStyleColor();
+//            this.area.setAttribute("style", "fill:" + this.color.getStyleColor());
+        }
+    }
+
+    setColorH(h) {
+        this.color.hue = h;
+        this.updateColor();
+    }
+
+    setColorS(s) {
+        this.color.saturation = s;
+        this.updateColor();
+    }
+
+    setColorB(b) {
+        this.color.brightness = b;
+        this.updateColor();
+    }
+
+    appendArea(area) {
+        let points = "";
+        let areas = area.split(",");
+        for (let i = 0; i < areas.length / 2; i++) {
+            if (points != "") {
+                points += " ";
+            }
+            points += areas[i * 2] + "," + areas[(i * 2) + 1];
+        }
+        this.area = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        this.area.setAttribute('points', points);
+        this.area.style.pointerEvents = "all";
+        let localThis = this;
+        this.area.addEventListener("click", function () {
+            localThis.toggleState()
+        });
+        this.parent.svgEl.appendChild(this.area);
+        return this.area;
+    }
+
+    toggleState(e) {
+        console.log("click toggle")
+        let section = this.id.substring(0, 1);
+        let segment = parseInt(this.id.substring(2, 4)) - 1;
+
+        if (section === "0") {
+            this.state = !this.state;
+        } else if (section === "1") {
+            if (this.parent.images.segments_l0[segment * 2].state || this.parent.images.segments_l0[segment * 2 + 1].state) {
+                this.parent.images.segments_l0[segment * 2].state = false;
+                this.parent.images.segments_l0[segment * 2 + 1].state = false;
+            } else {
+                this.parent.images.segments_l0[segment * 2].state = true;
+                this.parent.images.segments_l0[segment * 2 + 1].state = true;
+            }
+        } else if (section === "2") {
+            if (this.parent.images.segments_l0[segment * 4].state || this.parent.images.segments_l0[segment * 4 + 1].state || this.parent.images.segments_l0[segment * 4 + 2].state || this.parent.images.segments_l0[segment * 4 + 3].state) {
+                this.parent.images.segments_l0[segment * 4].state = false;
+                this.parent.images.segments_l0[segment * 4 + 1].state = false;
+                this.parent.images.segments_l0[segment * 4 + 2].state = false;
+                this.parent.images.segments_l0[segment * 4 + 3].state = false;
+            } else {
+                this.parent.images.segments_l0[segment * 4].state = true;
+                this.parent.images.segments_l0[segment * 4 + 1].state = true;
+                this.parent.images.segments_l0[segment * 4 + 2].state = true;
+                this.parent.images.segments_l0[segment * 4 + 3].state = true;
+            }
+        } else {
+            let oneActive = false;
+            for (let i = 0; i < 16; i++) {
+                if (this.parent.images.segments_l0[i].state) {
+                    oneActive = true;
+                }
+            }
+            for (let i = 0; i < 16; i++) {
+                this.parent.images.segments_l0[i].state = !oneActive;
+            }
+        }
+        this.parent.updateImage()
+    }
+
+    setVisibility(s) {
+        if (s == true) {
+            this.active.setAttribute("visibility", "visible");
+            this.inactive.setAttribute("visibility", "hidden");
+        } else {
+            this.active.setAttribute("visibility", "hidden");
+            this.inactive.setAttribute("visibility", "visible");
+        }
+    }
+
+    updateVisibility() {
+        let section = this.id.substring(0, 1);
+        let segment = parseInt(this.id.substring(2, 4)) - 1;
+
+        if (section == "0") {
+            this.setVisibility(this.state);
+        } else if (section == "1") {
+            if (this.parent.images.segments_l0[segment * 2].state || this.parent.images.segments_l0[segment * 2 + 1].state) {
+                this.setVisibility(false);
+            } else {
+                this.setVisibility(true);
+            }
+        } else if (section == "2") {
+            if (this.parent.images.segments_l0[segment * 4].state || this.parent.images.segments_l0[segment * 4 + 1].state || this.parent.images.segments_l0[segment * 4 + 2].state || this.parent.images.segments_l0[segment * 4 + 3].state) {
+                this.setVisibility(false);
+            } else {
+                this.setVisibility(true);
+            }
+        } else {
+            let oneActive = false;
+            console.log(this.parent.images.segments_l0);
+            for (let i = 0; i < 16; i++) {
+                if (this.parent.images.segments_l0[i].state) {
+                    oneActive = true;
+                }
+            }
+            this.setVisibility(!oneActive);
+        }
+    }
+}
+
+class AbstractControlPatternSelectionView {
     constructor(parent) {
         this.parent = parent;
         this.image_base_path = "/assets/img/pattern";
+        this.image_map = new PatternMap();
+        console.log(this.image_map);
+        this.svgEl = this.parent.htmlView.getElementsByClassName('pattern_canvas')[0];
 
-        this.baseEl = document.createElement("div");
-        this.baseEl.style.width = "100%";
-        this.baseEl.style.height = "80%";
-        this.imageEl = document.createElement("img");
-        this.imageEl.setAttribute('src', this.image_base_path + "/empty.png");
-        this.imageEl.useMap = "#pattern-selection-map";
-        this.imageEl.style.maxHeight = "100%";
-        this.imageEl.style.maxWidth = "auto";
-        this.imageEl.style.backgroundSize = "contain";
-
-        this.baseEl.appendChild(this.imageEl);
-        let patternSelect = this.parent.htmlView.getElementsByClassName('selection_pattern')[0];
-        patternSelect.appendChild(this.baseEl);
-
-        // make the image map dynamic
-        $(this.imageEl).rwdImageMaps();
-        this.fields = [];
+        this.images = new Object();
+        this.images.segments_l0 = [];
+        this.images.segments_l1 = [];
+        this.images.segments_l2 = [];
+        // first add the segment objects and the segment area
         for (let i = 0; i < 16; i++) {
-            let f = new Object();
-            f.active = false;
-            this.fields.push(f);
-        }
-        this.updateBackground();
-    }
-
-
-    updateBackground() {
-        let backgroundString = "";
-        let noneSelected = true;
-        for (let i = 0; i < this.fields.length; i++) {
-            if (backgroundString != "") {
-                backgroundString += ", ";
-            }
-            if (this.fields[i].active) {
-                noneSelected = false;
-                backgroundString += "url(" + this.image_base_path + "/active_0_" + (i + 1).toString().padStart(2, '0') + ".png)";
-            } else {
-                backgroundString += "url(" + this.image_base_path + "/inactive_0_" + (i + 1).toString().padStart(2, '0') + ".png)";
-            }
+            let id = "0_" + (i + 1).toString().padStart(2, '0');
+            console.log(id);
+            let segment = new AbstractControlPatternSegment(this, id);
+            segment.appendArea(this.getArea(id));
+            segment.appendColor(255, 255, 255);
+            segment.appendState(false);
+            this.images.segments_l0.push(segment);
         }
 
         for (let i = 0; i < 8; i++) {
-            if (this.fields[i * 2].active || this.fields[i * 2 + 1].active) {
-                backgroundString += ", url(" + this.image_base_path + "/inactive_1_" + (i + 1).toString().padStart(2, '0') + ".png)";
-            } else {
-                backgroundString += ", url(" + this.image_base_path + "/active_1_" + (i + 1).toString().padStart(2, '0') + ".png)";
-            }
+            let id = "1_" + (i + 1).toString().padStart(2, '0');
+            let segment = new AbstractControlPatternSegment(this, id);
+            segment.appendArea(this.getArea(id));
+            this.images.segments_l1.push(segment);
         }
 
         for (let i = 0; i < 4; i++) {
-            if (this.fields[i * 4].active || this.fields[i * 4 + 1].active || this.fields[i * 4 + 2].active || this.fields[i * 4 + 3].active) {
-                backgroundString += ", url(" + this.image_base_path + "/inactive_2_" + (i + 1).toString().padStart(2, '0') + ".png)";
-            } else {
-                backgroundString += ", url(" + this.image_base_path + "/active_2_" + (i + 1).toString().padStart(2, '0') + ".png)";
-            }
+            let id = "2_" + (i + 1).toString().padStart(2, '0');
+            let segment = new AbstractControlPatternSegment(this, id);
+            segment.appendArea(this.getArea(id));
+            this.images.segments_l2.push(segment);
         }
 
-        if (noneSelected) {
-            backgroundString += ", url(" + this.image_base_path + "/active_3_01.png)";
-        } else {
-            backgroundString += ", url(" + this.image_base_path + "/inactive_3_01.png)";
+        this.images.segment_l3 = new AbstractControlPatternSegment(this, "3_01");
+        this.images.segment_l3.appendArea(this.getArea("3_01"));
+
+
+        // now add the background image
+        this.images.background = this.appendPicture("background");
+        this.images.background.style.pointerEvents = "none";
+
+        // and finally add the segment pictures
+        for (let i = 0; i < this.images.segments_l0.length; i++) {
+            this.images.segments_l0[i].appendImage()
+            //this.images.segments_l0[i].appendArea(this.getArea(this.images.segments_l0[i].id));
         }
-        backgroundString += ", url(" + this.image_base_path + "/background.png)"
-        console.log(backgroundString);
-        this.imageEl.style.backgroundImage = backgroundString
+        for (let i = 0; i < this.images.segments_l1.length; i++) {
+            this.images.segments_l1[i].appendImage()
+        }
+        for (let i = 0; i < this.images.segments_l2.length; i++) {
+            this.images.segments_l2[i].appendImage()
+        }
+
+        this.images.segment_l3.appendImage()
+
+        this.updateImage();
     }
+
+    appendPicture(name) {
+        let newImage = document.createElementNS("http://www.w3.org/2000/svg", "image");
+        //newImage.classList.add(name)
+        newImage.setAttribute('href', this.image_base_path + "/" + name + ".png");
+        this.svgEl.appendChild(newImage);
+        return newImage
+    }
+
+    getArea(id) {
+        for (let i = 0; i < this.image_map.map.length; i++) {
+            if (this.image_map.map[i].id == id) {
+                return this.image_map.map[i].area;
+            }
+        }
+    }
+
+    updateImage() {
+        // and finally add the segment pictures
+        for (let i = 0; i < this.images.segments_l0.length; i++) {
+            this.images.segments_l0[i].updateColor();
+            this.images.segments_l0[i].updateVisibility();
+        }
+        for (let i = 0; i < this.images.segments_l1.length; i++) {
+            this.images.segments_l1[i].updateVisibility();
+        }
+        for (let i = 0; i < this.images.segments_l2.length; i++) {
+            this.images.segments_l2[i].updateVisibility();
+        }
+
+        this.images.segment_l3.updateVisibility();
+    }
+
 }
 
 class AbstractControlParameterView {
@@ -699,6 +867,16 @@ class AbstractControlParameterView {
 
     showAbstract(abstract) {
         this.linkedAbstract = abstract;
+        let localThis = this;
+        this.htmlNode.getElementsByClassName('parameter_ctrl_slider_h')[0].addEventListener('input', function () {
+            localThis.updateParameterH(this);
+        });
+        this.htmlNode.getElementsByClassName('parameter_ctrl_slider_s')[0].addEventListener('input', function () {
+            localThis.updateParameterS(this);
+        });
+        this.htmlNode.getElementsByClassName('parameter_ctrl_slider_b')[0].addEventListener('input', function () {
+            localThis.updateParameterB(this);
+        });
 
         let parameterSelectFields = this.htmlNode.getElementsByClassName('parameter_ctrl_select');
         for (let i = 0; i < parameterSelectFields.length; i++) {
@@ -730,6 +908,95 @@ class AbstractControlParameterView {
         }
         this.htmlNode.getElementsByClassName(id)[0].classList.add("selected");
     }
+
+    updateParameterH(el) {
+        let newValue = parseInt(el.value);
+        for (let i = 0; i < this.parent.selectionView.patternSelect.images.segments_l0.length; i++) {
+            if(this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
+                console.log(this.parent.selectionView.patternSelect.images.segments_l0[i])
+                this.parent.selectionView.patternSelect.images.segments_l0[i].setColorH(newValue);
+            }
+        }
+        this.parent.selectionView.patternSelect.updateImage();
+    }
+    updateParameterS(el) {
+        let newValue = parseInt(el.value);
+        for (let i = 0; i < this.parent.selectionView.patternSelect.images.segments_l0.length; i++) {
+            if(this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
+                console.log(this.parent.selectionView.patternSelect.images.segments_l0[i])
+                this.parent.selectionView.patternSelect.images.segments_l0[i].setColorS(newValue);
+            }
+        }
+        this.parent.selectionView.patternSelect.updateImage();
+    }
+    updateParameterB(el) {
+        let newValue = parseInt(el.value);
+        for (let i = 0; i < this.parent.selectionView.patternSelect.images.segments_l0.length; i++) {
+            if(this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
+                console.log(this.parent.selectionView.patternSelect.images.segments_l0[i])
+                this.parent.selectionView.patternSelect.images.segments_l0[i].setColorB(newValue);
+            }
+        }
+        this.parent.selectionView.patternSelect.updateImage();
+    }
+
+    updateParameterSpeed(el) {
+        let newValue = parseInt(el.value);
+        for (let i = 0; i < this.parent.selectionView.patternSelect.images.segments_l0.length; i++) {
+            if(this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
+                console.log(this.parent.selectionView.patternSelect.images.segments_l0[i])
+ //               this.parent.selectionView.patternSelect.images.segments_l0[i].setS(newValue);
+            }
+        }
+ //       this.parent.selectionView.patternSelect.updateImage();
+    }
+
+    sendPattern() {
+        let config = this.parent.linkedAbstract.config;
+
+        let selectedStripes = this.parent.linkedAbstract.stripeView.getSelectedStripes();
+        let selectedPatternIndicies = this.parent.selectionView.getSelectedPatternIndices();
+
+        if (selectedStripes.length == 0) {
+            // MOA TBD raise a warning
+            return;
+        }
+
+        obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
+        obj.config.stripe_ids = selectedStripes;
+        for (let i = 0; i < config.stripes.length; i++) {
+            if (config.stripes[i].stripe_id == selectedStripes[0]) {
+                if ((config.stripes[i].config == null) || (config.stripes[i].config.palette == null)) {
+                    continue;
+                }
+                obj.config.palette = config.stripes[i].config.palette;
+                break;
+            }
+        }
+        if (obj.config.palette == null) {
+            return;
+        }
+        for (let i = 0; i < selectedPatternIndicies.length; i++) {
+            for (let j = 0; j < obj.config.palette.palette.length; j++) {
+                if (obj.config.palette.palette[j].index == selectedPatternIndicies[i]) {
+                    obj.config.palette.palette[j].h = 255;
+                    obj.config.palette.palette[j].s = 255;
+                    obj.config.palette.palette[j].v = 255;
+                }
+            }
+        }
+    }
+    sendConfig() {
+        let config = this.parent.linkedAbstract.config;
+
+        let selectedStripes = this.parent.linkedAbstract.stripeView.getSelectedStripes();
+
+        if (selectedStripes.length == 0) {
+            // MOA TBD raise a warning
+            return;
+        }
+    }
+
 
     updateParameter() {
         let config = this.parent.linkedAbstract.config;
@@ -917,7 +1184,10 @@ function randomTranslate(b, min, max) {
  * @param   Number  v       The value
  * @return  Array           The RGB representation
  */
-function hsvToRgb(h, s, v) {
+function hsvToRgb(h1, s1, v1) {
+    let h = h1 / 255;
+    let s = s1 / 255;
+    let v = v1 / 255;
     var r, g, b;
 
     var i = Math.floor(h * 6);
@@ -951,6 +1221,107 @@ function hsvToRgb(h, s, v) {
     gValue = parseInt(g * 255);
     bValue = parseInt(b * 255);
     return "#" + rValue.toString(16).padStart(2, "0") + gValue.toString(16).padStart(2, "0") + bValue.toString(16).padStart(2, "0");
+}
+
+class PatternMap {
+    constructor() {
+        this.map = [];
+        this.appendArea("0_01", "243,21,268,24,291,29,323,36,298,91,280,83,258,81,242,80");
+        this.appendArea("0_02", "322,38,347,50,367,62,394,85,354,124,332,110,318,101,304,91");
+        this.appendArea("0_03", "396,87,414,108,431,133,441,158,389,177,381,158,369,142,357,127");
+        this.appendArea("0_04", "391,183,444,161,452,184,456,210,461,239,403,238,399,208");
+        this.appendArea("0_05", "402,242,459,242,457,271,452,297,443,321,391,300,398,279,401,264");
+        this.appendArea("0_06", "390,303,440,323,432,347,416,370,397,393,355,352,379,323");
+        this.appendArea("0_07", "354,356,392,395,374,414,349,428,324,442,304,388,331,374");
+        this.appendArea("0_08", "302,390,320,441,297,452,273,458,241,458,242,401,273,398");
+        this.appendArea("0_09", "239,402,237,459,210,458,183,452,158,442,179,390,206,396");
+        this.appendArea("0_10", "179,388,154,442,114,421,85,397,128,355,147,374");
+        this.appendArea("0_11", "125,352,81,396,54,357,38,325,91,304,103,328");
+        this.appendArea("0_12", "21,241,81,239,83,271,94,301,35,323,24,283");
+        this.appendArea("0_13", "78,240,22,240,22,198,36,159,90,181,81,207");
+        this.appendArea("0_14", "39,153,57,117,84,85,125,126,103,151,92,178");
+        this.appendArea("0_15", "83,83,118,56,155,34,181,91,151,105,127,124");
+        this.appendArea("0_16", "162,38,199,21,237,19,239,80,209,81,183,88");
+        this.appendArea("1_01", "243,82,274,87,305,96,332,112,350,127,310,166,292,153,267,142,242,140");
+        this.appendArea("1_02", "353,130,373,157,386,181,395,214,396,237,343,239,338,213,330,191,313,170");
+        this.appendArea("1_03", "400,241,395,270,388,297,372,327,354,348,314,313,330,291,341,267,341,240");
+        this.appendArea("1_04", "309,313,350,356,329,370,302,386,268,394,242,396,243,342,267,340,291,329");
+        this.appendArea("1_05", "237,342,237,400,206,394,182,387,153,370,127,355,168,314,184,325,206,336");
+        this.appendArea("1_06", "126,351,105,326,94,300,84,267,83,243,138,242,143,271,155,295,167,311");
+        this.appendArea("1_07", "81,239,85,209,93,183,105,154,126,129,166,171,150,191,142,211,138,239");
+        this.appendArea("1_08", "129,126,155,107,180,93,212,85,240,83,238,138,207,142,186,154,169,167");
+        this.appendArea("2_01", "239,140,282,149,308,170,331,198,338,239,294,237,286,214,268,195,244,189");
+        this.appendArea("2_02", "292,242,338,242,331,279,311,308,281,332,241,339,242,292,265,287,285,269");
+        this.appendArea("2_03", "238,337,198,332,169,309,149,279,141,242,185,242,192,265,208,284,238,295");
+        this.appendArea("2_04", "141,238,147,204,168,169,205,147,239,140,239,185,211,196,193,212,187,240");
+        this.appendArea("3_01", "241,192,262,194,281,210,289,232,286,253,279,273,260,286,240,291,220,288,202,276,193,257,190,233,201,207,217,194");
+    }
+
+    appendArea(id, area) {
+        let newArea = new Object();
+        newArea.id = id;
+        newArea.area = area;
+        this.map.push(newArea);
+    }
+}
+
+function parseCSV(str) {
+    let arr = [];
+    let quote = false;  // 'true' means we're inside a quoted field
+
+    // Iterate over each character, keep track of current row and column (of the returned array)
+    for (let row = 0, col = 0, c = 0; c < str.length; c++) {
+        let cc = str[c], nc = str[c + 1];        // Current character, next character
+        arr[row] = arr[row] || [];             // Create a new row if necessary
+        arr[row][col] = arr[row][col] || '';   // Create a new column (start with empty string) if necessary
+
+        // If the current character is a quotation mark, and we're inside a
+        // quoted field, and the next character is also a quotation mark,
+        // add a quotation mark to the current column and skip the next character
+        if (cc == '"' && quote && nc == '"') {
+            arr[row][col] += cc;
+            ++c;
+            continue;
+        }
+
+        // If it's just one quotation mark, begin/end quoted field
+        if (cc == '"') {
+            quote = !quote;
+            continue;
+        }
+
+        // If it's a comma and we're not in a quoted field, move on to the next column
+        if (cc == ',' && !quote) {
+            ++col;
+            continue;
+        }
+
+        // If it's a newline (CRLF) and we're not in a quoted field, skip the next character
+        // and move on to the next row and move to column 0 of that new row
+        if (cc == '\r' && nc == '\n' && !quote) {
+            ++row;
+            col = 0;
+            ++c;
+            continue;
+        }
+
+        // If it's a newline (LF or CR) and we're not in a quoted field,
+        // move on to the next row and move to column 0 of that new row
+        if (cc == '\n' && !quote) {
+            ++row;
+            col = 0;
+            continue;
+        }
+        if (cc == '\r' && !quote) {
+            ++row;
+            col = 0;
+            continue;
+        }
+
+        // Otherwise, append the current character to the current column
+        arr[row][col] += cc;
+    }
+    return arr;
 }
 
 // function selectSelectionTab(tabID) {
