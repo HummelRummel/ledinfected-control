@@ -962,6 +962,8 @@ class AbstractControlParameterView {
             return;
         }
 
+        let obj = new Object();
+
         obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
         obj.config.stripe_ids = selectedStripes;
         for (let i = 0; i < config.stripes.length; i++) {
