@@ -72,7 +72,7 @@
                              style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
                              height="64px" width="100%">
                             <img src="assets/img/speed.png" height="32px" width="32px">
-                            <input type="range" min="-8" max="8" value="0"
+                            <input type="range" min="-16" max="16" value="0"
                                    class="slider parameter_ctrl_slider_stripe_speed" height="auto" width="100%">
                         </div>
                     </div>
@@ -81,8 +81,17 @@
                              style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
                              height="64px" width="100%">
                             <img src="assets/img/stretch.png" height="32px" width="32px">
-                            <input type="range" min="-2" max="2" value="0"
+                            <input type="range" min="-100" max="100" value="0"
                                    class="slider parameter_ctrl_slider_stripe_stretch" height="auto" width="100%">
+                        </div>
+                    </div>
+                    <div class="slidecontainer" height="auto" width="100%">
+                        <div class="flex_display"
+                             style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
+                             height="64px" width="100%">
+                            <img src="assets/img/overlay.png" height="32px" width="32px">
+                            <input type="range" min="0" max="256" value="0"
+                                   class="slider parameter_ctrl_slider_stripe_overlay" height="auto" width="100%">
                         </div>
                     </div>
                     <div style="width: 57%; height: 100%;">
@@ -94,7 +103,7 @@
                              style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
                              height="64px" width="100%">
                             <img src="assets/img/hue.png" height="32px" width="32px">
-                            <input type="range" min="0" max="255" value="255"
+                            <input type="range" min="0" max="256" step=8 value="256"
                                    class="slider parameter_ctrl_slider_pattern_hue" height="auto" width="100%">
                         </div>
                     </div>
@@ -103,7 +112,7 @@
                              style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
                              height="64px" width="100%">
                             <img src="assets/img/saturation.png" height="32px" width="32px">
-                            <input type="range" min="0" max="255" value="255"
+                            <input type="range" min="0" max="256" step=8 value="256"
                                    class="slider parameter_ctrl_slider_pattern_saturation" height="auto"
                                    width="100%">
                         </div>
@@ -113,7 +122,7 @@
                              style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
                              height="64px" width="100%">
                             <img src="assets/img/brightness.png" height="32px" width="32px">
-                            <input type="range" min="0" max="255" value="255"
+                            <input type="range" min="0" max="256" step=8 value="256"
                                    class="slider parameter_ctrl_slider_pattern_brightness" height="auto"
                                    width="100%">
                         </div>

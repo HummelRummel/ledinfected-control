@@ -872,44 +872,33 @@ class AbstractControlParameterView {
         this.patternHue = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_pattern_hue")[0];
         this.patternHue.addEventListener('input', function () {
             localThis.inputHue();
-        });
-        this.patternHue.addEventListener('change', function () {
             localThis.changeHue();
         });
         this.patternSaturation = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_pattern_saturation")[0];
         this.patternSaturation.addEventListener('input', function () {
             localThis.inputSaturation();
-        });
-        this.patternSaturation.addEventListener('change', function () {
             localThis.changeSaturation();
         });
         this.patternBrightness = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_pattern_brightness")[0];
         this.patternBrightness.addEventListener('input', function () {
             localThis.inputBrightness();
-        });
-        this.patternBrightness.addEventListener('change', function () {
             localThis.changeBrightness();
         });
         this.stripeBrightness = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_stripe_brightness")[0];
         this.stripeBrightness.addEventListener('input', function () {
             localThis.inputStripeBrightness();
         });
-        this.stripeBrightness.addEventListener('change', function () {
-            localThis.changeStripeBrightness();
+        this.stripeOverlay = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_stripe_overlay")[0];
+        this.stripeOverlay.addEventListener('input', function () {
+            localThis.inputStripeOverlay();
         });
         this.stripeSpeed = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_stripe_speed")[0];
         this.stripeSpeed.addEventListener('input', function () {
             localThis.inputStripeSpeed();
         });
-        this.stripeSpeed.addEventListener('change', function () {
-            localThis.changeStripeSpeed();
-        });
         this.stripeStretch = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_stripe_stretch")[0];
         this.stripeStretch.addEventListener('input', function () {
             localThis.inputStripeStretch();
-        });
-        this.stripeStretch.addEventListener('change', function () {
-            localThis.changeStripeStretch();
         });
     }
 
@@ -938,6 +927,10 @@ class AbstractControlParameterView {
     }
 
     inputStripeBrightness() {
+        this.sendConfig();
+    }
+
+    inputStripeOverlay() {
         this.sendConfig();
     }
 
@@ -1032,6 +1025,7 @@ class AbstractControlParameterView {
         config.movement_speed = this.getCurrentStripeSpeed();
         config.brightness = this.getCurrentStripeBrightness();
         config.stretch = this.getCurrentStripeStretch();
+        config.overlay_ratio = this.getCurrentStripeOverlay();
         return config;
     }
 
@@ -1042,6 +1036,15 @@ class AbstractControlParameterView {
 
     getCurrentStripeBrightness() {
         let brightness = parseInt(this.stripeBrightness.value);
+        if (brightness > 255) {
+            return 255;
+        }
+        return brightness;
+
+    }
+
+    getCurrentStripeOverlay() {
+        let brightness = parseInt(this.stripeOverlay.value);
         if (brightness > 255) {
             return 255;
         }
@@ -1062,8 +1065,17 @@ class AbstractControlParameterView {
             let element = new Object();
             element.index = i+1;
             element.h = segments[i].color.hue;;
+            if (element.h > 255) {
+                element.h = 255;
+            }
             element.s = segments[i].color.saturation;
+            if (element.s > 255) {
+                element.s = 255;
+            }
             element.v =  segments[i].color.brightness;
+            if (element.v > 255) {
+                element.v = 255;
+            }
             palette.palette.push(element);
         }
         return palette;
