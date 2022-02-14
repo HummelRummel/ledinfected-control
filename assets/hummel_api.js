@@ -913,6 +913,22 @@ class AbstractControlParameterView {
         this.stripeStretch.addEventListener('input', function () {
             localThis.inputStripeStretch();
         });
+        this.loadPresetBtn = this.htmlNode.getElementsByClassName("load_preset_btn")[0];
+        this.loadPresetBtn.addEventListener('click', function () {
+            localThis.loadPreset();
+        });
+        this.savePresetBtn = this.htmlNode.getElementsByClassName("save_preset_btn")[0];
+        this.savePresetBtn.addEventListener('click', function () {
+            localThis.savePreset();
+        });
+    }
+
+    loadPreset() {
+        // MOA fixme TBD
+    }
+
+    savePreset() {
+        // MOA fixme TBD
     }
 
     inputHue() {

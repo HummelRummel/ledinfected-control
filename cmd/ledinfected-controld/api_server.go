@@ -18,6 +18,7 @@ type (
 
 		Arduinos  []*hummelapi.LEDInfectedArduino  `json:"arduinos"`
 		Abstracts []*hummelapi.LEDInfectedAbstract `json:"abstracts"`
+		Presets   []*hummelapi.LEDInfectedPreset   `json:"presets"`
 
 		engine *gin.Engine
 		stop_  chan struct{}
@@ -33,6 +34,7 @@ func newApiServer(customSerialDev string) (*apiServer, error) {
 	o := &apiServer{
 		customSerialDev: customSerialDev,
 		Abstracts:       abstracts,
+		Presets:         hummelapi.GetAllPresets(),
 
 		engine: gin.Default(),
 		stop_:  make(chan struct{}),
@@ -84,6 +86,8 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/config/save", o.saveAbstractStripeCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette", o.setAbstractStripePaletteByIDCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette/save", o.saveAbstractStripeCallback)
+	o.engine.GET("/api/presets", o.getAllPresetsCallback)
+	o.engine.POST("/api/presets", o.setPresetCallback)
 }
 
 func (o *apiServer) registerWebEndpoints() {
