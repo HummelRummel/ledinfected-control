@@ -963,16 +963,6 @@ class AbstractControlParameterView {
 
     showAbstract(abstract) {
         this.linkedAbstract = abstract;
-        let localThis = this;
-        // this.htmlNode.getElementsByClassName('parameter_ctrl_slider_h')[0].addEventListener('input', function () {
-        //     localThis.updateParameterH(this);
-        // });
-        // this.htmlNode.getElementsByClassName('parameter_ctrl_slider_s')[0].addEventListener('input', function () {
-        //     localThis.updateParameterS(this);
-        // });
-        // this.htmlNode.getElementsByClassName('parameter_ctrl_slider_b')[0].addEventListener('input', function () {
-        //     localThis.updateParameterB(this);
-        // });
 
         let parameterSelectFields = this.htmlNode.getElementsByClassName('parameter_ctrl_select');
         for (let i = 0; i < parameterSelectFields.length; i++) {
@@ -982,7 +972,6 @@ class AbstractControlParameterView {
                 }
             }
         }
-        // this.htmlNode.getElementsByClassName('parameter_ctrl_slider')[0].setAttribute('oninput', "updateParameter('" + this.linkedAbstract.id + "');");
     }
 
     selectParameterCtrlElement(id) {
