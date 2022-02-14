@@ -251,7 +251,7 @@ class AbstractStripeViewObject {
         for (let i = 0; i < config.stripes.length; i++) {
             let stripe = new Object();
             stripe.stripe_id = config.stripes[i].stripe_id;
-            stripe.selected = false;
+            stripe.selected = true;
             this.stripes.push(stripe);
         }
         this.parent = parent
@@ -334,12 +334,12 @@ class HTMLAbstractStripeViewObject {
 
         this.baseEl = document.createElement("div");
         this.baseEl.style.width = "100%";
-        this.baseEl.style.height = "80%";
+        this.baseEl.style.height = "100%";
         this.imageEl = document.createElement("img");
         this.imageEl.setAttribute('src', config.info.image.image_base_path + "/empty.png");
         this.imageEl.useMap = "#" + imgMapName;
         this.imageEl.style.maxHeight = "100%";
-        this.imageEl.style.maxWidth = "auto";
+        this.imageEl.style.maxWidth = "100%";
         this.imageEl.style.backgroundSize = "contain";
 
         this.baseEl.appendChild(this.imageEl);
@@ -416,31 +416,34 @@ class AbstractControlView {
         console.log(this.htmlView.getElementsByClassName("close_btn"));
         console.log("overview.controls.hide('" + this.linkedAbstract.id + "')");
         this.htmlView.getElementsByClassName("close_btn")[0].setAttribute('onclick', "overview.controls.hide('" + this.linkedAbstract.id + "');");
-        this.htmlView.getElementsByClassName("selection_stripes_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_stripes');");
-        this.htmlView.getElementsByClassName("selection_pattern_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_pattern');");
-        this.htmlView.getElementsByClassName("parameter_ctrl_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_ctrl');");
-        this.htmlView.getElementsByClassName("parameter_presets_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_presets');");
-        this.htmlView.getElementsByClassName("parameter_admin_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_admin');");
+        this.htmlView.getElementsByClassName("closeBtn")[0].setAttribute('onclick', "overview.controls.hide('" + this.linkedAbstract.id + "');");
+        // this.htmlView.getElementsByClassName("selection_stripes_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_stripes');");
+        // this.htmlView.getElementsByClassName("selection_pattern_btn")[0].setAttribute('onclick', "selectSelectionTab('" + this.linkedAbstract.id + "', 'selection_pattern');");
+        // this.htmlView.getElementsByClassName("parameter_ctrl_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_ctrl');");
+        // this.htmlView.getElementsByClassName("parameter_presets_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_presets');");
+        // this.htmlView.getElementsByClassName("parameter_admin_btn")[0].setAttribute('onclick', "selectParameterTab('" + this.linkedAbstract.id + "', 'parameter_admin');");
         this.htmlView.style.animation = "fadeInEffect 1s";
         this.htmlView.style.display = "block";
-
         this.selectionView.showAbstract(abstract);
         this.parameterView.showAbstract(abstract);
     }
 
     hide() {
-        let stripesSelectAbstract = this.htmlView.getElementsByClassName('selection_stripes')[0];
-        stripesSelectAbstract.removeChild(this.linkedAbstract.stripeView.getHTMLElement())
-
-        this.linkedAbstract = null;
-        this.config = null;
-        this.htmlView.id = "";
         this.htmlView.style.animation = "fadeOutEffect 1s";
         //this.htmlView.style.display = "block";
         let style = this.htmlView.style
+        let localThis = this;
 
         setTimeout(function () {
             style.display = "none";
+
+            let stripesSelectAbstract = localThis.htmlView.getElementsByClassName('selection_stripes')[0];
+            stripesSelectAbstract.removeChild(localThis.linkedAbstract.stripeView.getHTMLElement())
+
+            localThis.linkedAbstract = null;
+            localThis.config = null;
+            localThis.htmlView.id = "";
+
         }, 900);
     }
 }
@@ -507,7 +510,12 @@ class AbstractControlSelectionView {
         this.linkedAbstract = abstract;
 
         let stripesSelectAbstract = this.htmlNode.getElementsByClassName('selection_stripes')[0];
-        stripesSelectAbstract.appendChild(this.linkedAbstract.stripeView.getHTMLElement());
+        let stripeHtml = this.linkedAbstract.stripeView.getHTMLElement()
+        console.log(this.linkedAbstract);
+        if (this.linkedAbstract.config.stripes.length == 1) {
+            stripeHtml.style.display = "none";
+        }
+        stripesSelectAbstract.appendChild(stripeHtml);
 
         let ledPatternFields = this.htmlNode.getElementsByClassName('pattern_select_field');
         for (let i = 0; i < ledPatternFields.length; i++) {
@@ -517,12 +525,8 @@ class AbstractControlSelectionView {
                 }
             }
         }
-
-        /*
-        <!-- Image Map Generated by http://www.image-map.net/ -->
-<img src="background.png" usemap="#pattern-selection-map">
-
-         */
+        this.selectSelectionTab("selection_stripes");
+        this.selectParameterTab("parameter_ctrl");
     }
 
     selectSelectionTab(tabID) {
@@ -534,6 +538,7 @@ class AbstractControlSelectionView {
         for (i = 0; i < tabcontent.length; i++) {
             tabcontent[i].style.display = "none";
         }
+        this.htmlNode.getElementsByClassName("selection_stripes")[0].style.display = "block";
 
         // Get all elements with class="tablinks" and remove the class "active"
         tablinks = this.htmlNode.getElementsByClassName("selection_tablinks");
@@ -546,10 +551,10 @@ class AbstractControlSelectionView {
         this.htmlNode.getElementsByClassName(tabID + "_btn")[0].className += " active";
         // this is needed to update the dynamic image map
         if (tabID == "selection_stripes") {
-          //  $(window).trigger('resize');
+            //  $(window).trigger('resize');
         }
         if (tabID == "selection_pattern") {
-          //  $(window).trigger('resize');
+            //  $(window).trigger('resize');
         }
     }
 
@@ -782,7 +787,7 @@ class AbstractControlPatternSelectionView {
             let segment = new AbstractControlPatternSegment(this, id);
             segment.appendArea(this.getArea(id));
             segment.appendColor(255, 255, 255);
-            segment.appendState(false);
+            segment.appendState(true);
             this.images.segments_l0.push(segment);
         }
 
@@ -863,20 +868,111 @@ class AbstractControlParameterView {
     constructor(parent) {
         this.parent = parent;
         this.htmlNode = this.parent.htmlView;
+        let localThis = this;
+        this.patternHue = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_pattern_hue")[0];
+        this.patternHue.addEventListener('input', function () {
+            localThis.inputHue();
+        });
+        this.patternHue.addEventListener('change', function () {
+            localThis.changeHue();
+        });
+        this.patternSaturation = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_pattern_saturation")[0];
+        this.patternSaturation.addEventListener('input', function () {
+            localThis.inputSaturation();
+        });
+        this.patternSaturation.addEventListener('change', function () {
+            localThis.changeSaturation();
+        });
+        this.patternBrightness = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_pattern_brightness")[0];
+        this.patternBrightness.addEventListener('input', function () {
+            localThis.inputBrightness();
+        });
+        this.patternBrightness.addEventListener('change', function () {
+            localThis.changeBrightness();
+        });
+        this.stripeBrightness = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_stripe_brightness")[0];
+        this.stripeBrightness.addEventListener('input', function () {
+            localThis.inputStripeBrightness();
+        });
+        this.stripeBrightness.addEventListener('change', function () {
+            localThis.changeStripeBrightness();
+        });
+        this.stripeSpeed = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_stripe_speed")[0];
+        this.stripeSpeed.addEventListener('input', function () {
+            localThis.inputStripeSpeed();
+        });
+        this.stripeSpeed.addEventListener('change', function () {
+            localThis.changeStripeSpeed();
+        });
+        this.stripeStretch = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_stripe_stretch")[0];
+        this.stripeStretch.addEventListener('input', function () {
+            localThis.inputStripeStretch();
+        });
+        this.stripeStretch.addEventListener('change', function () {
+            localThis.changeStripeStretch();
+        });
+    }
+
+    inputHue() {
+        this.updateParameterH(this.patternHue);
+    }
+
+    changeHue() {
+        this.sendPattern();
+    }
+
+    inputSaturation() {
+        this.updateParameterS(this.patternSaturation);
+    }
+
+    changeSaturation() {
+        this.sendPattern();
+    }
+
+    inputBrightness() {
+        this.updateParameterB(this.patternBrightness);
+    }
+
+    changeBrightness() {
+        this.sendPattern();
+    }
+
+    inputStripeBrightness() {
+        this.sendConfig();
+    }
+
+    changeStripeBrightness() {
+        // this.sendConfig();
+    }
+
+    inputStripeSpeed() {
+        this.sendConfig();
+    }
+
+    changeStripeSpeed() {
+        // this.sendConfig();
+    }
+
+    inputStripeStretch() {
+        this.sendConfig();
+    }
+
+    changeStripeStretch() {
+        // this.sendConfig();
     }
 
     showAbstract(abstract) {
         this.linkedAbstract = abstract;
         let localThis = this;
-        this.htmlNode.getElementsByClassName('parameter_ctrl_slider_h')[0].addEventListener('input', function () {
-            localThis.updateParameterH(this);
-        });
-        this.htmlNode.getElementsByClassName('parameter_ctrl_slider_s')[0].addEventListener('input', function () {
-            localThis.updateParameterS(this);
-        });
-        this.htmlNode.getElementsByClassName('parameter_ctrl_slider_b')[0].addEventListener('input', function () {
-            localThis.updateParameterB(this);
-        });
+        // this.htmlNode.getElementsByClassName('parameter_ctrl_slider_h')[0].addEventListener('input', function () {
+        //     localThis.updateParameterH(this);
+        // });
+        // this.htmlNode.getElementsByClassName('parameter_ctrl_slider_s')[0].addEventListener('input', function () {
+        //     localThis.updateParameterS(this);
+        // });
+        // this.htmlNode.getElementsByClassName('parameter_ctrl_slider_b')[0].addEventListener('input', function () {
+        //     localThis.updateParameterB(this);
+        // });
 
         let parameterSelectFields = this.htmlNode.getElementsByClassName('parameter_ctrl_select');
         for (let i = 0; i < parameterSelectFields.length; i++) {
@@ -886,7 +982,7 @@ class AbstractControlParameterView {
                 }
             }
         }
-        this.htmlNode.getElementsByClassName('parameter_ctrl_slider')[0].setAttribute('oninput', "updateParameter('" + this.linkedAbstract.id + "');");
+        // this.htmlNode.getElementsByClassName('parameter_ctrl_slider')[0].setAttribute('oninput', "updateParameter('" + this.linkedAbstract.id + "');");
     }
 
     selectParameterCtrlElement(id) {
@@ -912,27 +1008,29 @@ class AbstractControlParameterView {
     updateParameterH(el) {
         let newValue = parseInt(el.value);
         for (let i = 0; i < this.parent.selectionView.patternSelect.images.segments_l0.length; i++) {
-            if(this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
+            if (this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
                 console.log(this.parent.selectionView.patternSelect.images.segments_l0[i])
                 this.parent.selectionView.patternSelect.images.segments_l0[i].setColorH(newValue);
             }
         }
         this.parent.selectionView.patternSelect.updateImage();
     }
+
     updateParameterS(el) {
         let newValue = parseInt(el.value);
         for (let i = 0; i < this.parent.selectionView.patternSelect.images.segments_l0.length; i++) {
-            if(this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
+            if (this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
                 console.log(this.parent.selectionView.patternSelect.images.segments_l0[i])
                 this.parent.selectionView.patternSelect.images.segments_l0[i].setColorS(newValue);
             }
         }
         this.parent.selectionView.patternSelect.updateImage();
     }
+
     updateParameterB(el) {
         let newValue = parseInt(el.value);
         for (let i = 0; i < this.parent.selectionView.patternSelect.images.segments_l0.length; i++) {
-            if(this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
+            if (this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
                 console.log(this.parent.selectionView.patternSelect.images.segments_l0[i])
                 this.parent.selectionView.patternSelect.images.segments_l0[i].setColorB(newValue);
             }
@@ -940,15 +1038,46 @@ class AbstractControlParameterView {
         this.parent.selectionView.patternSelect.updateImage();
     }
 
-    updateParameterSpeed(el) {
-        let newValue = parseInt(el.value);
-        for (let i = 0; i < this.parent.selectionView.patternSelect.images.segments_l0.length; i++) {
-            if(this.parent.selectionView.patternSelect.images.segments_l0[i].state) {
-                console.log(this.parent.selectionView.patternSelect.images.segments_l0[i])
- //               this.parent.selectionView.patternSelect.images.segments_l0[i].setS(newValue);
-            }
+    getConfig() {
+        let config = new Object();
+        config.speed = this.getCurrentStripeSpeed();
+        config.brightness = this.getCurrentStripeBrightness();
+        config.stretch = this.getCurrentStripeStretch();
+        return config;
+    }
+
+    getCurrentStripeSpeed() {
+        return parseInt(this.stripeSpeed.value);
+
+    }
+
+    getCurrentStripeBrightness() {
+        let brightness = parseInt(this.stripeBrightness.value);
+        if (brightness > 255) {
+            return 255;
         }
- //       this.parent.selectionView.patternSelect.updateImage();
+        return brightness;
+
+    }
+
+    getCurrentStripeStretch() {
+        return parseInt(this.stripeStretch.value);
+    }
+
+    getCurrentPatternPalette() {
+        let segments = this.parent.selectionView.patternSelect.images.segments_l0;
+
+        let palette = new Object();
+        palette.palette = [];
+        for (let i = 0; i < 16; i++) {
+            let element = new Object();
+            element.index = i;
+            element.h = segments[i].color.hue;;
+            element.s = segments[i].color.saturation;
+            element.v =  segments[i].color.brightness;
+            palette.palette.push(element);
+        }
+        return palette;
     }
 
     sendPattern() {
@@ -957,37 +1086,46 @@ class AbstractControlParameterView {
         let selectedStripes = this.parent.linkedAbstract.stripeView.getSelectedStripes();
         let selectedPatternIndicies = this.parent.selectionView.getSelectedPatternIndices();
 
+        console.log(selectedStripes);
         if (selectedStripes.length == 0) {
             // MOA TBD raise a warning
             return;
         }
 
         let obj = new Object();
+        obj.config = new Object();
 
         obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
         obj.config.stripe_ids = selectedStripes;
-        for (let i = 0; i < config.stripes.length; i++) {
-            if (config.stripes[i].stripe_id == selectedStripes[0]) {
-                if ((config.stripes[i].config == null) || (config.stripes[i].config.palette == null)) {
-                    continue;
-                }
-                obj.config.palette = config.stripes[i].config.palette;
-                break;
-            }
-        }
-        if (obj.config.palette == null) {
-            return;
-        }
-        for (let i = 0; i < selectedPatternIndicies.length; i++) {
-            for (let j = 0; j < obj.config.palette.palette.length; j++) {
-                if (obj.config.palette.palette[j].index == selectedPatternIndicies[i]) {
-                    obj.config.palette.palette[j].h = 255;
-                    obj.config.palette.palette[j].s = 255;
-                    obj.config.palette.palette[j].v = 255;
-                }
-            }
-        }
+        obj.config.palette = this.getCurrentPatternPalette();
+        // for (let i = 0; i < config.stripes.length; i++) {
+        //     if (config.stripes[i].stripe_id == selectedStripes[0]) {
+        //         if ((config.stripes[i].config == null) || (config.stripes[i].config.palette == null)) {
+        //             continue;
+        //         }
+        //         obj.config.palette = config.stripes[i].config.palette;
+        //         break;
+        //     }
+        // }
+        // if (obj.config.palette == null) {
+        //     return;
+        // }
+        // for (let i = 0; i < selectedPatternIndicies.length; i++) {
+        //     for (let j = 0; j < obj.config.palette.palette.length; j++) {
+        //         if (obj.config.palette.palette[j].index == selectedPatternIndicies[i]) {
+        //             obj.config.palette.palette[j].h = 255;
+        //             obj.config.palette.palette[j].s = 255;
+        //             obj.config.palette.palette[j].v = 255;
+        //         }
+        //     }
+        // }
+
+        console.log('---- SENDING PATTERN ----')
+        console.log(obj);
+
+        overview.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }
+
     sendConfig() {
         let config = this.parent.linkedAbstract.config;
 
@@ -997,6 +1135,19 @@ class AbstractControlParameterView {
             // MOA TBD raise a warning
             return;
         }
+
+
+        let obj = new Object();
+        obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/config";
+
+        obj.config = new Object();
+        obj.config.stripe_ids = selectedStripes;
+        obj.config.config = this.getConfig();
+
+        console.log('---- SENDING CONFIG ----')
+        console.log(obj);
+
+        overview.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }
 
 

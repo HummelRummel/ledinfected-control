@@ -4,8 +4,8 @@
     <title>HummelFlowerControlCentre</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
-<!--    <script src="assets/jquery.rwdImageMaps.js"></script>-->
+    <!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+    <!--    <script src="assets/jquery.rwdImageMaps.js"></script>-->
 
 
     <!--    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/maphilight/1.4.0/jquery.maphilight.min.js"></script>-->
@@ -36,14 +36,11 @@
         <div class="selection_stripes selection_tabcontent tabcontent">
         </div>
         <div class="selection_pattern selection_tabcontent tabcontent">
-            <div style="width: 100%; height: 80%;">
-                <svg width="100%" height="100%" viewBox="0 0 480 480" class="pattern_canvas">
-                </svg>
-            </div>
+
         </div>
     </div>
 
-    <div class="parameter_view">
+    <div class="parameter_view" width="95%">
         <!-- Tab links -->
         <div class="parameter_tab tab">
             <button class="parameter_ctrl_btn parameter_tablinks"
@@ -59,55 +56,84 @@
 
         <!-- Tab content -->
         <div class="parameter_ctrl parameter_tabcontent tabcontent">
-            <h3>CTRL</h3>
-            <div class="flex_display">
-                <div class="parameter_slider_container">
-                    <div class="slidecontainer">
-                        <button class="parameter_ctrl_h round_button parameter_ctrl_select" data-ctrl-type="h"
-                                onclick="selectParameterCtrlElement('parameter_ctrl_h')">H
-                        </button>
-                        <input type="range" min="0" max="255" value="255" class="slider parameter_ctrl_slider_h">
+            <div class="parameter_slider_container" height="auto" width="100%">
+                <div class="flex_display" style="display: flex; flex-flow: column; flex-grow: 1" height="auto"
+                     width="100%">
+                    <div class="slidecontainer" height="32px" width="auto">
+                        <div class="flex_display"
+                             style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;">
+                            <img src="assets/img/brightness.png" height="32px" width="32px">
+                            <input type="range" min="0" max="256" step="8" value="256"
+                                   class="slider parameter_ctrl_slider_stripe_brightness">
+                        </div>
                     </div>
-                    <div class="slidecontainer">
-                        <button class="parameter_ctrl_s round_button parameter_ctrl_select" data-ctrl-type="s"
-                                onclick="selectParameterCtrlElement('parameter_ctrl_s')">S
-                        </button>
-                        <input type="range" min="0" max="255" value="255" class="slider parameter_ctrl_slider_s">
+                    <div class="slidecontainer" height="auto" width="100%">
+                        <div class="flex_display"
+                             style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
+                             height="64px" width="100%">
+                            <img src="assets/img/speed.png" height="32px" width="32px">
+                            <input type="range" min="-8" max="8" value="0"
+                                   class="slider parameter_ctrl_slider_stripe_speed" height="auto" width="100%">
+                        </div>
                     </div>
-                    <div class="slidecontainer">
-                        <button class="parameter_ctrl_v round_button parameter_ctrl_select" data-ctrl-type="v"
-                                onclick="selectParameterCtrlElement('parameter_ctrl_v')">V
-                        </button>
-                        <input type="range" min="0" max="255" value="255" class="slider parameter_ctrl_slider_b">
+                    <div class="slidecontainer" height="auto" width="100%">
+                        <div class="flex_display"
+                             style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
+                             height="64px" width="100%">
+                            <img src="assets/img/stretch.png" height="32px" width="32px">
+                            <input type="range" min="-2" max="2" value="0"
+                                   class="slider parameter_ctrl_slider_stripe_stretch" height="auto" width="100%">
+                        </div>
                     </div>
-                    <div class="slidecontainer">
-                        <button class="parameter_ctrl_speed round_button parameter_ctrl_select" data-ctrl-type="speed"
-                                onclick="selectParameterCtrlElement('parameter_ctrl_speed')">Speed
-                        </button>
-                        <input type="range" min="-4" max="4" value="0" class="slider parameter_ctrl_slider_speed"
-                               oninput="updateSpeed();">
+                    <div style="width: 57%; height: 100%;">
+                        <svg width="100%" height="100%" viewBox="0 0 480 480" class="pattern_canvas">
+                        </svg>
                     </div>
-                    <div class="slidecontainer">
-                        <button class="parameter_ctrl_overlay round_button parameter_ctrl_select"
-                                data-ctrl-type="overlay"
-                                onclick="selectParameterCtrlElement('parameter_ctrl_overlay')">Overlay
-                        </button>
-                        <input type="range" min="0" max="255" value="0" class="slider parameter_ctrl_slider_overlay"
-                               oninput="updateOverlay();">
+                    <div class="slidecontainer" height="auto" width="100%">
+                        <div class="flex_display"
+                             style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
+                             height="64px" width="100%">
+                            <img src="assets/img/hue.png" height="32px" width="32px">
+                            <input type="range" min="0" max="255" value="255"
+                                   class="slider parameter_ctrl_slider_pattern_hue" height="auto" width="100%">
+                        </div>
+                    </div>
+                    <div class="slidecontainer" height="auto" width="100%">
+                        <div class="flex_display"
+                             style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
+                             height="64px" width="100%">
+                            <img src="assets/img/saturation.png" height="32px" width="32px">
+                            <input type="range" min="0" max="255" value="255"
+                                   class="slider parameter_ctrl_slider_pattern_saturation" height="auto"
+                                   width="100%">
+                        </div>
+                    </div>
+                    <div class="slidecontainer" height="auto" width="100%">
+                        <div class="flex_display"
+                             style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
+                             height="64px" width="100%">
+                            <img src="assets/img/brightness.png" height="32px" width="32px">
+                            <input type="range" min="0" max="255" value="255"
+                                   class="slider parameter_ctrl_slider_pattern_brightness" height="auto"
+                                   width="100%">
+                        </div>
+                    </div>
+                    <div class="button_container" style="width: 57%; height: 32px; padding-top: 16px;">
+                        <div class="flex_display"
+                             style="display: flex; flex-flow: row; flex-grow: 1; flex: 1; justify-content: space-between">
+                            <button class="sync_btn"
+                                    style="background: url(/assets/img/sync.png); background-size: contain; width: 32px; height: 32px;"
+                                    width="32px" height="32px" onclick="globalSyncAbstracts();"></button>
+                            <button class="save_btn"
+                                    style="background: url(/assets/img/save.png); background-size: contain; width: 32px; height: 32px;"
+                                    width="32px" height="32px" onclick="savePreset();"></button>
+                            <button class="closeBtn"
+                                    style="background: url(/assets/img/close.png); background-size: contain; width: 32px; height: 32px;"
+                                    width="32px" height="32px"></button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="flex_display">
-                <input type="range" class="parameter_ctrl_slider"
-                       min="0" max="255" oninput="updateObject();">
-                </dev>
-            </div>
-            <div class="flex_display">
-                <button class="sync_btn round_button"
-                        onclick="globalSyncAbstracts();">Sync
-                </button>
-            </div>
-            <div class="colorshow"></div>
         </div>
         <div class="parameter_presets parameter_tabcontent tabcontent">
             <h3>PRESETS</h3>

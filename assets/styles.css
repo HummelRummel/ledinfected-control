@@ -30,6 +30,7 @@ area {
 
 /* Style the tab */
 .tab {
+    display: none;
     overflow: hidden;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
@@ -68,8 +69,7 @@ area {
 }
 
 .selection_view {
-    width: 100%;
-    height: 50%;
+    width: 57%;
 }
 
 /* Style the tab content */
@@ -77,9 +77,9 @@ area {
     width: 100%;
     height: 100%;
     display: none;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none;
+    /*padding: 6px 12px;*/
+    /*border: 1px solid #ccc;*/
+    /*border-top: none;*/
     animation: fadeInEffect 1s; /* Fading effect takes 1 second */
 }
 
@@ -210,9 +210,12 @@ table {
 
 .slider {
     -webkit-appearance: none;
-    width: 100%;
-    height: 25px;
-    background: #d3d3d3;
+    width: 50%;
+    max-height: 100%;
+    /*background: #cccccc;*/
+    background:url(/assets/img/slider-background.png) no-repeat center;
+    background-size: 100% 32px;
+    /*-webkit-background-size: cover;*/
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
@@ -226,15 +229,19 @@ table {
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 25px;
-    height: 25px;
-    background: #04AA6D;
+    width: 32px;
+    height: 32px;
+    /*background: grey;*/
+    background: url(/assets/img/slider-knob.png);
+    background-size: contain;
     cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    background: #04AA6D;
+    width: 32px;
+    height: 32px;
+    /*background: grey;*/
+    background: url(/assets/img/slider-knob.png);
+    background-size: contain;
     cursor: pointer;
 }
