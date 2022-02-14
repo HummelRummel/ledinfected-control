@@ -1029,7 +1029,7 @@ class AbstractControlParameterView {
 
     getConfig() {
         let config = new Object();
-        config.speed = this.getCurrentStripeSpeed();
+        config.movement_speed = this.getCurrentStripeSpeed();
         config.brightness = this.getCurrentStripeBrightness();
         config.stretch = this.getCurrentStripeStretch();
         return config;
@@ -1060,7 +1060,7 @@ class AbstractControlParameterView {
         palette.palette = [];
         for (let i = 0; i < 16; i++) {
             let element = new Object();
-            element.index = i;
+            element.index = i+1;
             element.h = segments[i].color.hue;;
             element.s = segments[i].color.saturation;
             element.v =  segments[i].color.brightness;
@@ -1111,6 +1111,7 @@ class AbstractControlParameterView {
 
         console.log('---- SENDING PATTERN ----')
         console.log(obj);
+        console.log(JSON.stringify(obj.config));
 
         overview.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }

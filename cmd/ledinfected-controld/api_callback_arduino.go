@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 
@@ -27,7 +28,7 @@ func (o *apiServer) getArduinoByIDCallback(c *gin.Context) {
 func (o *apiServer) setArduinoIDCallback(c *gin.Context) {
 	a, err := o.getCallbackArduino(c)
 	if err != nil {
-		c.String(http.StatusNotFound, "")
+		c.String(http.StatusNotFound, err.Error())
 		return
 	}
 	type stripeConfig struct {
@@ -35,18 +36,18 @@ func (o *apiServer) setArduinoIDCallback(c *gin.Context) {
 	}
 	var arduinoConfig stripeConfig
 	if err := c.BindJSON(&arduinoConfig); err != nil {
-		c.String(http.StatusBadRequest, "")
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if arduinoConfig.ID == nil {
-		fmt.Printf("arduino Index not set\n")
-		c.String(http.StatusBadRequest, "")
+		c.String(http.StatusBadRequest, "arduino Index not set")
 		return
 	}
 	err = a.SetArduinoID(*arduinoConfig.ID)
 	if err != nil {
-		fmt.Printf("failed to read config: %s\n", err)
+		c.JSON(http.StatusExpectationFailed, fmt.Sprintf("failed to read config: %s\n", err))
+		return
 	}
 	c.JSON(http.StatusOK, "{}")
 }
@@ -54,12 +55,12 @@ func (o *apiServer) setArduinoIDCallback(c *gin.Context) {
 func (o *apiServer) setArduinoStripeSetupCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
-		c.String(http.StatusNotFound, "")
+		c.String(http.StatusNotFound, err.Error())
 		return
 	}
 	data := &hummelapi.LEDInfectedArduinoConfigStripeSetup{}
 	if err := c.BindJSON(data); err != nil {
-		c.String(http.StatusBadRequest, "")
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -75,8 +76,8 @@ func (o *apiServer) saveArduinoStripeSetupCallback(c *gin.Context) {
 	}
 
 	if err := s.SaveSetup(); err != nil {
-		fmt.Printf("failed to save setup: %s\n", err)
 		c.String(http.StatusBadRequest, "failed to save setup: %s", err)
+		return
 	}
 	c.JSON(http.StatusOK, "{}")
 }
@@ -84,12 +85,12 @@ func (o *apiServer) saveArduinoStripeSetupCallback(c *gin.Context) {
 func (o *apiServer) setArduinoStripeConfigCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
-		c.String(http.StatusNotFound, "")
+		c.String(http.StatusNotFound, err.Error())
 		return
 	}
 	data := &hummelapi.LEDInfectedArduinoConfigStripeConfig{}
 	if err := c.BindJSON(data); err != nil {
-		c.String(http.StatusBadRequest, "")
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -100,12 +101,12 @@ func (o *apiServer) setArduinoStripeConfigCallback(c *gin.Context) {
 func (o *apiServer) setArduinoStripePaletteConfigCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
-		c.String(http.StatusNotFound, "")
+		c.String(http.StatusNotFound, err.Error())
 		return
 	}
 	data := &hummelapi.LEDInfectedArduinoConfigStripePalette{}
 	if err := c.BindJSON(data); err != nil {
-		c.String(http.StatusBadRequest, "")
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 	s.SetPalette(data)
@@ -121,7 +122,29 @@ func (o *apiServer) saveArduinoStripeConfigCallback(c *gin.Context) {
 	}
 
 	if err := s.Save(); err != nil {
-		fmt.Printf("failed to save config: %s\n", err)
+		c.JSON(http.StatusExpectationFailed, fmt.Sprintf("failed to save config: %s", err))
+		return
 	}
 	c.JSON(http.StatusOK, "{}")
+}
+
+// fixme todo split it up into config and palette
+func (o *apiServer) syncCallback(c *gin.Context) {
+	var sumErr error
+	wg := sync.WaitGroup{}
+	for _, a:= range o.Arduinos {
+		wg.Add(1)
+		go func() {
+			if err := a.GlobalSync(); err != nil {
+				sumErr = err;
+			}
+			defer wg.Done()
+		}()
+	}
+	wg.Wait()
+	if sumErr != nil {
+		c.JSON(http.StatusBadRequest, sumErr.Error())
+	} else {
+		c.JSON(http.StatusOK, "{}")
+	}
 }

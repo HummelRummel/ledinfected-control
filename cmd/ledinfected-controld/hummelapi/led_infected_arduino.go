@@ -72,8 +72,8 @@ func (o *LEDInfectedArduino) GetDevFile() string {
 	return o.connection.devFile
 }
 
-func (o *LEDInfectedArduino) GlobalSync(timestamps []uint8) error {
-	return o.connection.GlobalSync(timestamps)
+func (o *LEDInfectedArduino) GlobalSync() error {
+	return o.connection.GlobalSync()
 }
 
 func (o *LEDInfectedArduino) GlobalSetupSave() error {

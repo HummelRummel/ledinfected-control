@@ -150,12 +150,13 @@ func (o *apiServer) setAbstractStripePaletteMultiCallback(c *gin.Context) {
 func (o *apiServer) saveAbstractStripeCallback(c *gin.Context) {
 	_, s, err := o.getCallbackAbstractAndStripe(c)
 	if err != nil {
-		c.String(http.StatusNotFound, "")
+		c.String(http.StatusNotFound, err.Error())
 		return
 	}
 
 	if err := s.Save(); err != nil {
-		fmt.Printf("failed to save config: %s\n", err)
+		c.String(http.StatusExpectationFailed, fmt.Sprintf("failed to save config: %s", err))
+		return
 	}
 	c.JSON(http.StatusOK, "{}")
 }

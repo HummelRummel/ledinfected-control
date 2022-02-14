@@ -25,11 +25,13 @@ import (
 	1. Send StartCommand signal [2]byte{hummelCommandProtocolId,hummelCommandProtocolId}
     2. Send actual comamand [1+opt]byte{command,opt data...}, some commands also have a response from the controller
 	3. Send EndCommand signal [1]byte{hummelCommandProtocolIdEnd}
-
-
 */
 
-const baudRate = 19200
+const (
+	baudRate = 19200
+
+	neededArduinoMajorVersion = 0
+)
 
 type (
 	LEDInfectedArduinoConnection struct {
@@ -50,7 +52,6 @@ type (
 )
 
 func NewLEDInfectedArduinoConnection(devFile string) (*LEDInfectedArduinoConnection, error) {
-
 	port, err := serial.Open(devFile, &serial.Mode{})
 	mode := &serial.Mode{
 		BaudRate: baudRate,
@@ -179,7 +180,7 @@ func (o *LEDInfectedArduinoConnection) sendInfectedCommand(cmdType byte, cmdCode
 	o.serialLock.Lock()
 	defer o.serialLock.Unlock()
 	lastError := ""
-	for i := 0; i < retries; i++ {
+	for i := 0; i <= retries; i++ {
 		cmd, err := newLEDInfectedCommand(cmdType, cmdCode, data)
 		if err != nil {
 			return nil, fmt.Errorf("invalid infected command: %s", err)
@@ -211,11 +212,8 @@ func (o *LEDInfectedArduinoConnection) SetArduinoID(newID uint8) error {
 	return err
 }
 
-func (o *LEDInfectedArduinoConnection) GlobalSync(stripeTimestamps []uint8) error {
-	if len(stripeTimestamps) != int(o.numStripes) {
-		return fmt.Errorf("cannot sync, expected timestamps for %d stripes, got %d", o.numStripes, len(stripeTimestamps))
-	}
-	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSync, stripeTimestamps, 5)
+func (o *LEDInfectedArduinoConnection) GlobalSync() error {
+	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSync, nil, 0)
 	return err
 }
 
@@ -230,15 +228,24 @@ func (o *LEDInfectedArduinoConnection) globalGetSetup() (*LEDInfectedArduinoConf
 		return nil, err
 	}
 
-	if response.rspDataLen != 2 {
-		return nil, fmt.Errorf("expected 2 data bytes but got: %d", response.rspDataLen)
+	if response.rspDataLen < 4 {
+		return nil, fmt.Errorf("invalid arduino version, expects 4 global setup message size to be 4, received %d", response.rspDataLen)
 	}
 
-	return &LEDInfectedArduinoConfigGlobalSetup{
+	setup := &LEDInfectedArduinoConfigGlobalSetup{
 		ID:         response.rspData[0],
 		NumStripes: response.rspData[1],
 		DevFile:    o.devFile,
-	}, nil
+		Version: LEDInfectedArduinoVersion{
+			Major: response.rspData[2],
+			Minor: response.rspData[3],
+		},
+	}
+
+	if setup.Version.Major != neededArduinoMajorVersion {
+		return nil , fmt.Errorf("invalid arduino version, needed %d.xx, but arduino has %d.%d", neededArduinoMajorVersion, setup.Version.Major, setup.Version.Minor)
+	}
+	return setup, nil
 }
 
 func (o *LEDInfectedArduinoConnection) StripeSetSetup(stripeID uint8, setup *LEDInfectedArduinoConfigStripeSetup) error {
@@ -251,7 +258,7 @@ func (o *LEDInfectedArduinoConnection) StripeGetSetup(stripeID uint8) (*LEDInfec
 	if err != nil {
 		return nil, err
 	}
-	if response.rspDataLen != 16 {
+	if response.rspDataLen != 18 {
 		return nil, fmt.Errorf("expected 16 data bytes but got: %d", response.rspDataLen)
 	}
 	return castConfigStripeSetup(response.rspData)
@@ -267,7 +274,7 @@ func (o *LEDInfectedArduinoConnection) StripeGetConfig(stripeID uint8) (*LEDInfe
 	if err != nil {
 		return nil, err
 	}
-	if response.rspDataLen != 4 {
+	if response.rspDataLen != 5 {
 		return nil, fmt.Errorf("expected 4 data bytes but got: %d", response.rspDataLen)
 	}
 	return castConfigStripeConfig(response.rspData)
