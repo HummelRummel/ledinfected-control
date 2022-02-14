@@ -27,6 +27,7 @@ class OverviewView {
 overview = new OverviewView(document.body)
 
 function globalSyncAbstracts() {
+    // MOA fix needs a refactoring
     let cmd = new Object();
     cmd.arduinos = [];
     for (let i = 0; i < overview.abstracts.length; i++) {
@@ -615,7 +616,19 @@ class HSBColor {
     }
 
     getStyleColor() {
-        return hsvToRgb(this.hue, this.saturation, this.brightness);
+        let h = this.hue;
+        if (h > 255) {
+            h = 255;
+        }
+        let s = this.saturation;
+        if (s > 255) {
+            s = 255;
+        }
+        let b = this.brightness;
+        if (b > 255) {
+            b = 255;
+        }
+        return hsvToRgb(h, s, b);
     }
 }
 
@@ -934,28 +947,40 @@ class AbstractControlParameterView {
         this.sendConfig();
     }
 
-    changeStripeBrightness() {
-        // this.sendConfig();
-    }
-
     inputStripeSpeed() {
         this.sendConfig();
-    }
-
-    changeStripeSpeed() {
-        // this.sendConfig();
     }
 
     inputStripeStretch() {
         this.sendConfig();
     }
 
-    changeStripeStretch() {
-        // this.sendConfig();
+    setCurrentConfig() {
+        for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
+            let config = this.linkedAbstract.config.stripes[i].config;
+            // MOA fixme needs also to check if something is selected, but for now keep it simple
+            if (config != null) {
+                if (config.config.brightness == 255) {
+                    config.config.brightness = 256;
+                }
+                this.stripeBrightness.value = config.config.brightness;
+                this.stripeSpeed.value = config.config.movement_speed;
+                this.stripeSpeed.value = config.config.movement_speed;
+                this.stripeStretch.value = config.config.stretch;
+                if (config.config.overlay_ratio == 255) {
+                    config.config.overlay_ratio = 256;
+                }
+                this.stripeOverlay.value = config.config.overlay_ratio;
+
+                this.setCurrentPatternPalette(config.palette.palette);
+            }
+        }
     }
 
     showAbstract(abstract) {
         this.linkedAbstract = abstract;
+
+        this.setCurrentConfig();
 
         let parameterSelectFields = this.htmlNode.getElementsByClassName('parameter_ctrl_select');
         for (let i = 0; i < parameterSelectFields.length; i++) {
@@ -1063,8 +1088,9 @@ class AbstractControlParameterView {
         palette.palette = [];
         for (let i = 0; i < 16; i++) {
             let element = new Object();
-            element.index = i+1;
-            element.h = segments[i].color.hue;;
+            element.index = i + 1;
+            element.h = segments[i].color.hue;
+            ;
             if (element.h > 255) {
                 element.h = 255;
             }
@@ -1072,13 +1098,33 @@ class AbstractControlParameterView {
             if (element.s > 255) {
                 element.s = 255;
             }
-            element.v =  segments[i].color.brightness;
+            element.v = segments[i].color.brightness;
             if (element.v > 255) {
                 element.v = 255;
             }
             palette.palette.push(element);
         }
         return palette;
+    }
+
+    setCurrentPatternPalette(palette) {
+        console.log(palette);
+        for (let i = 0; i < 16; i++) {
+            let paletteIndex = palette[i].index - 1;
+            if (palette[i].h == 255) {
+                palette[i].h = 256;
+            }
+            this.parent.selectionView.patternSelect.images.segments_l0[paletteIndex].color.hue = palette[i].h;
+            if (palette[i].s == 255) {
+                palette[i].s = 256;
+            }
+            this.parent.selectionView.patternSelect.images.segments_l0[paletteIndex].color.saturation = palette[i].s;
+            if (palette[i].v == 255) {
+                palette[i].v = 256;
+            }
+            this.parent.selectionView.patternSelect.images.segments_l0[paletteIndex].color.brightness = palette[i].v;
+            this.parent.selectionView.patternSelect.images.segments_l0[paletteIndex].updateColor();
+        }
     }
 
     sendPattern() {
