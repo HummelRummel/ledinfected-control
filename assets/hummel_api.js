@@ -134,182 +134,296 @@ class HTMLAbstractOverviewObject {
     }
 }
 
-function toggleAllSelectedStripes() {
-    let noneSelected = true;
-    for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
-        if (overview.abstracts[0].config.stripes[i].config != null) {
-            if (overview.abstracts[0].stripeView.stripes[i].selected == true) {
-                noneSelected = false;
-            }
-        }
-    }
-    if (noneSelected == true) {
-        for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
-            overview.abstracts[0].stripeView.stripes[i].selected = true;
-        }
-    } else {
-        for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
-            overview.abstracts[0].stripeView.stripes[i].selected = false;
-        }
-    }
-    overview.abstracts[0].stripeView.updateBackground();
-}
+// function togglePatternSelect(id) {
+//     let section = id.substring(0, 1);
+//     let segment = parseInt(id.substring(2, 4)) - 1;
+//
+//     let fields = overview.controls.controls[0].selectionView.patternSelect.fields
+//     if (section == "0") {
+//         overview.controls.controls[0].selectionView.patternSelect.fields[segment].active = !fields[segment].active;
+//     } else if (section == "1") {
+//         if (fields[segment * 2].active || fields[segment * 2 + 1].active) {
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2].active = false;
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2 + 1].active = false;
+//         } else {
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2].active = true;
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2 + 1].active = true;
+//         }
+//     } else if (section == "2") {
+//         if (fields[segment * 4].active || fields[segment * 4 + 1].active || fields[segment * 4 + 2].active || fields[segment * 4 + 3].active) {
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4].active = false;
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 1].active = false;
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 2].active = false;
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 3].active = false;
+//         } else {
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4].active = true;
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 1].active = true;
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 2].active = true;
+//             overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 3].active = true;
+//         }
+//     } else {
+//         oneActive = false;
+//         for (let i = 0; i < 16; i++) {
+//             if (fields[i].active) {
+//                 oneActive = true;
+//             }
+//         }
+//         for (let i = 0; i < 16; i++) {
+//             overview.controls.controls[0].selectionView.patternSelect.fields[i].active = !oneActive;
+//         }
+//     }
+//
+//     overview.controls.controls[0].selectionView.patternSelect.updateImage();
+// }
 
-function togglePatternSelect(id) {
-    let section = id.substring(0, 1);
-    let segment = parseInt(id.substring(2, 4)) - 1;
+// function toggleSelectedStripeOld(stripe_id) {
+//     for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
+//         if (overview.abstracts[0].config.stripes[i].config != null) {
+//             if (overview.abstracts[0].stripeView.stripes[i].stripe_id == stripe_id) {
+//                 if (overview.abstracts[0].stripeView.stripes[i].selected == true) {
+//                     overview.abstracts[0].stripeView.stripes[i].selected = false;
+//                 } else {
+//                     overview.abstracts[0].stripeView.stripes[i].selected = true;
+//                 }
+//                 //    overview.abstracts[0].stripeView.stripes[i].selected != overview.abstracts[0].stripeView.stripes[i].selected;
+//                 overview.abstracts[0].stripeView.updateBackground();
+//                 return;
+//             }
+//         }
+//     }
+// }
+//
+// function toggleSelectedStripe(abstract_id, stripe_id) {
+//     console.log("toggleSelectedStripe");
+//     console.log(overview.abstracts)
+//     for (let i = 0; i < overview.abstracts.length; i++) {
+//         if (overview.abstracts[i].id == abstract_id) {
+//             if (stripe_id == "all") {
+//                 let sel = false;
+//                 for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
+//                     if (overview.abstracts[i].stripeView.stripes[j].selected == true) {
+//                         sel = true;
+//                     }
+//                 }
+//                 for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
+//                     overview.abstracts[i].stripeView.stripes[j].selected = !sel;
+//                 }
+//                 overview.abstracts[i].stripeView.updateBackground();
+//                 return;
+//             }
+//             console.log(overview.abstracts[i].stripeView.stripes.length)
+//             for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
+//                 if (overview.abstracts[i].stripeView.stripes[j].stripe_id == stripe_id) {
+//                     overview.abstracts[i].stripeView.stripes[j].selected = !overview.abstracts[i].stripeView.stripes[j].selected;
+//                     overview.abstracts[i].stripeView.updateBackground();
+//                     return
+//                 }
+//             }
+//             return
+//         }
+//     }
+// }
 
-    let fields = overview.controls.controls[0].selectionView.patternSelect.fields
-    if (section == "0") {
-        overview.controls.controls[0].selectionView.patternSelect.fields[segment].active = !fields[segment].active;
-    } else if (section == "1") {
-        if (fields[segment * 2].active || fields[segment * 2 + 1].active) {
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2].active = false;
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2 + 1].active = false;
+class AbstractStripeViewStripeObject {
+    constructor(parent, stripeID, area) {
+        this.parent = parent;
+        this.id = stripeID;
+        this.areaMap = area;
+        if (this.id == 'all') {
+            this.selected = false;
         } else {
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2].active = true;
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 2 + 1].active = true;
+            this.selected = true;
         }
-    } else if (section == "2") {
-        if (fields[segment * 4].active || fields[segment * 4 + 1].active || fields[segment * 4 + 2].active || fields[segment * 4 + 3].active) {
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4].active = false;
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 1].active = false;
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 2].active = false;
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 3].active = false;
+    }
+
+    appendImage() {
+        this.active = this.parent.appendPicture(this.id + "-selected");
+        this.inactive = this.parent.appendPicture(this.id + "-notselected");
+    }
+
+    appendArea() {
+        let localThis = this;
+        let points = "";
+        let areas = this.areaMap.split(",");
+        for (let i = 0; i < areas.length / 2; i++) {
+            if (points != "") {
+                points += " ";
+            }
+            points += areas[i * 2] + "," + areas[(i * 2) + 1];
+        }
+        this.area = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        this.area.setAttribute('points', points);
+        this.area.style.pointerEvents = "all";
+        this.area.addEventListener("click", function () {
+            localThis.toggleState()
+        });
+        this.parent.svgEl.appendChild(this.area);
+        return this.area;
+    }
+
+    toggleState() {
+        console.log("click toggle")
+        if (this.id != 'all') {
+            this.selected = !this.selected;
         } else {
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4].active = true;
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 1].active = true;
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 2].active = true;
-            overview.controls.controls[0].selectionView.patternSelect.fields[segment * 4 + 3].active = true;
-        }
-    } else {
-        oneActive = false;
-        for (let i = 0; i < 16; i++) {
-            if (fields[i].active) {
-                oneActive = true;
+            let oneActive = false;
+            for (let i = 0; i < this.parent.stripes.length; i++) {
+                if (this.parent.stripes[i].id != 'all' && this.parent.stripes[i].selected == true) {
+                    oneActive = true;
+                }
+            }
+            for (let i = 0; i < this.parent.stripes.length; i++) {
+                this.parent.stripes[i].setState(!oneActive)
             }
         }
-        for (let i = 0; i < 16; i++) {
-            overview.controls.controls[0].selectionView.patternSelect.fields[i].active = !oneActive;
+        this.parent.updateImage()
+    }
+
+    setState(v){
+        this.selected = v;
+    }
+    setVisibility(s) {
+        if (s == true) {
+            this.active.setAttribute("visibility", "visible");
+            this.inactive.setAttribute("visibility", "hidden");
+        } else {
+            this.active.setAttribute("visibility", "hidden");
+            this.inactive.setAttribute("visibility", "visible");
         }
     }
 
-    overview.controls.controls[0].selectionView.patternSelect.updateImage();
-}
-
-function toggleSelectedStripeOld(stripe_id) {
-    for (let i = 0; i < overview.abstracts[0].stripeView.stripes.length; i++) {
-        if (overview.abstracts[0].config.stripes[i].config != null) {
-            if (overview.abstracts[0].stripeView.stripes[i].stripe_id == stripe_id) {
-                if (overview.abstracts[0].stripeView.stripes[i].selected == true) {
-                    overview.abstracts[0].stripeView.stripes[i].selected = false;
-                } else {
-                    overview.abstracts[0].stripeView.stripes[i].selected = true;
+    updateVisibility() {
+        if (this.id != "all") {
+            this.setVisibility(this.selected);
+        } else {
+            let oneActive = false;
+            for (let i = 0; i < this.parent.stripes.length; i++) {
+                if (this.parent.stripes[i].id != 'all' && this.parent.stripes[i].selected == true) {
+                    oneActive = true;
                 }
-                //    overview.abstracts[0].stripeView.stripes[i].selected != overview.abstracts[0].stripeView.stripes[i].selected;
-                overview.abstracts[0].stripeView.updateBackground();
-                return;
             }
+            this.setVisibility(!oneActive);
         }
     }
-}
 
-function toggleSelectedStripe(abstract_id, stripe_id) {
-    console.log("toggleSelectedStripe");
-    console.log(overview.abstracts)
-    for (let i = 0; i < overview.abstracts.length; i++) {
-        if (overview.abstracts[i].id == abstract_id) {
-            if (stripe_id == "all") {
-                let sel = false;
-                for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
-                    if (overview.abstracts[i].stripeView.stripes[j].selected == true) {
-                        sel = true;
-                    }
-                }
-                for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
-                    overview.abstracts[i].stripeView.stripes[j].selected = !sel;
-                }
-                overview.abstracts[i].stripeView.updateBackground();
-                return;
-            }
-            console.log(overview.abstracts[i].stripeView.stripes.length)
-            for (let j = 0; j < overview.abstracts[i].stripeView.stripes.length; j++) {
-                if (overview.abstracts[i].stripeView.stripes[j].stripe_id == stripe_id) {
-                    overview.abstracts[i].stripeView.stripes[j].selected = !overview.abstracts[i].stripeView.stripes[j].selected;
-                    overview.abstracts[i].stripeView.updateBackground();
-                    return
-                }
-            }
-            return
-        }
-    }
 }
 
 class AbstractStripeViewObject {
     constructor(parent, config) {
+        let localThis = this;
         this.parent = parent;
+        this.image_base_path = config.info.image.image_base_path
         this.stripes = [];
-        for (let i = 0; i < config.stripes.length; i++) {
-            let stripe = new Object();
-            stripe.stripe_id = config.stripes[i].stripe_id;
-            stripe.selected = true;
+        this.svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        this.svgEl.setAttribute('width', '100%');
+        this.svgEl.setAttribute('height', '100%');
+        this.svgEl.setAttribute('viewBox', '0 0 480 480');
+        this.svgMinEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        for (let i = 0; i < config.info.image.stripe_view.img_map.length; i++) {
+            let stripe = new AbstractStripeViewStripeObject(this, config.info.image.stripe_view.img_map[i].stripe_id, config.info.image.stripe_view.img_map[i].area);
             this.stripes.push(stripe);
         }
-        this.parent = parent
-        this.htmlObject = new HTMLAbstractStripeViewObject(this, this.stripes, config)
-        this.updateBackground();
+        for (let i = 0; i < this.stripes.length; i++) {
+            this.stripes[i].appendArea();
+        }
+        this.background = this.appendPicture("background");
+        for (let i = 0; i < this.stripes.length; i++) {
+            this.stripes[i].appendImage();
+        }
+
+        this.toggleSvgEl = this.parent.htmlParent.getElementsByClassName('toggle_stripe_canvas_btn')[0];
+        this.toggleSvgEl.addEventListener('click', function () {
+            if (localThis.svgEl.style.display !== "none") {
+                localThis.svgEl.style.display = "none";
+                localThis.svgMinEl.style.display = "block";
+            } else {
+                localThis.svgMinEl.style.display = "none";
+                localThis.svgEl.style.display = "block";
+            }
+        })
+
+        this.updateImage();
+        // this.htmlObject = new HTMLAbstractStripeViewObject(this, this.stripes, config);
+        // this.updateBackground();
+    }
+
+
+    updateImage(){
+        for (let i = 0; i < this.stripes.length; i++) {
+            this.stripes[i].updateVisibility();
+        }
+        console.log(this.getSelectedStripes())
+    }
+
+    appendPicture(name) {
+        let newImage = document.createElementNS("http://www.w3.org/2000/svg", "image");
+        newImage.setAttribute('href', this.image_base_path + "/" + name + ".png");
+        newImage.style.pointerEvents = "none";
+        this.svgEl.appendChild(newImage);
+        return newImage
     }
 
     getSelectedStripes() {
         let stripe_ids = [];
         for (let i = 0; i < this.stripes.length; i++) {
             if (this.stripes[i].selected == true) {
-                stripe_ids.push(this.stripes[i].stripe_id);
+                if (this.stripes[i].id == "all") {
+                    continue;
+                }
+                stripe_ids.push(this.stripes[i].id);
             }
         }
         return stripe_ids;
     }
 
-    updateBackground() {
-        let image_base_path = this.parent.config.info.image.image_base_path;
-
-        let backgroundString = "";
-        let noneSelected = true;
-        for (let i = 0; i < this.stripes.length; i++) {
-            if (this.parent.config.stripes[i].config != null) {
-                if (this.stripes[i].selected == true) {
-                    noneSelected = false;
-                    if (backgroundString != "") {
-                        backgroundString += ", ";
-                    }
-                    backgroundString += "url(" + image_base_path + "/" + this.stripes[i].stripe_id + "-selected.png)";
-                } else {
-                    if (backgroundString != "") {
-                        backgroundString += ", ";
-                    }
-                    backgroundString += "url(" + image_base_path + "/" + this.stripes[i].stripe_id + "-notselected.png)";
-                }
-            }
-        }
-
-        if (noneSelected == true) {
-            if (backgroundString != "") {
-                backgroundString += ", ";
-            }
-            backgroundString += "url(" + image_base_path + "/selected-all.png)";
-        } else {
-            if (backgroundString != "") {
-                backgroundString += ", ";
-            }
-            backgroundString += "url(" + image_base_path + "/notselected-all.png)";
-        }
-        if (backgroundString != "") {
-            backgroundString += ", ";
-        }
-        backgroundString += "url(" + image_base_path + "/background.png)"
-        console.log(backgroundString);
-        this.htmlObject.imageEl.style.backgroundImage = backgroundString
+    getSVGElement() {
+        return this.svgEl;
     }
+
+    getSVGMinElement() {
+        return this.svgMinEl;
+    }
+
+    // updateBackground() {
+    //     let image_base_path = this.parent.config.info.image.image_base_path;
+    //
+    //     let backgroundString = "";
+    //     let noneSelected = true;
+    //     for (let i = 0; i < this.stripes.length; i++) {
+    //         if (this.parent.config.stripes[i].config != null) {
+    //             if (this.stripes[i].selected == true) {
+    //                 noneSelected = false;
+    //                 if (backgroundString != "") {
+    //                     backgroundString += ", ";
+    //                 }
+    //                 backgroundString += "url(" + image_base_path + "/" + this.stripes[i].stripe_id + "-selected.png)";
+    //             } else {
+    //                 if (backgroundString != "") {
+    //                     backgroundString += ", ";
+    //                 }
+    //                 backgroundString += "url(" + image_base_path + "/" + this.stripes[i].stripe_id + "-notselected.png)";
+    //             }
+    //         }
+    //     }
+    //
+    //     if (noneSelected == true) {
+    //         if (backgroundString != "") {
+    //             backgroundString += ", ";
+    //         }
+    //         backgroundString += "url(" + image_base_path + "/all-selected.png)";
+    //     } else {
+    //         if (backgroundString != "") {
+    //             backgroundString += ", ";
+    //         }
+    //         backgroundString += "url(" + image_base_path + "/all-notselected.png)";
+    //     }
+    //     if (backgroundString != "") {
+    //         backgroundString += ", ";
+    //     }
+    //     backgroundString += "url(" + image_base_path + "/background.png)"
+    //     console.log(backgroundString);
+    //     this.htmlObject.imageEl.style.backgroundImage = backgroundString
+    // }
 
     getHTMLElement() {
         return this.htmlObject.baseEl;
@@ -380,7 +494,7 @@ class AbstractControls {
         } else {
             overview.abstracts[i].config = await overview.connection.get("/abstract/" + abstractID);
             this.controls[0].showAbstract(overview.abstracts[i]);
-            overview.abstracts[i].stripeView.updateBackground();
+//            overview.abstracts[i].stripeView.updateBackground();
         }
     }
 
@@ -431,31 +545,22 @@ class AbstractControlView {
 
     hide() {
         this.htmlView.style.animation = "fadeOutEffect 1s";
-        //this.htmlView.style.display = "block";
         let style = this.htmlView.style
         let localThis = this;
 
         setTimeout(function () {
             style.display = "none";
 
-            let stripesSelectAbstract = localThis.htmlView.getElementsByClassName('selection_stripes')[0];
-            stripesSelectAbstract.removeChild(localThis.linkedAbstract.stripeView.getHTMLElement())
+            let stripesSelectAbstract = localThis.htmlView.getElementsByClassName('stripe_canvas_div')[0];
+            let stripesSelectAbstractMin = localThis.htmlView.getElementsByClassName('stripe_canvas_minimized_div')[0];
+            stripesSelectAbstract.removeChild(localThis.linkedAbstract.stripeView.getSVGElement())
+            stripesSelectAbstractMin.removeChild(localThis.linkedAbstract.stripeView.getSVGMinElement())
 
             localThis.linkedAbstract = null;
             localThis.config = null;
             localThis.htmlView.id = "";
 
         }, 900);
-    }
-}
-
-function selectSelectionTab(abstractID, tabID) {
-    for (let i = 0; i < overview.controls.controls.length; i++) {
-        if (overview.controls.controls[i].linkedAbstract != null) {
-            if (overview.controls.controls[i].linkedAbstract.id == abstractID) {
-                overview.controls.controls[i].selectionView.selectSelectionTab(tabID);
-            }
-        }
     }
 }
 
@@ -469,40 +574,12 @@ function selectParameterTab(abstractID, tabID) {
     }
 }
 
-function toggleSelectedElement(abstractID, elementID) {
-    for (let i = 0; i < overview.controls.controls.length; i++) {
-        if (overview.controls.controls[i].linkedAbstract != null) {
-            if (overview.controls.controls[i].linkedAbstract.id == abstractID) {
-                overview.controls.controls[i].htmlView.getElementsByClassName(elementID)[0].classList.toggle("selected");
-            }
-        }
-    }
-}
-
-function selectParameterCtrlElement(abstractID, elementID) {
-    for (let i = 0; i < overview.controls.controls.length; i++) {
-        if (overview.controls.controls[i].linkedAbstract != null) {
-            if (overview.controls.controls[i].linkedAbstract.id == abstractID) {
-                overview.controls.controls[i].parameterView.selectParameterCtrlElement(elementID)
-            }
-        }
-    }
-}
-
-function updateParameter(abstractID) {
-    for (let i = 0; i < overview.controls.controls.length; i++) {
-        if (overview.controls.controls[i].linkedAbstract != null) {
-            if (overview.controls.controls[i].linkedAbstract.id == abstractID) {
-                overview.controls.controls[i].parameterView.updateParameter();
-            }
-        }
-    }
-}
-
 class AbstractControlSelectionView {
     constructor(parent) {
         this.parent = parent;
         this.htmlNode = this.parent.htmlView;
+        this.stripesSelectAbstractDiv = this.htmlNode.getElementsByClassName('stripe_canvas_div')[0];
+        this.stripesSelectAbstractMinDiv = this.htmlNode.getElementsByClassName('stripe_canvas_minimized_div')[0];
 
         this.patternSelect = new AbstractControlPatternSelectionView(this.parent)
     }
@@ -510,13 +587,17 @@ class AbstractControlSelectionView {
     showAbstract(abstract) {
         this.linkedAbstract = abstract;
 
-        let stripesSelectAbstract = this.htmlNode.getElementsByClassName('selection_stripes')[0];
-        let stripeHtml = this.linkedAbstract.stripeView.getHTMLElement()
-        console.log(this.linkedAbstract);
+        let svg = this.linkedAbstract.stripeView.getSVGElement()
+        let svgMin = this.linkedAbstract.stripeView.getSVGMinElement()
         if (this.linkedAbstract.config.stripes.length == 1) {
-            stripeHtml.style.display = "none";
+            this.stripesSelectAbstractDiv.style.display = "none";
+            this.stripesSelectAbstractMinDiv.style.display = "block";
+        } else {
+            this.stripesSelectAbstractDiv.style.display = "block";
+            this.stripesSelectAbstractMinDiv.style.display = "none";
         }
-        stripesSelectAbstract.appendChild(stripeHtml);
+        this.stripesSelectAbstractDiv.appendChild(svg);
+        this.stripesSelectAbstractMinDiv.appendChild(svgMin);
 
         let ledPatternFields = this.htmlNode.getElementsByClassName('pattern_select_field');
         for (let i = 0; i < ledPatternFields.length; i++) {
@@ -1617,6 +1698,47 @@ function parseCSV(str) {
         arr[row][col] += cc;
     }
     return arr;
+}
+
+
+function selectSelectionTab(abstractID, tabID) {
+    for (let i = 0; i < overview.controls.controls.length; i++) {
+        if (overview.controls.controls[i].linkedAbstract != null) {
+            if (overview.controls.controls[i].linkedAbstract.id == abstractID) {
+                overview.controls.controls[i].selectionView.selectSelectionTab(tabID);
+            }
+        }
+    }
+}
+
+function toggleSelectedElement(abstractID, elementID) {
+    for (let i = 0; i < overview.controls.controls.length; i++) {
+        if (overview.controls.controls[i].linkedAbstract != null) {
+            if (overview.controls.controls[i].linkedAbstract.id == abstractID) {
+                overview.controls.controls[i].htmlView.getElementsByClassName(elementID)[0].classList.toggle("selected");
+            }
+        }
+    }
+}
+
+function selectParameterCtrlElement(abstractID, elementID) {
+    for (let i = 0; i < overview.controls.controls.length; i++) {
+        if (overview.controls.controls[i].linkedAbstract != null) {
+            if (overview.controls.controls[i].linkedAbstract.id == abstractID) {
+                overview.controls.controls[i].parameterView.selectParameterCtrlElement(elementID)
+            }
+        }
+    }
+}
+
+function updateParameter(abstractID) {
+    for (let i = 0; i < overview.controls.controls.length; i++) {
+        if (overview.controls.controls[i].linkedAbstract != null) {
+            if (overview.controls.controls[i].linkedAbstract.id == abstractID) {
+                overview.controls.controls[i].parameterView.updateParameter();
+            }
+        }
+    }
 }
 
 // function selectSelectionTab(tabID) {
