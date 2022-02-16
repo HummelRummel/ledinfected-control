@@ -877,6 +877,58 @@ class AbstractControlPatternSelectionView {
 
 }
 
+class Preset {
+    constructor(name, config, palette) {
+        let localThis = this;
+        this.name = name;
+        this.config = config;
+        this.palette = palette;
+
+        this.selectButton = document.createElement('button');
+        this.selectButton.addEventListener('input', function () {
+            localThis.loadPreset();
+        });
+    }
+    loadPreset() {
+
+    }
+    getSelectButton(){
+        return this.selectButton;
+    }
+}
+
+class PresetSelect {
+    constructor(parent) {
+        this.parent = parent;
+
+        this.viewPort = document.createElement('div');
+        // MOA fixme setup the viewports dimension and hide it
+        this.parent.appendChild(this.viewPort);
+    }
+
+    loadPreset() {
+
+    }
+
+    async showPresetSelect() {
+        this.presets = await this.connection.get("/presets");
+
+        for (let i = 0; i < this.presets.length; i++) {
+            let presetButton = document.createElement('button');
+            this.patternHue.addEventListener('input', function () {
+                localThis.inputHue();
+                localThis.changeHue();
+            });
+            this.presets[i].Name;
+        }
+    }
+
+    async hidePresetSelect() {
+
+    }
+}
+
+
 class AbstractControlParameterView {
     constructor(parent) {
         this.parent = parent;
@@ -901,6 +953,7 @@ class AbstractControlParameterView {
         this.stripeBrightness.addEventListener('input', function () {
             localThis.inputStripeBrightness();
         });
+        this.stripeOverlayDiv = this.htmlNode.getElementsByClassName("parameter_ctrl_stripe_overlay_div")[0];
         this.stripeOverlay = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_stripe_overlay")[0];
         this.stripeOverlay.addEventListener('input', function () {
             localThis.inputStripeOverlay();
@@ -921,6 +974,22 @@ class AbstractControlParameterView {
         this.savePresetBtn.addEventListener('click', function () {
             localThis.savePreset();
         });
+    }
+
+    showAbstract(abstract) {
+        this.linkedAbstract = abstract;
+
+        this.setCurrentConfig();
+
+        let parameterSelectFields = this.htmlNode.getElementsByClassName('parameter_ctrl_select');
+        for (let i = 0; i < parameterSelectFields.length; i++) {
+            for (let j = 0; j < parameterSelectFields[i].classList.length; j++) {
+                // MOA fixme change it to event handler in the constructor
+                if ((parameterSelectFields[i].classList[j] != 'round_button') && (parameterSelectFields[i].classList[j] != 'parameter_ctrl_select') && (parameterSelectFields[i].classList[j] != 'selected')) {
+                    parameterSelectFields[i].setAttribute('onclick', "selectParameterCtrlElement('" + this.linkedAbstract.id + "', '" + parameterSelectFields[i].classList[j] + "');");
+                }
+            }
+        }
     }
 
     loadPreset() {
@@ -972,6 +1041,14 @@ class AbstractControlParameterView {
     }
 
     setCurrentConfig() {
+        this.stripeOverlayDiv.style.display = "none";
+        for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
+            let config = this.linkedAbstract.config.stripes[i].config;
+            if (config != null && config.setup.overlayID > 1 && config.setup.overlayID < 6) {
+                this.stripeOverlayDiv.style.display = "block";
+            }
+        }
+
         for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
             let config = this.linkedAbstract.config.stripes[i].config;
             // MOA fixme needs also to check if something is selected, but for now keep it simple
@@ -989,21 +1066,8 @@ class AbstractControlParameterView {
                 this.stripeOverlay.value = config.config.overlay_ratio;
 
                 this.setCurrentPatternPalette(config.palette.palette);
-            }
-        }
-    }
 
-    showAbstract(abstract) {
-        this.linkedAbstract = abstract;
-
-        this.setCurrentConfig();
-
-        let parameterSelectFields = this.htmlNode.getElementsByClassName('parameter_ctrl_select');
-        for (let i = 0; i < parameterSelectFields.length; i++) {
-            for (let j = 0; j < parameterSelectFields[i].classList.length; j++) {
-                if ((parameterSelectFields[i].classList[j] != 'round_button') && (parameterSelectFields[i].classList[j] != 'parameter_ctrl_select') && (parameterSelectFields[i].classList[j] != 'selected')) {
-                    parameterSelectFields[i].setAttribute('onclick', "selectParameterCtrlElement('" + this.linkedAbstract.id + "', '" + parameterSelectFields[i].classList[j] + "');");
-                }
+                return;
             }
         }
     }
