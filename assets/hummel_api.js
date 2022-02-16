@@ -783,12 +783,24 @@ class AbstractControlPatternSegment {
 
 class AbstractControlPatternSelectionView {
     constructor(parent) {
+        let localThis = this;
         this.parent = parent;
         this.image_base_path = "/assets/img/pattern";
         this.image_map = new PatternMap();
         console.log(this.image_map);
         this.svgEl = this.parent.htmlView.getElementsByClassName('pattern_canvas')[0];
-
+        this.svgMinEl = this.parent.htmlView.getElementsByClassName('pattern_canvas_minimized')[0];
+        this.svgMinEl.style.display = "none";
+        this.toggleSvgEl = this.parent.htmlView.getElementsByClassName('toggle_pattern_canvas_btn')[0];
+        this.toggleSvgEl.addEventListener('click', function () {
+            if (localThis.svgEl.style.display !== "none") {
+                localThis.svgEl.style.display = "none";
+                localThis.svgMinEl.style.display = "block";
+            } else {
+                localThis.svgMinEl.style.display = "none";
+                localThis.svgEl.style.display = "block";
+            }
+        })
         this.images = new Object();
         this.images.segments_l0 = [];
         this.images.segments_l1 = [];
@@ -889,10 +901,12 @@ class Preset {
             localThis.loadPreset();
         });
     }
+
     loadPreset() {
 
     }
-    getSelectButton(){
+
+    getSelectButton() {
         return this.selectButton;
     }
 }

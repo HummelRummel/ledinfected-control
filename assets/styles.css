@@ -35,6 +35,12 @@ area {
     cursor: pointer;
 }
 
+.toggle_btn{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
 /* Style the tab */
 .tab {
     display: none;
