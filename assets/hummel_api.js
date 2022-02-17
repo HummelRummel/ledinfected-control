@@ -49,6 +49,7 @@ function globalSyncAbstracts() {
                     let newArduinoSync = new Object();
                     newArduinoSync.arduino_id = stripeArduinoID;
                     newArduinoSync.stripes = [];
+                    // refactor to a proper class
                     let newStripeSync = new Object();
                     newStripeSync.stripe_id = overview.abstracts[i].config.stripes[j].setup.arduino_stripes[k].arduino_stripe_id;
                     newStripeSync.sync = overview.abstracts[i].config.stripes[j].setup.arduino_stripes[k].sync;
@@ -279,9 +280,10 @@ class AbstractStripeViewStripeObject {
         this.parent.updateImage()
     }
 
-    setState(v){
+    setState(v) {
         this.selected = v;
     }
+
     setVisibility(s) {
         if (s == true) {
             this.active.setAttribute("visibility", "visible");
@@ -348,7 +350,7 @@ class AbstractStripeViewObject {
     }
 
 
-    updateImage(){
+    updateImage() {
         for (let i = 0; i < this.stripes.length; i++) {
             this.stripes[i].updateVisibility();
         }
@@ -519,8 +521,9 @@ class AbstractControlView {
         this.htmlView.style.left = offset;
         this.htmlView.style.display = "none";
 
-        this.selectionView = new AbstractControlSelectionView(this)
+        let localThis = this;
         this.parameterView = new AbstractControlParameterView(this)
+        this.selectionView = new AbstractControlSelectionView(this, function(){localThis.parameterView.colorChangeCallback();})
 
         this.htmlParent.appendChild(this.htmlView);
     }
@@ -575,13 +578,13 @@ function selectParameterTab(abstractID, tabID) {
 }
 
 class AbstractControlSelectionView {
-    constructor(parent) {
+    constructor(parent, colorChangeCallback) {
         this.parent = parent;
         this.htmlNode = this.parent.htmlView;
         this.stripesSelectAbstractDiv = this.htmlNode.getElementsByClassName('stripe_canvas_div')[0];
         this.stripesSelectAbstractMinDiv = this.htmlNode.getElementsByClassName('stripe_canvas_minimized_div')[0];
 
-        this.patternSelect = new AbstractControlPatternSelectionView(this.parent)
+        this.patternSelect = new AbstractControlPatternSelectionView(this.parent, colorChangeCallback)
     }
 
     showAbstract(abstract) {
@@ -660,33 +663,6 @@ class AbstractControlSelectionView {
         this.htmlNode.getElementsByClassName(tabID)[0].style.display = "block";
         this.htmlNode.getElementsByClassName(tabID + "_btn")[0].className += " active";
     }
-
-    // getSelectedStripes() {
-    //
-    //     let selectedStripes = [];
-    //     this.patternSelect.fields[i]
-    //     for (let i = 0; i < ledSelectFields.length; i++) {
-    //         this.patternSelect.fields[i].active
-    //         if (ledSelectFields[i].classList.contains('selected')) {
-    //             selectedStripes.push(i);
-    //         }
-    //     }
-    //     return selectedStripes;
-    // }
-
-
-    getSelectedPatternIndices() {
-        let patternIndecies = [];
-
-        this.patternSelect.images.segments_l0
-
-        for (let i = 0; i < 16; i++) {
-            if (this.patternSelect.images.segments_l0[i].state) {
-                patternIndecies.push(i);
-            }
-        }
-        return patternIndecies;
-    }
 }
 
 class HSBColor {
@@ -729,7 +705,8 @@ class AbstractControlPatternSegment {
         //this.inactive.addEventListener("click", this.toggleState, false);
     }
 
-    appendColor(h, s, b) {
+    appendColor(colorChangeCallback, h, s, b) {
+        this.colorChangeCallback = colorChangeCallback;
         this.color = new HSBColor(h, s, b);
     }
 
@@ -746,18 +723,27 @@ class AbstractControlPatternSegment {
     }
 
     setColorH(h) {
-        this.color.hue = h;
-        this.updateColor();
+        if (this.color.hue != h) {
+            this.color.hue = h;
+            this.updateColor();
+            this.colorChangeCallback();
+        }
     }
 
     setColorS(s) {
-        this.color.saturation = s;
-        this.updateColor();
+        if (this.color.saturation != s) {
+            this.color.saturation = s;
+            this.updateColor();
+            this.colorChangeCallback();
+        }
     }
 
     setColorB(b) {
-        this.color.brightness = b;
-        this.updateColor();
+        if (this.color.brightness != b) {
+            this.color.brightness = b;
+            this.updateColor();
+            this.colorChangeCallback();
+        }
     }
 
     appendArea(area) {
@@ -863,8 +849,9 @@ class AbstractControlPatternSegment {
 }
 
 class AbstractControlPatternSelectionView {
-    constructor(parent) {
+    constructor(parent,colorChangeCallback) {
         let localThis = this;
+        this.colorChangeCallbackPtr = colorChangeCallback;
         this.parent = parent;
         this.image_base_path = "/assets/img/pattern";
         this.image_map = new PatternMap();
@@ -892,7 +879,7 @@ class AbstractControlPatternSelectionView {
             console.log(id);
             let segment = new AbstractControlPatternSegment(this, id);
             segment.appendArea(this.getArea(id));
-            segment.appendColor(255, 255, 255);
+            segment.appendColor(colorChangeCallback,255, 255, 255);
             segment.appendState(true);
             this.images.segments_l0.push(segment);
         }
@@ -936,6 +923,28 @@ class AbstractControlPatternSelectionView {
         this.updateImage();
     }
 
+    getFirstSelectedPatternColor(){
+        for (let i = 0; i < 16; i++) {
+            if (this.images.segments_l0[i].state) {
+                return this.images.segments_l0[i].color;
+            }
+        }
+        return null;
+    }
+    getSelectedPatternIndices() {
+        let patternIndecies = [];
+
+        this.images.segments_l0
+
+        for (let i = 0; i < 16; i++) {
+            if (this.images.segments_l0[i].state) {
+                patternIndecies.push(i);
+            }
+        }
+        return patternIndecies;
+    }
+
+
     appendPicture(name) {
         let newImage = document.createElementNS("http://www.w3.org/2000/svg", "image");
         //newImage.classList.add(name)
@@ -966,60 +975,54 @@ class AbstractControlPatternSelectionView {
         }
 
         this.images.segment_l3.updateVisibility();
+        this.colorChangeCallbackPtr();
     }
 
 }
 
 class Preset {
-    constructor(name, config, palette) {
+    constructor(parentHTML, name, config, palette, actionCallback) {
         let localThis = this;
+        this.parentHTML = parentHTML;
         this.name = name;
         this.config = config;
         this.palette = palette;
+        this.actionCallback = actionCallback;
 
-        this.selectButton = document.createElement('button');
-        this.selectButton.addEventListener('input', function () {
-            localThis.loadPreset();
+        this.presetElement = document.createElement('button');
+        this.presetElement.classList.add("preset_select_button")
+        this.presetElement.innerHTML = this.name;
+        this.presetElement.addEventListener('click', function () {
+            localThis.actionCallback(localThis);
         });
+        this.parentHTML.appendChild(this.presetElement);
     }
 
-    loadPreset() {
-
-    }
-
-    getSelectButton() {
-        return this.selectButton;
+    clearFromList() {
+        this.parentHTML.removeChild(this.presetElement);
     }
 }
 
 class PresetSelect {
-    constructor(parent) {
-        this.parent = parent;
+    constructor(parentHTML) {
+        this.parentHTML = parentHTML;
+        this.presets = [];
 
-        this.viewPort = document.createElement('div');
-        // MOA fixme setup the viewports dimension and hide it
-        this.parent.appendChild(this.viewPort);
+        this.viewPort = this.parentHTML.getElementsByClassName("preset_select_viewport")[0];
+        this.buttonPort = this.parentHTML.getElementsByClassName("preset_select_button_port")[0];
     }
 
-    loadPreset() {
-
-    }
-
-    async showPresetSelect() {
-        this.presets = await this.connection.get("/presets");
-
+    async updatePresets(interfaceType, actionCallback) {
+        console.log(this.buttonPort)
+        this.actionCallback = actionCallback;
+        this.presetList = await overview.connection.get("/presets");
         for (let i = 0; i < this.presets.length; i++) {
-            let presetButton = document.createElement('button');
-            this.patternHue.addEventListener('input', function () {
-                localThis.inputHue();
-                localThis.changeHue();
-            });
-            this.presets[i].Name;
+            this.presets[i].clearFromList();
         }
-    }
-
-    async hidePresetSelect() {
-
+        for (let i = 0; i < this.presetList.length; i++) {
+            this.presets.push(new Preset(this.buttonPort, this.presetList[i].name, this.presetList[i].config, this.presetList[i].palette, this.actionCallback));
+        }
+        // MoA fixme hide the input box
     }
 }
 
@@ -1028,6 +1031,8 @@ class AbstractControlParameterView {
     constructor(parent) {
         this.parent = parent;
         this.htmlNode = this.parent.htmlView;
+        this.presetSelect = new PresetSelect(this.htmlNode);
+
         let localThis = this;
         this.patternHue = this.htmlNode.getElementsByClassName("parameter_ctrl_slider_pattern_hue")[0];
         this.patternHue.addEventListener('input', function () {
@@ -1063,18 +1068,39 @@ class AbstractControlParameterView {
         });
         this.loadPresetBtn = this.htmlNode.getElementsByClassName("load_preset_btn")[0];
         this.loadPresetBtn.addEventListener('click', function () {
-            localThis.loadPreset();
+            localThis.showLoadPreset();
         });
         this.savePresetBtn = this.htmlNode.getElementsByClassName("save_preset_btn")[0];
         this.savePresetBtn.addEventListener('click', function () {
-            localThis.savePreset();
+            localThis.showSavePreset();
         });
+        this.presetSelectConfirm = this.htmlNode.getElementsByClassName("preset_select_confirm")[0];
+        this.presetSelectPresetNameInput = this.htmlNode.getElementsByClassName("preset_select_preset_name_input")[0];
+        this.presetSelectConfirm.addEventListener('click', function () {
+
+            if (localThis.presetSelectPresetNameInput.value != "") {
+                let preset = new Object();
+                preset.name = localThis.presetSelectPresetNameInput.value;
+                localThis.savePresetSelectButtonCallback(preset);
+            }
+        });
+
+    }
+
+    updateSelectedConfig() {
+        for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
+            let config = this.linkedAbstract.config.stripes[i].config;
+            if (config != null) {
+                this.updateUIParameters(config);
+                return
+            }
+        }
     }
 
     showAbstract(abstract) {
         this.linkedAbstract = abstract;
 
-        this.setCurrentConfig();
+        this.updateSelectedConfig();
 
         let parameterSelectFields = this.htmlNode.getElementsByClassName('parameter_ctrl_select');
         for (let i = 0; i < parameterSelectFields.length; i++) {
@@ -1087,12 +1113,64 @@ class AbstractControlParameterView {
         }
     }
 
-    loadPreset() {
-        // MOA fixme TBD
+    colorChangeCallback(){
+        console.log("TBD")
+        // let selectionView = this.parent.selectionView;
+        // if (selectionView != null) {
+        //     selectionView = this.parent.parent.selectionView;
+        // }
+        // let color = selectionView.patternSelect.getFirstSelectedPatternColor();
+        // if (color != null) {
+        //     console.log("COLOR")
+        //     console.log(color);
+        //     console.log(this.patternHue);
+        //     this.patternHue.value = color.hue;
+        //     this.patternSaturation.value = color.saturation;
+        //     this.patternBrightness.value = color.brightness;
+        // }
+    }
+    showLoadPreset() {
+        let localThis = this;
+        this.presetSelect.updatePresets("load", function (preset) {
+            localThis.loadPresetSelectButtonCallback(preset);
+        })
     }
 
-    savePreset() {
-        // MOA fixme TBD
+    showSavePreset() {
+        let localThis = this;
+        this.presetSelect.updatePresets("save", function (preset) {
+            localThis.savePresetSelectButtonCallback(preset);
+        })
+    }
+
+    loadPresetSelectButtonCallback(preset) {
+        console.log("----LOAD PRESET-----");
+        let config = Object();
+        config.config = preset.config;
+        config.palette = preset.palette;
+        console.log(config);
+        this.updateUIParameters(config);
+        // set the config in the UI and send it to all selected arduinos
+        this.sendConfig();
+        this.sendPattern();
+    }
+
+    savePresetSelectButtonCallback(preset) {
+        console.log("----SAVE PRESET-----")
+        let newPreset = new Object();
+        newPreset.name = preset.name;
+        newPreset.config = this.getConfig();
+        newPreset.palette = this.getCurrentPatternPalette();
+        let obj = new Object();
+        obj.config = newPreset;
+
+        obj.apiPath = "/presets";
+
+        console.log('---- SENDING PRESET ----')
+        console.log(obj);
+        console.log(JSON.stringify(obj.config));
+
+        overview.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }
 
     inputHue() {
@@ -1135,7 +1213,7 @@ class AbstractControlParameterView {
         this.sendConfig();
     }
 
-    setCurrentConfig() {
+    updateUIParameters(newConfig) {
         this.stripeOverlayDiv.style.display = "none";
         for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
             let config = this.linkedAbstract.config.stripes[i].config;
@@ -1144,26 +1222,24 @@ class AbstractControlParameterView {
             }
         }
 
-        for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
-            let config = this.linkedAbstract.config.stripes[i].config;
-            // MOA fixme needs also to check if something is selected, but for now keep it simple
-            if (config != null) {
-                if (config.config.brightness == 255) {
-                    config.config.brightness = 256;
+        if (newConfig != null) {
+            if (newConfig.config != null) {
+                if (newConfig.config.brightness == 255) {
+                    newConfig.config.brightness = 256;
                 }
-                this.stripeBrightness.value = config.config.brightness;
-                this.stripeSpeed.value = config.config.movement_speed;
-                this.stripeSpeed.value = config.config.movement_speed;
-                this.stripeStretch.value = config.config.stretch;
-                if (config.config.overlay_ratio == 255) {
-                    config.config.overlay_ratio = 256;
+                this.stripeBrightness.value = newConfig.config.brightness;
+                this.stripeSpeed.value = newConfig.config.movement_speed;
+                this.stripeSpeed.value = newConfig.config.movement_speed;
+                this.stripeStretch.value = newConfig.config.stretch;
+                if (newConfig.config.overlay_ratio == 255) {
+                    newConfig.config.overlay_ratio = 256;
                 }
-                this.stripeOverlay.value = config.config.overlay_ratio;
-
-                this.setCurrentPatternPalette(config.palette.palette);
-
-                return;
+                this.stripeOverlay.value = newConfig.config.overlay_ratio;
             }
+            if (newConfig.palette != null) {
+                this.setCurrentPatternPalette(newConfig.palette.palette);
+            }
+            return;
         }
     }
 
@@ -1306,7 +1382,6 @@ class AbstractControlParameterView {
         let config = this.parent.linkedAbstract.config;
 
         let selectedStripes = this.parent.linkedAbstract.stripeView.getSelectedStripes();
-        let selectedPatternIndicies = this.parent.selectionView.getSelectedPatternIndices();
 
         console.log(selectedStripes);
         if (selectedStripes.length == 0) {
@@ -1320,27 +1395,6 @@ class AbstractControlParameterView {
         obj.apiPath = "/abstract/" + this.parent.linkedAbstract.id + "/stripes/palette";
         obj.config.stripe_ids = selectedStripes;
         obj.config.palette = this.getCurrentPatternPalette();
-        // for (let i = 0; i < config.stripes.length; i++) {
-        //     if (config.stripes[i].stripe_id == selectedStripes[0]) {
-        //         if ((config.stripes[i].config == null) || (config.stripes[i].config.palette == null)) {
-        //             continue;
-        //         }
-        //         obj.config.palette = config.stripes[i].config.palette;
-        //         break;
-        //     }
-        // }
-        // if (obj.config.palette == null) {
-        //     return;
-        // }
-        // for (let i = 0; i < selectedPatternIndicies.length; i++) {
-        //     for (let j = 0; j < obj.config.palette.palette.length; j++) {
-        //         if (obj.config.palette.palette[j].index == selectedPatternIndicies[i]) {
-        //             obj.config.palette.palette[j].h = 255;
-        //             obj.config.palette.palette[j].s = 255;
-        //             obj.config.palette.palette[j].v = 255;
-        //         }
-        //     }
-        // }
 
         console.log('---- SENDING PATTERN ----')
         console.log(obj);
