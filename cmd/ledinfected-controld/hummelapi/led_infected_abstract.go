@@ -34,7 +34,8 @@ type (
 	}
 	ImageMapArea struct {
 		StripeID string `json:"stripe_id"`
-		Area     string `json:"area"`
+		AreaMax  string `json:"max_view"`
+		AreaMin  string `json:"min_view"`
 	}
 	ImageDimension struct {
 		Height int `json:"height"`
