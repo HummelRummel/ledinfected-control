@@ -8,6 +8,16 @@
     overflow: hidden;
 }
 
+.preset_select_viewport{
+    witdth: 100%;
+    height: 40%;
+}
+
+.preset_select_line{
+    witdth: 100%;
+    padding: 4px;
+}
+
 .simple_picture_btn {
     width: 32px;
     height: 32px;
@@ -218,6 +228,8 @@ table {
 
 .slidecontainer {
     height: 200px;
+    padding-left: 6px;
+    padding-right: 6px
 }
 
 .parameter_slider_container {

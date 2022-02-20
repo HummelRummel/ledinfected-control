@@ -36,6 +36,7 @@ class LEDInfectedApp {
     }
 
     async init() {
+        this.overview.initHummeln();
         this.ledInfected.init(this.connection);
     }
 }
@@ -507,6 +508,10 @@ class Overview {
         document.body.appendChild(this.viewPort);
 
         this.addWindAnimation();
+    }
+
+    initHummeln() {
+        createHummel(this.viewPort);
     }
 
     addWindAnimation() {
@@ -1032,26 +1037,26 @@ class PaletteSelect {
             segment.appendColor(255, 255, 255);
             this.segments_l0.push(segment);
 
-            this.paletteSelectMax.appendArea(this.getAreaMax(id), segment);
-            this.paletteSelectMin.appendArea(this.getAreaMin(id), segment);
+            this.paletteSelectMax.appendArea(this.getAreaMax(id), true, segment);
+            this.paletteSelectMin.appendArea(this.getAreaMin(id), true, segment);
         }
         for (let i = 0; i < 8; i++) {
             let id = "1_" + (i + 1).toString().padStart(2, '0');
             let segment = new PatternSegment(this, id);
             this.segments_l1.push(segment);
 
-            this.paletteSelectMax.appendArea(this.getAreaMax(id), segment);
+            this.paletteSelectMax.appendArea(this.getAreaMax(id), false, segment);
         }
         for (let i = 0; i < 4; i++) {
             let id = "2_" + (i + 1).toString().padStart(2, '0');
             let segment = new PatternSegment(this, id);
             this.segments_l2.push(segment);
 
-            this.paletteSelectMax.appendArea(this.getAreaMax(id), segment);
+            this.paletteSelectMax.appendArea(this.getAreaMax(id), false, segment);
         }
         this.segment_l3 = new PatternSegment(this, "3_01");
-        this.paletteSelectMax.appendArea(this.getAreaMax("3_01"), this.segment_l3);
-        this.paletteSelectMin.appendArea(this.getAreaMin("3_01"), this.segment_l3);
+        this.paletteSelectMax.appendArea(this.getAreaMax("3_01"), false, this.segment_l3);
+        this.paletteSelectMin.appendArea(this.getAreaMin("3_01"), false, this.segment_l3);
 
         // now add the background image
         this.paletteSelectMax.appendBackground();
@@ -1302,7 +1307,7 @@ class PaletteSelectViewport {
         linkedSegment.registerViewPortUnselectedElement(this.inactive);
     }
 
-    appendArea(areaMap, linkedSegment) {
+    appendArea(areaMap, colored, linkedSegment) {
         let points = "";
         if (areaMap != "") {
             let areas = areaMap.split(",");
@@ -1314,6 +1319,9 @@ class PaletteSelectViewport {
             }
             let area = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
             area.setAttribute('points', points);
+            if (colored == false) {
+                area.setAttribute('fill-opacity', 0.0);
+            }
             area.style.pointerEvents = "all";
             area.addEventListener("click", function () {
                 linkedSegment.toggleState()
@@ -1340,22 +1348,22 @@ class PaletteSelectViewport {
 class ImageMapPalette {
     constructor() {
         this.map = [];
-        this.appendArea("0_01", "243,21,268,24,291,29,323,36,298,91,280,83,258,81,242,80");
-        this.appendArea("0_02", "322,38,347,50,367,62,394,85,354,124,332,110,318,101,304,91");
-        this.appendArea("0_03", "396,87,414,108,431,133,441,158,389,177,381,158,369,142,357,127");
-        this.appendArea("0_04", "391,183,444,161,452,184,456,210,461,239,403,238,399,208");
-        this.appendArea("0_05", "402,242,459,242,457,271,452,297,443,321,391,300,398,279,401,264");
-        this.appendArea("0_06", "390,303,440,323,432,347,416,370,397,393,355,352,379,323");
-        this.appendArea("0_07", "354,356,392,395,374,414,349,428,324,442,304,388,331,374");
-        this.appendArea("0_08", "302,390,320,441,297,452,273,458,241,458,242,401,273,398");
-        this.appendArea("0_09", "239,402,237,459,210,458,183,452,158,442,179,390,206,396");
-        this.appendArea("0_10", "179,388,154,442,114,421,85,397,128,355,147,374");
-        this.appendArea("0_11", "125,352,81,396,54,357,38,325,91,304,103,328");
-        this.appendArea("0_12", "21,241,81,239,83,271,94,301,35,323,24,283");
-        this.appendArea("0_13", "78,240,22,240,22,198,36,159,90,181,81,207");
-        this.appendArea("0_14", "39,153,57,117,84,85,125,126,103,151,92,178");
-        this.appendArea("0_15", "83,83,118,56,155,34,181,91,151,105,127,124");
-        this.appendArea("0_16", "162,38,199,21,237,19,239,80,209,81,183,88");
+        this.appendArea("0_01", "243,21,268,24,291,29,323,36,298,91,280,83,258,81,242,80", "23,8,58,6,59,22,22,25");
+        this.appendArea("0_02", "322,38,347,50,367,62,394,85,354,124,332,110,318,101,304,91", "73,5,108,8,108,25,71,25");
+        this.appendArea("0_03", "396,87,414,108,431,133,441,158,389,177,381,158,369,142,357,127", "120,7,154,9,154,24,119,27");
+        this.appendArea("0_04", "391,183,444,161,452,184,456,210,461,239,403,238,399,208", "168,8,203,8,202,24,167,26");
+        this.appendArea("0_05", "402,242,459,242,457,271,452,297,443,321,391,300,398,279,401,264", "215,10,251,7,250,28,215,27");
+        this.appendArea("0_06", "390,303,440,323,432,347,416,370,397,393,355,352,379,323", "262,9,301,8,299,24,261,26");
+        this.appendArea("0_07", "354,356,392,395,374,414,349,428,324,442,304,388,331,374", "311,8,347,8,347,25,312,25");
+        this.appendArea("0_08", "302,390,320,441,297,452,273,458,241,458,242,401,273,398", "359,8,396,9,395,23,359,26");
+        this.appendArea("0_09", "239,402,237,459,210,458,183,452,158,442,179,390,206,396", "22,40,58,40,57,57,21,56");
+        this.appendArea("0_10", "179,388,154,442,114,421,85,397,128,355,147,374", "72,40,106,40,106,57,71,57");
+        this.appendArea("0_11", "125,352,81,396,54,357,38,325,91,304,103,328", "120,40,154,40,153,57,118,58");
+        this.appendArea("0_12", "21,241,81,239,83,271,94,301,35,323,24,283", "167,40,203,39,202,57,166,57");
+        this.appendArea("0_13", "78,240,22,240,22,198,36,159,90,181,81,207", "214,40,250,41,250,58,214,57");
+        this.appendArea("0_14", "39,153,57,117,84,85,125,126,103,151,92,178", "262,40,299,39,299,57,261,57");
+        this.appendArea("0_15", "83,83,118,56,155,34,181,91,151,105,127,124", "311,38,348,40,347,59,309,58");
+        this.appendArea("0_16", "162,38,199,21,237,19,239,80,209,81,183,88", "359,41,395,40,395,57,357,58");
         this.appendArea("1_01", "243,82,274,87,305,96,332,112,350,127,310,166,292,153,267,142,242,140");
         this.appendArea("1_02", "353,130,373,157,386,181,395,214,396,237,343,239,338,213,330,191,313,170");
         this.appendArea("1_03", "400,241,395,270,388,297,372,327,354,348,314,313,330,291,341,267,341,240");
@@ -1368,7 +1376,7 @@ class ImageMapPalette {
         this.appendArea("2_02", "292,242,338,242,331,279,311,308,281,332,241,339,242,292,265,287,285,269");
         this.appendArea("2_03", "238,337,198,332,169,309,149,279,141,242,185,242,192,265,208,284,238,295");
         this.appendArea("2_04", "141,238,147,204,168,169,205,147,239,140,239,185,211,196,193,212,187,240");
-        this.appendArea("3_01", "241,192,262,194,281,210,289,232,286,253,279,273,260,286,240,291,220,288,202,276,193,257,190,233,201,207,217,194");
+        this.appendArea("3_01", "241,192,262,194,281,210,289,232,286,253,279,273,260,286,240,291,220,288,202,276,193,257,190,233,201,207,217,194", "404,7,423,5,422,61,403,61");
     }
 
     appendArea(id, areaMax, areaMin) {
@@ -1533,4 +1541,242 @@ class PresetSelect {
         }
         // MoA fixme hide the input box
     }
+}
+
+
+let hummeln = [];
+
+const maxSpeed = 100;
+const borderSizeLeftPercent = 2;
+const borderSizeTopPercent = 2;
+const hummelImageSize = 40;
+
+class Hummel {
+    constructor(hummelID, parentHTML) {
+        let xPercent = getRandomInt(5, 95);
+        let yPercent = getRandomInt(5, 95);
+        let x = (parentHTML.offsetWidth / 100) * xPercent;
+        let y = (parentHTML.offsetHeight / 100) * yPercent;
+
+        this.hummelID = hummelID;
+        this.parentHHMTL = parentHTML;
+        this.elements = createHummelElements(parentHTML, hummelID);
+        this.style = createHummelStyle(hummelID, xPercent, yPercent);
+        this.startPosX = 0;
+        this.startPosY = 0;
+        this.posX = x;
+        this.posY = y;
+        this.speed = getRandomInt(0, maxSpeed);
+        this.direction = getRandomInt(1, 360);
+        this.loopEnd = 0;
+        this.loopSpeed = 0;
+        this.autoMove = true;
+        this.imageSize = hummelImageSize;
+        this.mouseDown = false;
+
+        let that = this;
+        this.elements.hummel.addEventListener('mousedown', function (el) {
+            that.mouseDownCallback(el);
+        });
+    }
+
+    mouseDownCallback(el) {
+        let that = this;
+        this.mouseDown = true;
+        el.preventDefault();
+        // get the starting position of the cursor
+        this.startPosX = el.clientX;
+        this.startPosY = el.clientY;
+
+        let moveCallback = this.moveMouseCallback.bind(this);
+
+        this.autoMove = false;
+        document.addEventListener('mousemove', moveCallback);
+
+        let mouseUpCallback = function () {
+            that.mouseButtonIsDown = false;
+            document.removeEventListener('mousemove', moveCallback);
+            document.removeEventListener('mouseup', mouseUpCallback);
+            that.autoMove = true;
+        }
+        document.addEventListener('mouseup', mouseUpCallback);
+    }
+
+    moveMouseCallback(e) {
+        let hummel = this;
+
+        // calculate the new position
+        let newPosX = hummel.startPosX - e.clientX;
+        let newPosY = hummel.startPosY - e.clientY;
+
+        // with each move we also want to update the start X and Y
+        hummel.startPosX = e.clientX;
+        hummel.startPosY = e.clientY;
+        console.log(hummel.hummelID + " mouse move: " + newPosX + "," + newPosY);
+
+        // console.log(hummel.elements.hummel.style)
+        // set the element's new position:
+        hummel.posX = hummel.elements.hummel.offsetLeft - newPosX
+        hummel.posY = hummel.elements.hummel.offsetTop - newPosY
+
+        hummel.elements.hummel.style.left = hummel.posX + "px";
+        hummel.elements.hummel.style.top = hummel.posY + "px";
+    }
+
+    automaticMovementAction() {
+        let hummel = this;
+        let screenHeight = hummel.parent.offsetHeight;
+        let minY = (screenHeight / 100) * borderSizeTopPercent;
+        let maxY = screenHeight - minY - hummel.imageSize;
+
+        let screenWidth = hummel.parent.offsetWidth;
+        let minX = (screenWidth / 100) * borderSizeLeftPercent;
+        let maxX = screenWidth - minX - hummel.imageSize;
+
+        if (hummel.posX < minX) {
+            hummel.direction = getRandomInt(45, 135);
+            //console.log("minX reached, new direction: "+ hummel.direction)
+
+            hummel.speed = maxSpeed;
+        } else if (hummel.posX > maxX) {
+            hummel.direction = getRandomInt(225, 315);
+            //console.log("maxX reached, new direction: "+ hummel.direction)
+
+            hummel.speed = maxSpeed;
+        } else if (hummel.posY < minY) {
+            hummel.direction = getRandomInt(135, 225);
+            //console.log("minY reached, new direction: "+ hummel.direction)
+            hummel.speed = maxSpeed;
+        } else if (hummel.posY > maxY) {
+            hummel.direction = getRandomInt(-45, 45);
+            //console.log("maxY reached, new direction: "+ hummel.direction)
+
+            hummel.speed = maxSpeed;
+        } else {
+            let seed = getRandomInt(0, 1000)
+            if (seed == 0) {
+                let oldSpeed = hummel.Speed;
+                hummel.speed = getRandomInt(0, 100);
+                //console.log("change speed from "+oldSpeed+" to "+ hummel.speed)
+            } else if (seed == 1) {
+                hummel.direction = getRandomInt(0, 360);
+                //console.log("change direction from "+ oldDirection +" to " + hummel.direction);
+            } else if (seed == 2) {
+                hummel.speed = 100;
+                let loopValue = 360;
+                if (getRandomInt(1, 2) == 1) {
+                    hummel.direction += loopValue;
+                } else {
+                    hummel.direction -= loopValue;
+                }
+                hummel.loopSpeed = getRandomInt(3, 10);
+                hummel.loopEnd = getRandomInt(1, 360);
+                console.log(hummel.hummelID + ": do a loop with " + loopValue)
+            } else if ((seed > 100) && (seed < 200)) {
+                //console.log("direction correction")
+                hummel.direction += getRandomInt(-2, 2);
+            }
+        }
+
+        hummel.direction += getRandomInt(-1, 1);
+
+        if (hummel.loopEnd > 0) {
+            //console.log(hummel.hummelID + ": loop action")
+            if (hummel.direction > hummel.loopEnd) {
+                hummel.direction -= hummel.loopSpeed;
+                if (hummel.direction < hummel.loopEnd) {
+                    hummel.direction = hummel.loopEnd;
+                }
+            } else if (hummel.direction < hummel.loopEnd) {
+                hummel.direction += hummel.loopSpeed;
+                if (hummel.direction > hummel.loopEnd) {
+                    hummel.direction = hummel.loopEnd;
+                }
+            }
+            if (hummel.direction == hummel.loopEnd) {
+                hummel.loopEnd = 0;
+            }
+        }
+
+        if (hummel.speed > (maxSpeed / 2)) {
+            hummel.speed -= maxSpeed / 20;
+        } else if (hummel.speed < (maxSpeed / 2)) {
+            hummel.speed += maxSpeed / 20;
+        }
+
+        // do the movement
+        hummel.posX += (Math.cos((hummel.direction - 90) * (Math.PI / 180)) * (hummel.speed / 20));
+        hummel.posY += (Math.sin((hummel.direction - 90) * (Math.PI / 180)) * (hummel.speed / 20));
+
+        //  console.log(hummel.direction + ": "+ Math.cos((180 / Math.PI) * hummel.direction) + "/" + Math.sin((180 / Math.PI) * hummel.direction))
+
+        hummel.elements.hummel.style.left = hummel.posX + "px";
+        hummel.elements.hummel.style.top = hummel.posY + "px";
+        hummel.elements.hummel.style.transform = "rotate(" + (hummel.direction - 45) + "deg)"
+    }
+}
+
+function createHummel(parentElement) {
+    // new Hummel("123", parentElement)
+}
+
+
+function createHummelElements(parentElement, hummelID) {
+    const hummelEl = document.createElement("div");
+    hummelEl.setAttribute('class', hummelID)
+
+    parentElement.appendChild(hummelEl);
+
+    const hummelBodyEl = document.createElement("img");
+    hummelBodyEl.setAttribute('class', hummelID + '_body');
+    hummelBodyEl.setAttribute('src', 'assets/img/hummel.gif');
+
+    hummelEl.appendChild(hummelBodyEl);
+
+    return {hummel: hummelEl, body: hummelBodyEl};
+}
+
+function createHummelStyle(hummelID, x, y) {
+    const style = document.createElement("style");
+
+    style.innerHTML = "\n"
+
+    style.innerHTML += "\n"
+    style.innerHTML += "." + hummelID + "{\n"
+    style.innerHTML += "    width:50px;\n"
+    style.innerHTML += "    height:50px;\n"
+    style.innerHTML += "    left:" + x + "%;\n"
+    style.innerHTML += "    top:" + y + "%;\n"
+    style.innerHTML += "    position:absolute;\n"
+//    style.innerHTML += "    background:#0000ff;\n"
+    style.innerHTML += "    cursor:move;\n"
+    style.innerHTML += "    z-index: 3;\n"
+    style.innerHTML += "}\n"
+
+    // add hummel body style
+    style.innerHTML += "\n"
+    style.innerHTML += "." + hummelID + "_body {\n"
+    style.innerHTML += "    width:" + hummelImageSize + "px;\n"
+    style.innerHTML += "    height:" + hummelImageSize + "px;\n"
+    style.innerHTML += "    left:5px;\n"
+    style.innerHTML += "    top:5px;\n"
+//    style.innerHTML += "    z-index: 3;\n"
+//    style.innerHTML += "    background:#ff0000;\n"
+    style.innerHTML += "    animation-name: " + hummelID + "_floating;\n"
+    style.innerHTML += "    animation-duration: 10s;\n"
+    style.innerHTML += "    animation-iteration-count: infinite;\n"
+    style.innerHTML += "    animation-direction: alternate;\n"
+    style.innerHTML += "    animation-timing-function: ease-in-out;\n"
+    //   style.innerHTML += "    box-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;\n"
+    style.innerHTML += "}\n"
+
+    // add keyframes for individual hummel floating
+    style.innerHTML += "\n"
+    style.innerHTML += "@keyframes " + hummelID + "_floating {\n";
+    for (n = 0; n < 11; ++n) {
+        style.innerHTML += randomTranslate(n * 10, 0, 10);
+    }
+    style.innerHTML += "}\n";
+    document.head.appendChild(style);
+    return style;
 }
