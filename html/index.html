@@ -30,43 +30,34 @@
         </div>
         <button class="toggle_stripe_canvas_btn toggle_btn">Hide</button>
     </div>
-    <div class="parameter_slider_container" height="auto" width="100%">
-        <div class="flex_display" style="display: flex; flex-flow: column; flex-grow: 1" height="auto"
-             width="100%">
-            <div class="slidecontainer" height="32px" width="auto"
-                 style="padding-top: 8px;">
-                <div class="flex_display"
-                     style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;">
-                    <img src="assets/img/brightness.png" height="32px" width="32px">
-                    <input type="range" min="0" max="256" step="8" value="256"
-                           class="slider parameter_ctrl_slider_stripe_brightness">
+    <div class="parameter_slider_container">
+        <div class="flex_column">
+            <div class="slide_container" style="padding-top: 8px;">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/brightness.png">
+                    <input class="slider parameter_ctrl_slider_stripe_brightness"
+                           type="range" min="0" max="256" step="8" value="256">
                 </div>
             </div>
-            <div class="slidecontainer" height="auto" width="100%">
-                <div class="flex_display"
-                     style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
-                     height="64px" width="100%">
-                    <img src="assets/img/speed.png" height="32px" width="32px">
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/speed.png">
                     <input type="range" min="-16" max="16" value="0"
                            class="slider parameter_ctrl_slider_stripe_speed" height="auto" width="100%">
                 </div>
             </div>
-            <div class="slidecontainer" height="auto" width="100%">
-                <div class="flex_display"
-                     style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
-                     height="64px" width="100%">
-                    <img src="assets/img/stretch.png" height="32px" width="32px">
-                    <input type="range" min="-100" max="100" value="0"
-                           class="slider parameter_ctrl_slider_stripe_stretch" height="auto" width="100%">
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/stretch.png">
+                    <input class="slider parameter_ctrl_slider_stripe_stretch"
+                           type="range" min="-100" max="100" value="0">
                 </div>
             </div>
-            <div class="slidecontainer parameter_ctrl_stripe_overlay_div" height="auto" width="100%">
-                <div class="flex_display"
-                     style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
-                     height="64px" width="100%">
-                    <img src="assets/img/overlay.png" height="32px" width="32px">
-                    <input type="range" min="0" max="256" value="0"
-                           class="slider parameter_ctrl_slider_stripe_overlay" height="auto" width="100%">
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/overlay.png">
+                    <input class="slider parameter_ctrl_slider_stripe_overlay"
+                           type="range" min="0" max="256" value="0">
                 </div>
             </div>
             <div height="auto" width="80%"
@@ -77,42 +68,36 @@
                 </svg>
                 <button class="toggle_pattern_canvas_btn toggle_btn">Hide</button>
             </div>
-            <div class="slidecontainer" height="auto" width="100%">
-                <div class="flex_display"
-                     style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
-                     height="64px" width="100%">
-                    <img src="assets/img/hue.png" height="32px" width="32px">
-                    <input type="range" min="0" max="256" step=8 value="256"
-                           class="slider parameter_ctrl_slider_pattern_hue" height="auto" width="100%">
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/hue.png" >
+                    <input class="slider parameter_ctrl_slider_pattern_hue"
+                           type="range" min="0" max="256" step=8 value="256">
                 </div>
             </div>
-            <div class="slidecontainer" height="auto" width="100%">
-                <div class="flex_display"
-                     style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
-                     height="64px" width="100%">
-                    <img src="assets/img/saturation.png" height="32px" width="32px">
-                    <input type="range" min="0" max="256" step=8 value="256"
-                           class="slider parameter_ctrl_slider_pattern_saturation" height="auto"
-                           width="100%">
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/saturation.png">
+                    <input class="slider parameter_ctrl_slider_pattern_saturation"
+                           type="range" min="0" max="256" step=8 value="256">
                 </div>
             </div>
-            <div class="slidecontainer" height="auto" width="100%">
-                <div class="flex_display"
-                     style="display: flex; flex-flow: row; flex-grow: 1; margin-right: auto; flex: 1;"
-                     height="64px" width="100%">
-                    <img src="assets/img/brightness.png" height="32px" width="32px">
-                    <input type="range" min="0" max="256" step=8 value="256"
-                           class="slider parameter_ctrl_slider_pattern_brightness" height="auto"
-                           width="100%">
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/brightness.png">
+                    <input class="slider parameter_ctrl_slider_pattern_brightness"
+                           type="range" min="0" max="256" step=8 value="256">
                 </div>
             </div>
             <div class="preset_select_viewport" style="height: 500px; width: 100%;">
                 <div class="preset_select_button_port">
                 </div>
-                <input type="text" class="preset_select_preset_name_input preset_select_line">
                 <div class="preset_select_line">
-                    <button class="preset_select_confirm">Confirm</button>
-                    <button class="preset_select_cancel">Cancel</button>
+                    <input type="text" class="preset_select_preset_name_input" style="margin: auto 0 auto auto;">
+                </div>
+                <div class="preset_select_line">
+                    <button class="preset_select_confirm simple_preset_btn">Confirm</button>
+                    <button class="preset_select_cancel simple_preset_btn">Cancel</button>
                 </div>
             </div>
             <div class="button_container" width="100%" height="64px"
