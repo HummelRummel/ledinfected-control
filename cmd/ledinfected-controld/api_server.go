@@ -66,6 +66,7 @@ func (o *apiServer) run() {
 
 func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.GET("/api", o.getAllCallback)
+	o.engine.POST("/api/sync", o.syncCallback)
 	o.engine.GET("/api/arduino", o.getAllArduinosCallback)
 	o.engine.GET("/api/arduino/:ArduinoId", o.getArduinoByIDCallback)
 	o.engine.POST("/api/arduino/:ArduinoId/set_id", o.setArduinoIDCallback)

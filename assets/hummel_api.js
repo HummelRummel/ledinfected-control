@@ -758,9 +758,10 @@ class ControlStripe {
 
     applyConfig(newConfig) {
         this.stripeOverlayDiv.style.display = "none";
+        console.log(this.linkedAbstract)
         for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
             let config = this.linkedAbstract.config.stripes[i].config;
-            if (config != null && config.setup.overlayID > 1 && config.setup.overlayID < 6) {
+            if (config != null && config.setup.overlay_id > 1 && config.setup.overlay_id < 6) {
                 this.stripeOverlayDiv.style.display = "block";
             }
         }
@@ -793,6 +794,7 @@ class ControlStripe {
                 this.paletteSelect.segments_l0[i].setColorH(newValue);
             }
         }
+        this.sendPattern();
     }
 
     updateParameterS(el) {
@@ -802,6 +804,7 @@ class ControlStripe {
                 this.paletteSelect.segments_l0[i].setColorS(newValue);
             }
         }
+        this.sendPattern();
     }
 
     updateParameterB(el) {
@@ -811,6 +814,7 @@ class ControlStripe {
                 this.paletteSelect.segments_l0[i].setColorB(newValue);
             }
         }
+        this.sendPattern();
     }
 
     getCurrentConfig() {
@@ -1005,24 +1009,28 @@ class StripeSelectViewport {
 // PaletteSelect
 /////////////////////////////////////////////////////////////////////////////////////////////
 class PaletteSelect {
-    constructor(parent, canvasMax, canvasMin) {
+    constructor(parent, canvasMax, canvasMin, minimal, palette) {
         let that = this;
         this.parent = parent;
         this.imageMap = new ImageMapPalette();
-        this.paletteSelectMax = new PaletteSelectViewport(this, canvasMax, "");
+        if (minimal != true) {
+            this.paletteSelectMax = new PaletteSelectViewport(this, canvasMax, "");
+        }
         this.paletteSelectMin = new PaletteSelectViewport(this, canvasMin, "-min");
 
-        // register the basic toggle callback
-        this.toggleSvgEl = this.parent.viewPort.getElementsByClassName('toggle_pattern_canvas_btn')[0];
-        this.toggleSvgEl.addEventListener('click', function () {
-            if (canvasMax.style.display !== "none") {
-                canvasMax.style.display = "none";
-                canvasMin.style.display = "block";
-            } else {
-                canvasMin.style.display = "none";
-                canvasMax.style.display = "block";
-            }
-        })
+        if (minimal != true) {
+            // register the basic toggle callback
+            this.toggleSvgEl = this.parent.viewPort.getElementsByClassName('toggle_pattern_canvas_btn')[0];
+            this.toggleSvgEl.addEventListener('click', function () {
+                if (canvasMax.style.display !== "none") {
+                    canvasMax.style.display = "none";
+                    canvasMin.style.display = "block";
+                } else {
+                    canvasMin.style.display = "none";
+                    canvasMax.style.display = "block";
+                }
+            })
+        }
 
         // Create the segments and append areas to their viewports
         // To be able to show it in a minimal and maximized view, two view ports are defined
@@ -1033,49 +1041,65 @@ class PaletteSelect {
         for (let i = 0; i < 16; i++) {
             let id = "0_" + (i + 1).toString().padStart(2, '0');
             let segment = new PatternSegment(this, id);
-            segment.appendState(true);
-            segment.appendColor(255, 255, 255);
+            segment.appendState(!minimal);
+            if (palette != null) {
+                let color = palette.getColor(i);
+                segment.appendColor(color.h, color.s, color.b);
+            } else {
+                segment.appendColor(255, 255, 255);
+            }
             this.segments_l0.push(segment);
 
-            this.paletteSelectMax.appendArea(this.getAreaMax(id), true, segment);
+            if (minimal != true) {
+                this.paletteSelectMax.appendArea(this.getAreaMax(id), true, segment);
+            }
             this.paletteSelectMin.appendArea(this.getAreaMin(id), true, segment);
         }
-        for (let i = 0; i < 8; i++) {
-            let id = "1_" + (i + 1).toString().padStart(2, '0');
-            let segment = new PatternSegment(this, id);
-            this.segments_l1.push(segment);
+        if (minimal != true) {
+            for (let i = 0; i < 8; i++) {
+                let id = "1_" + (i + 1).toString().padStart(2, '0');
+                let segment = new PatternSegment(this, id);
+                this.segments_l1.push(segment);
 
-            this.paletteSelectMax.appendArea(this.getAreaMax(id), false, segment);
+                this.paletteSelectMax.appendArea(this.getAreaMax(id), false, segment);
+            }
+
+            for (let i = 0; i < 4; i++) {
+                let id = "2_" + (i + 1).toString().padStart(2, '0');
+                let segment = new PatternSegment(this, id);
+                this.segments_l2.push(segment);
+
+                this.paletteSelectMax.appendArea(this.getAreaMax(id), false, segment);
+            }
+            this.segment_l3 = new PatternSegment(this, "3_01");
+            this.paletteSelectMax.appendArea(this.getAreaMax("3_01"), false, this.segment_l3);
+            this.paletteSelectMin.appendArea(this.getAreaMin("3_01"), false, this.segment_l3);
         }
-        for (let i = 0; i < 4; i++) {
-            let id = "2_" + (i + 1).toString().padStart(2, '0');
-            let segment = new PatternSegment(this, id);
-            this.segments_l2.push(segment);
 
-            this.paletteSelectMax.appendArea(this.getAreaMax(id), false, segment);
+        if (minimal != true) {
+            // now add the background image
+            this.paletteSelectMax.appendBackground();
         }
-        this.segment_l3 = new PatternSegment(this, "3_01");
-        this.paletteSelectMax.appendArea(this.getAreaMax("3_01"), false, this.segment_l3);
-        this.paletteSelectMin.appendArea(this.getAreaMin("3_01"), false, this.segment_l3);
-
-        // now add the background image
-        this.paletteSelectMax.appendBackground();
         this.paletteSelectMin.appendBackground();
 
         // and finally add the segment pictures
         for (let i = 0; i < this.segments_l0.length; i++) {
-            this.paletteSelectMax.appendStateImage(this.segments_l0[i]);
+            if (minimal != true) {
+                this.paletteSelectMax.appendStateImage(this.segments_l0[i]);
+            }
             this.paletteSelectMin.appendStateImage(this.segments_l0[i]);
         }
-        for (let i = 0; i < this.segments_l1.length; i++) {
-            this.paletteSelectMax.appendStateImage(this.segments_l1[i]);
-        }
-        for (let i = 0; i < this.segments_l2.length; i++) {
-            this.paletteSelectMax.appendStateImage(this.segments_l2[i]);
-        }
+        if (minimal != true) {
+            for (let i = 0; i < this.segments_l1.length; i++) {
+                this.paletteSelectMax.appendStateImage(this.segments_l1[i]);
+            }
+            for (let i = 0; i < this.segments_l2.length; i++) {
+                this.paletteSelectMax.appendStateImage(this.segments_l2[i]);
+            }
 
-        this.paletteSelectMax.appendStateImage(this.segment_l3);
-        this.paletteSelectMin.appendStateImage(this.segment_l3);
+            this.paletteSelectMax.appendStateImage(this.segment_l3);
+            this.paletteSelectMin.appendStateImage(this.segment_l3);
+        }
 
         this.updateSelectedPaletteVisibility();
     }
@@ -1455,6 +1479,19 @@ class HSBColor {
         let gValue = parseInt(g * 255);
         let bValue = parseInt(b * 255);
         return "#" + rValue.toString(16).padStart(2, "0") + gValue.toString(16).padStart(2, "0") + bValue.toString(16).padStart(2, "0");
+    }
+}
+
+class Palette {
+    constructor(palette) {
+        this.palette = palette;
+    }
+    getColor(index){
+        for (let i = 0; i < this.palette.palette.length; i++){
+            if(index == this.palette.palette[i].index) {
+                return this.palette.palette[i];
+            }
+        }
     }
 }
 

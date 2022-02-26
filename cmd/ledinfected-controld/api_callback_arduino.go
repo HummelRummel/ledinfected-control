@@ -133,13 +133,14 @@ func (o *apiServer) syncCallback(c *gin.Context) {
 	var sumErr error
 	wg := sync.WaitGroup{}
 	for _, a:= range o.Arduinos {
+		fmt.Printf("sync arduino %d\n", a.GetID())
 		wg.Add(1)
-		go func() {
-			if err := a.GlobalSync(); err != nil {
+		go func(ard *hummelapi.LEDInfectedArduino) {
+			if err := ard.GlobalSync(); err != nil {
 				sumErr = err;
 			}
 			defer wg.Done()
-		}()
+		}(a)
 	}
 	wg.Wait()
 	if sumErr != nil {

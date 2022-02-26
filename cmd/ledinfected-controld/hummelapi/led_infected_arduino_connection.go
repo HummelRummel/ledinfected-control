@@ -213,6 +213,7 @@ func (o *LEDInfectedArduinoConnection) SetArduinoID(newID uint8) error {
 }
 
 func (o *LEDInfectedArduinoConnection) GlobalSync() error {
+	fmt.Printf("sync %s\n", o.devFile)
 	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSync, nil, 0)
 	return err
 }
