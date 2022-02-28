@@ -620,19 +620,36 @@ class ControlStripe {
         this.stripeBrightness = this.viewPort.getElementsByClassName("parameter_ctrl_slider_stripe_brightness")[0];
         this.stripeBrightness.addEventListener('input', function () {
             that.sendConfig();
+//            that.setTimeout(that.stripeBrightness, 255, 2000);
+        });
+        this.stripeBrightness.addEventListener('mouseup', function () {
+            that.clearTimeout();
         });
         this.stripeOverlayDiv = this.viewPort.getElementsByClassName("parameter_ctrl_stripe_overlay_div")[0];
         this.stripeOverlay = this.viewPort.getElementsByClassName("parameter_ctrl_slider_stripe_overlay")[0];
         this.stripeOverlay.addEventListener('input', function () {
             that.sendConfig();
+//            that.setTimeout(that.stripeOverlay, 0, 2000);
         });
+        this.stripeOverlay.addEventListener('mouseup', function () {
+            that.clearTimeout();
+        });
+
         this.stripeSpeed = this.viewPort.getElementsByClassName("parameter_ctrl_slider_stripe_speed")[0];
         this.stripeSpeed.addEventListener('input', function () {
             that.sendConfig();
+//            that.setTimeout(that.stripeSpeed, 0, 2000);
+        });
+        this.stripeSpeed.addEventListener('mouseup', function () {
+            that.clearTimeout();
         });
         this.stripeStretch = this.viewPort.getElementsByClassName("parameter_ctrl_slider_stripe_stretch")[0];
         this.stripeStretch.addEventListener('input', function () {
             that.sendConfig();
+//            that.setTimeout(that.stripeStretch, 0, 2000);
+        });
+        this.stripeStretch.addEventListener('mouseup', function () {
+            that.clearTimeout();
         });
         this.syncBtn = this.viewPort.getElementsByClassName("sync_btn")[0];
         this.syncBtn.addEventListener('click', function () {
@@ -659,6 +676,26 @@ class ControlStripe {
         this.closeBtn.addEventListener('click', function () {
             that.hide();
         });
+    }
+
+    clearTimeout() {
+        if (this.resetTimer != null) {
+            // in your click function, call clearTimeout
+            window.clearTimeout(this.resetTimer);
+            this.resetTimer = null;
+        }
+    }
+
+    setTimeout(el, resetValue, timeout) {
+        let that = this;
+        this.clearTimeout();
+
+        this.resetTimer = window.setTimeout(
+        function() {
+            el.value = resetValue;
+            that.sendConfig();
+            that.resetTimer = null;
+        }, timeout);
     }
 
     showAbstract(abstract) {
