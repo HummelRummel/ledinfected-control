@@ -24,7 +24,7 @@ func (o *apiServer) getCallbackArdoinoAndStripe(c *gin.Context) (*hummelapi.LEDI
 		return nil, nil, fmt.Errorf("could not read arduino id: %s", err)
 	}
 
-	stripeID, err := strconv.Atoi(c.Param("StripeId"))
+	stripeID, err := strconv.Atoi(c.Param("ArduinoStripeId"))
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not read stripe id: %s", err)
 	}
@@ -62,7 +62,7 @@ func (o *apiServer) getCallbackAbstract(c *gin.Context) (*hummelapi.LEDInfectedA
 
 func (o *apiServer) getCallbackAbstractAndStripe(c *gin.Context) (*hummelapi.LEDInfectedAbstract, *hummelapi.LEDInfectedAbstractStripe, error) {
 	objectID := c.Param("AbstractId")
-	stripeID := c.Param("StripeId")
+	stripeID := c.Param("AbstractStripeId")
 
 	return o.getObjectAndStripe(objectID, stripeID)
 }
@@ -73,6 +73,7 @@ func (o *apiServer) getAbstract(abstractID string) (*hummelapi.LEDInfectedAbstra
 			return a, nil
 		}
 	}
+
 	return nil, fmt.Errorf("abstract with id %d not found", abstractID)
 }
 

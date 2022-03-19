@@ -8,11 +8,34 @@ import (
 )
 
 type (
+	LEDInfectedFloor struct {
+		FloorID     string                `json:"hive_id"`
+		Name        string                `json:"name"`
+		Dimension   Dimension             `json:"dimension"`
+		Decorations []Decoration          `json:"decorations"`
+		Abstracts   []LEDInfectedAbstract `json:"abstracts"`
+	}
+
+	Decoration struct {
+		Position  Position  `json:"position"`
+		ImagePath string    `json:"image_path"`
+		Dimension Dimension `json:"dimension"`
+	}
+
+	LEDInfectedHive struct {
+		HiveID    string                `json:"hive_id"`
+		Name      string                `json:"name"`
+		URL       string                `json:"url"`
+		Abstracts []LEDInfectedAbstract `json:"abstracts"`
+	}
+
 	LEDInfectedAbstract struct {
 		AbstractID string                          `json:"abstract_id"` // arduinoID of the LED abstract
-		Info       *LEDInfectedAbstractGlobalInfo  `json:"info"`        // info of the LED abstract (cannot be changed)
-		Setup      *LEDInfectedAbstractGlobalSetup `json:"setup"`       // setup of the LED abstract (configurable)
-		Stripes    []*LEDInfectedAbstractStripe    `json:"stripes"`     // stripes of the LED abstract
+		HiveID     string                          `json:"hive_id"`
+		FloorID    string                          `json:"floor_id"`
+		Info       *LEDInfectedAbstractGlobalInfo  `json:"info"`    // info of the LED abstract (cannot be changed)
+		Setup      *LEDInfectedAbstractGlobalSetup `json:"setup"`   // setup of the LED abstract (configurable)
+		Stripes    []*LEDInfectedAbstractStripe    `json:"stripes"` // stripes of the LED abstract
 
 		linkedArduinos []*LEDInfectedArduino
 	}
@@ -27,7 +50,7 @@ type (
 		StripeView    AbstractImageStripeViewImage `json:"stripe_view"`
 	}
 	AbstractOverviewImage struct {
-		Dimension ImageDimension `json:"dimension"`
+		Dimension Dimension `json:"dimension"`
 	}
 	AbstractImageStripeViewImage struct {
 		ImgMap []ImageMapArea `json:"img_map"`
@@ -37,13 +60,13 @@ type (
 		AreaMax  string `json:"max_view"`
 		AreaMin  string `json:"min_view"`
 	}
-	ImageDimension struct {
+	Dimension struct {
 		Height int `json:"height"`
 		Width  int `json:"width"`
 	}
 
 	LEDInfectedAbstractGlobalSetup struct {
-		Position *LEDInfectedAbstractGlobalPosition `json:"position"` // position on the hummel wiese
+		Position *Position `json:"position"` // position on the hummel wiese
 	}
 
 	LEDInfectedAbstractStripe struct {
@@ -65,7 +88,7 @@ type (
 		Name           string                                  `json:"name"` // human readable name of the stripe
 	}
 
-	LEDInfectedAbstractGlobalPosition struct {
+	Position struct {
 		X int `json:"x"` // BlumenWiese x position
 		Y int `json:"y"` // BlumenWises y position
 	}
