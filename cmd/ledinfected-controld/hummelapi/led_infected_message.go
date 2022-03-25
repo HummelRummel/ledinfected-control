@@ -93,7 +93,7 @@ func (o *LEDInfectedResponse) getRspString() string {
 	case ledInfectedResponseCodeInvalidLen:
 		return "INVALID_LEN"
 	case ledInfectedResponseCodeInvalidChecksum:
-		return fmt.Sprintf("INVALID_CHECKSUM(%X,%X/%X,%X)", o.rspData[0], o.rspData[1], o.rspData[2], o.rspData[3])
+		return "INVALID_CHECKSUM"
 	case ledInfectedResponseCodeError:
 		return "ERROR"
 	}
