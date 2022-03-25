@@ -81,6 +81,7 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.POST("/api/abstract/:AbstractId/setup/save", o.saveAbstractCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripes/config", o.setAbstractStripeConfigMultiCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripes/palette", o.setAbstractStripePaletteMultiCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripes/save", o.setAbstractStripeSaveMultiCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/setup", o.setAbstractStripeSetupCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/setup/save", o.saveAbstractCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/config", o.setAbstractStripeConfigByIDCallback)

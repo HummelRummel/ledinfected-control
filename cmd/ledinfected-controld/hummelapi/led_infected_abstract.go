@@ -308,6 +308,23 @@ func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripe
 	return nil
 }
 
+func (o *LEDInfectedAbstract) SaveMulti(stripeIDs ...string) error {
+	for _, id := range stripeIDs {
+		found := false
+		for _, abStripe := range o.Stripes {
+			if abStripe.StripeID == id {
+				abStripe.Save()
+				found = true
+			}
+		}
+		if !found {
+			return fmt.Errorf("could not found stripe %s", id)
+		}
+	}
+
+	return nil
+}
+
 func (o *LEDInfectedAbstractStripe) SetSetup(setup *LEDInfectedAbstractStripeSetup) error {
 	o.Setup = setup
 	return nil

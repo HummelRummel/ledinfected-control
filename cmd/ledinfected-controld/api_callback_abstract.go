@@ -147,6 +147,28 @@ func (o *apiServer) setAbstractStripePaletteMultiCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, "{}")
 }
 
+func (o *apiServer) setAbstractStripeSaveMultiCallback(c *gin.Context) {
+	a, err := o.getCallbackAbstract(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "%s", err)
+		return
+	}
+	type multiSelect struct {
+		StripeIDs []string                                         `json:"stripe_ids"`
+	}
+	data := &multiSelect{}
+	if err := c.BindJSON(data); err != nil {
+		c.String(http.StatusBadRequest, "%s", err)
+		return
+	}
+
+	if err := a.SaveMulti(data.StripeIDs...); err != nil {
+		c.String(http.StatusBadRequest, "%s", err)
+		return
+	}
+	c.JSON(http.StatusOK, "{}")
+}
+
 func (o *apiServer) saveAbstractStripeCallback(c *gin.Context) {
 	_, s, err := o.getCallbackAbstractAndStripe(c)
 	if err != nil {
