@@ -1,0 +1,65 @@
+{
+  "abstract_id": "rainbow-eyes",
+  "info": {
+    "name": "Der Augen Ei-Sprung",
+    "image": {
+      "image_base_path": "/assets/img/abstracts/eyev1",
+      "overview": {
+        "dimension": {
+          "height": 180,
+          "width": 180
+        }
+      },
+      "stripe_view": {
+        "img_map": [
+          {
+            "stripe_id": "eye1",
+            "max_view": "130,184,161,180,187,188,214,203,230,223,238,252,235,286,217,318,184,338,158,341,117,328,92,297,78,260,87,225,106,200"
+          },
+          {
+            "stripe_id": "eye2",
+            "max_view": "297,185,329,179,354,188,381,211,398,243,402,268,390,297,361,328,327,341,302,340,275,325,250,302,241,275,244,238,260,211,279,194"
+          }
+        ]
+      }
+    },
+    "img_base_id": "eyev1",
+    "src_file": "configs/rainbow-eyes.json"
+  },
+  "setup": {
+    "position": {
+      "x": 200,
+      "y": 500
+    }
+  },
+  "stripes": [
+    {
+      "stripe_id": "eye1",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 255,
+            "arduino_stripe_id": 0
+          }
+        ],
+        "name": "Eye 1"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "eye2",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 255,
+            "arduino_stripe_id": 1
+          }
+        ],
+        "name": "Eye 2"
+      },
+      "config": null
+    }
+  ]
+}

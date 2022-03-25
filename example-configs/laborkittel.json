@@ -1,0 +1,87 @@
+{
+  "abstract_id": "laborkittel",
+  "info": {
+    "name": "LED Laborkittel",
+    "image": {
+      "image_base_path": "/assets/img/abstracts/laborkittel",
+      "overview": {
+        "dimension": {
+          "height": 180,
+          "width": 180
+        }
+      },
+      "stripe_view": {
+        "img_map": [
+          {
+            "stripe_id": "streifen-links",
+            "max_view": "172,140,182,133,198,134,199,151,203,180,212,199,213,241,211,277,199,298,193,319,193,331,183,330,181,311,190,270,189,214,182,173"
+          },
+          {
+            "stripe_id": "streifen-rechts",
+            "max_view": "299,142,315,142,319,156,305,201,293,255,287,274,268,314,270,335,254,336,265,256,267,226,274,191,289,154"
+          },
+          {
+            "stripe_id": "streifen-hinten",
+            "max_view": "230,150,255,150,253,195,247,237,242,279,237,321,226,359,214,356,213,330,225,278,236,186"
+          },
+          {
+            "stripe_id": "all",
+            "max_view": "350,375,376,371,402,364,446,367,453,433,399,438,404,447,390,447,349,439"
+          }
+        ]
+      }
+    },
+    "img_base_id": "laborkittel",
+    "src_file": "configs/laborkittel.json"
+  },
+  "setup": {
+    "position": {
+      "x": 500,
+      "y": 200
+    }
+  },
+  "stripes": [
+    {
+      "stripe_id": "streifen-links",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 77,
+            "arduino_stripe_id": 0
+          }
+        ],
+        "name": "Streifen links"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "streifen-rechts",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 77,
+            "arduino_stripe_id": 1
+          }
+        ],
+        "name": "Streifen rechts"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "streifen-hinten",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 77,
+            "arduino_stripe_id": 2
+          }
+        ],
+        "name": "Steifen hinten"
+      },
+      "config": null
+    }
+  ]
+}
