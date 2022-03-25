@@ -626,6 +626,8 @@ class ControlStripe {
             that.clearTimeout();
         });
         this.stripeOverlayDiv = this.viewPort.getElementsByClassName("parameter_ctrl_stripe_overlay_div")[0];
+        // MOA meier fixme: overlay disabled for now, it makes more bad then good
+        this.stripeOverlayDiv.style.display = "none";
         this.stripeOverlay = this.viewPort.getElementsByClassName("parameter_ctrl_slider_stripe_overlay")[0];
         this.stripeOverlay.addEventListener('input', function () {
             that.sendConfig();
@@ -643,6 +645,10 @@ class ControlStripe {
         this.stripeSpeed.addEventListener('mouseup', function () {
             that.clearTimeout();
         });
+        this.stripeStretchDiv = this.viewPort.getElementsByClassName("parameter_ctrl_stripe_stretch_div")[0];
+        // MOA meier fixme: strech disabled for now, it makes more bad then good
+        this.stripeStretchDiv.style.display = "none";
+
         this.stripeStretch = this.viewPort.getElementsByClassName("parameter_ctrl_slider_stripe_stretch")[0];
         this.stripeStretch.addEventListener('input', function () {
             that.sendConfig();
@@ -655,13 +661,22 @@ class ControlStripe {
         this.syncBtn.addEventListener('click', function () {
             app.ledInfected.syncMovement();
         });
+
+        // MOA meier fixme: this is just temporary
+        this.presetViewPort = this.viewPort.getElementsByClassName("preset_select_viewport")[0];
+        this.presetViewPort.style.display = "none";
+
         this.loadPresetBtn = this.viewPort.getElementsByClassName("show_load_preset_btn")[0];
+        // MOA meier fixme: overlay disabled for now, it makes more bad then good
+        this.loadPresetBtn.style.display = "none";
         this.loadPresetBtn.addEventListener('click', function () {
             that.showLoadPreset();
         });
         this.savePresetBtn = this.viewPort.getElementsByClassName("show_save_preset_btn")[0];
         this.savePresetBtn.addEventListener('click', function () {
-            that.showSavePreset();
+            // MOA meier fixme: for now disable the preset and use it to write data to the arduino
+            // that.showSavePreset();
+            that.saveConfig();
         });
         this.presetSelectConfirm = this.viewPort.getElementsByClassName("preset_select_confirm")[0];
         this.presetSelectPresetNameInput = this.viewPort.getElementsByClassName("preset_select_preset_name_input")[0];
@@ -799,7 +814,8 @@ class ControlStripe {
         for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
             let config = this.linkedAbstract.config.stripes[i].config;
             if (config != null && config.setup.overlay_id > 1 && config.setup.overlay_id < 6) {
-                this.stripeOverlayDiv.style.display = "block";
+                // MOA meier fixme: overlay disabled for now, it makes more bad then good
+                // this.stripeOverlayDiv.style.display = "block";
             }
         }
 
@@ -981,6 +997,26 @@ class ControlStripe {
 
         app.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }
+
+    saveConfig() {
+        let selectedStripes = this.linkedAbstract.getSelectedStripes();
+
+        if (selectedStripes.length == 0) {
+            console.log("no stripes selected")
+            return;
+        }
+
+        let obj = new Object();
+        obj.apiPath = "/abstract/" + this.linkedAbstract.id + "/stripes/save";
+
+        obj.config = new Object();
+        obj.config.stripe_ids = selectedStripes;
+
+        console.log('---- SAVE CURRENT CONFIG ----')
+        console.log(obj);
+
+        app.connection.post(obj.apiPath, JSON.stringify(obj.config));
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -992,6 +1028,8 @@ class StripeSelect {
         this.parent = parent;
 
         this.toggleSvgEl = this.parent.viewPort.getElementsByClassName('toggle_stripe_canvas_btn')[0];
+        // MOA meier fixme: this is only for temporary better usability
+        this.toggleSvgEl.style.display = "none";
         this.toggleSvgEl.addEventListener('click', function () {
             console.log("toggle stripe")
             if (that.stripeSelectMax.svgParent.style.display === "none") {
@@ -1056,8 +1094,14 @@ class PaletteSelect {
         this.paletteSelectMin = new PaletteSelectViewport(this, canvasMin, "-min");
 
         if (minimal != true) {
+            // MOA meier fixme: this is only for temporary better usability
+            canvasMax.style.display = "none";
+            canvasMin.style.display = "block";
+
             // register the basic toggle callback
             this.toggleSvgEl = this.parent.viewPort.getElementsByClassName('toggle_pattern_canvas_btn')[0];
+            // MOA meier fixme: this is only for temporary better usability
+            this.toggleSvgEl.style.display = "none";
             this.toggleSvgEl.addEventListener('click', function () {
                 if (canvasMax.style.display !== "none") {
                     canvasMax.style.display = "none";
@@ -1268,6 +1312,24 @@ class PatternSegment {
 
         if (section === "0") {
             this.state = !this.state;
+            let segMode = (segment % 4);
+            if ( segMode == 0) {
+                this.parent.segments_l0[segment + 1].state = this.state;
+                this.parent.segments_l0[segment + 2].state = this.state;
+                this.parent.segments_l0[segment + 3].state = this.state;
+            } else if ( segMode == 1) {
+                this.parent.segments_l0[segment - 1].state = this.state;
+                this.parent.segments_l0[segment + 1].state = this.state;
+                this.parent.segments_l0[segment + 2].state = this.state;
+            } else if ( segMode == 2) {
+                this.parent.segments_l0[segment - 2].state = this.state;
+                this.parent.segments_l0[segment - 1].state = this.state;
+                this.parent.segments_l0[segment + 1].state = this.state;
+            } else {
+                this.parent.segments_l0[segment - 3].state = this.state;
+                this.parent.segments_l0[segment - 2].state = this.state;
+                this.parent.segments_l0[segment - 1].state = this.state;
+            }
         } else if (section === "1") {
             if (this.parent.segments_l0[segment * 2].state || this.parent.segments_l0[segment * 2 + 1].state) {
                 this.parent.segments_l0[segment * 2].state = false;
@@ -1304,8 +1366,8 @@ class PatternSegment {
 
     setVisibility(s) {
         if (s == true) {
-            console.log(this.id + " - state: " + this.state);
-            console.log(this.selectedViewportElements);
+            // console.log(this.id + " - state: " + this.state);
+            // console.log(this.selectedViewportElements);
             for (let i = 0; i < this.selectedViewportElements.length; i++) {
                 this.selectedViewportElements[i].setAttribute("visibility", "visible");
             }
@@ -1600,6 +1662,8 @@ class PresetSelect {
         this.presets = [];
 
         this.viewPort = this.parentHTML.getElementsByClassName("preset_select_viewport")[0];
+        // MOA meier fixme: this is just temporary
+        this.viewPort.style.display = "none";
         this.buttonPort = this.parentHTML.getElementsByClassName("preset_select_button_port")[0];
     }
 
