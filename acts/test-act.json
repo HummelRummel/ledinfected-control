@@ -1,0 +1,193 @@
+{
+  "act_id": "test-act",
+  "name": "Act Name TestiTesti",
+  "start_scene_id": "scene1_idle_state_1",
+  "scenes": [
+    {
+      "scene_id": "scene1_idle_state_1",
+      "name": "Scene 1 Idle state 1",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "preset_id": "slow_blue"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "t1"
+          },
+          "scene_id": "flower1_on"
+        },
+        {
+          "trigger": {
+            "timeout_s": 10
+          },
+          "scene_id": "scene1_idle_state_2"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next"
+          },
+          "scene_id": "flower1_on"
+        }
+      ]
+    },
+    {
+      "scene_id": "scene1_idle_state_2",
+      "name": "Scene 1 Idle state 2",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "preset_id": "slow_blue_purple"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "t1"
+          },
+          "scene_id": "flower1_on"
+        },
+        {
+          "trigger": {
+            "timeout_s": 10
+          },
+          "scene_id": "scene1_idle_state_1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next"
+          },
+          "scene_id": "flower1_on"
+        }
+      ]
+    },
+    {
+      "scene_id": "flower1_on",
+      "name": "Flower 1 turned on, switch to next scene",
+      "effects": [
+        {
+          "abstract_id": "flowerv1_1",
+          "stripe_ids": ["circle"],
+          "preset_id": "red_purple"
+        },
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "preset_id": "red_purple"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "timeout_s": 10
+          },
+          "scene_id": "scene2_idle_state_1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next"
+          },
+          "scene_id": "scene2_idle_state_1"
+        }
+      ]
+    },
+    {
+      "scene_id": "scene2_idle_state_1",
+      "name": "Scene 2 Idle state 1",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "preset_id": "slow_blue_purple"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "t2"
+          },
+          "scene_id": "flower2_on"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next"
+          },
+          "scene_id": "flower2_on"
+        }
+      ]
+    },
+    {
+      "scene_id": "flower2_on",
+      "name": "Flower 2 turned on, switch to next scene",
+      "effects": [
+        {
+          "abstract_id": "flowerv1_2",
+          "stripe_ids": ["circle"],
+          "preset_id": "red_purple"
+        },
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "preset_id": "red_purple"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "timeout_s": 10
+          },
+          "scene_id": "scenefinal_idle_state_1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next"
+          },
+          "scene_id": "scenefinal_idle_state_1"
+        }
+      ]
+    },
+    {
+      "scene_id": "scenefinal_idle_state_1",
+      "name": "final scene",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "preset_id": "red_purple"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "t2"
+          },
+          "scene_id": "flower2_on"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next"
+          },
+          "scene_id": "flower2_on"
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "act_trigger_id": "t1"
+    },
+    {
+      "act_trigger_id": "t2"
+    },
+    {
+      "act_trigger_id": "t3"
+    },
+    {
+      "act_trigger_id": "next"
+    }
+  ]
+}

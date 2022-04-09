@@ -11,7 +11,7 @@ func (o *apiServer) getAllPresetsCallback(c *gin.Context) {
 	return
 }
 
-func (o *apiServer) setPresetCallback(c *gin.Context) {
+func (o *apiServer) updatePresetCallback(c *gin.Context) {
 	newPreset := &hummelapi.LEDInfectedPreset{}
 	if err := c.BindJSON(newPreset); err != nil {
 		c.String(http.StatusBadRequest, err.Error())

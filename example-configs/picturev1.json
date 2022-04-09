@@ -1,0 +1,47 @@
+{
+  "abstract_id": "picturev1",
+  "info": {
+    "name": "Simple Picture",
+    "image": {
+      "image_base_path": "/assets/img/abstracts/picturev1",
+      "overview": {
+        "dimension": {
+          "height": 180,
+          "width": 180
+        }
+      },
+      "stripe_view": {
+        "img_map": [
+          {
+            "stripe_id": "circle",
+            "max_view": "118,106,380,106,376,352,119,345"
+          }
+        ]
+      }
+    },
+    "img_base_id": "picturev1",
+    "src_file": "configs/picturev1.json"
+  },
+  "setup": {
+    "position": {
+      "x": 700,
+      "y": 500
+    }
+  },
+  "stripes": [
+    {
+      "stripe_id": "circle",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 20,
+            "arduino_stripe_id": 0
+          }
+        ],
+        "name": "Rahmen"
+      },
+      "config": null
+    }
+  ]
+}

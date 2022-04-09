@@ -19,6 +19,8 @@ type (
 		Arduinos  []*hummelapi.LEDInfectedArduino  `json:"arduinos"`
 		Abstracts []*hummelapi.LEDInfectedAbstract `json:"abstracts"`
 		Presets   []*hummelapi.LEDInfectedPreset   `json:"presets"`
+		Acts      []*hummelapi.LEDInfectedAct      `json:"acts"`
+		ActiveAct *hummelapi.LEDInfectedAct        `json:"active_act"`
 
 		engine *gin.Engine
 		stop_  chan struct{}
@@ -39,6 +41,7 @@ func newApiServer(customSerialDev string) (*apiServer, error) {
 		engine: gin.Default(),
 		stop_:  make(chan struct{}),
 	}
+	o.Acts = hummelapi.GetAllActs(o.getAllAbstracts)
 
 	return o, nil
 }
@@ -88,8 +91,32 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/config/save", o.saveAbstractStripeCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette", o.setAbstractStripePaletteByIDCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette/save", o.saveAbstractStripeCallback)
-	o.engine.GET("/api/presets", o.getAllPresetsCallback)
-	o.engine.POST("/api/presets", o.setPresetCallback)
+	o.engine.GET("/api/preset", o.getAllPresetsCallback)
+	o.engine.POST("/api/preset", o.updatePresetCallback)
+	o.engine.PATCH("/api/preset", o.updatePresetCallback)
+	o.engine.GET("/api/act", o.getAllActsCallback)
+	o.engine.GET("/api/act/:ActId", o.getActCallback)
+	o.engine.GET("/api/act/:ActId/status", o.getActStatusCallback)
+	o.engine.POST("/api/act/:ActId/start", o.startActCallback)
+	o.engine.POST("/api/act/:ActId/stop", o.stopActCallback)
+	o.engine.GET("/api/act/:ActId/trigger", o.getAllActTriggersCallback)
+	o.engine.GET("/api/act/:ActId/trigger/:TriggerId", o.getActTriggerCallback)
+	o.engine.POST("/api/act/:ActId/trigger/:TriggerId/trigger", o.triggerActTriggerCallback)
+	//o.engine.GET("/api/act/:ActId/scene", o.getAllScenesCallback)
+	//o.engine.GET("/api/act/:ActId/scene/:SceneId", o.getSceneCallback)
+	//o.engine.GET("/api/act/:ActId/scene/:SceneId/status", o.getSceneStatusCallback)
+	//o.engine.GET("/api/act/:ActId/scene/:SceneId/effect", o.getAllSceneEffectsCallback)
+	//o.engine.POST("/api/act/:ActId/scene/:SceneId/effect", o.newSceneEffectsCallback)
+	//o.engine.GET("/api/act/:ActId/scene/:SceneId/effect/:EffectId", o.getSceneEffectCallback)
+	//o.engine.PATCH("/api/act/:ActId/scene/:SceneId/effect/:EffectId", o.patchSceneEffectCallback)
+	//o.engine.DELETE("/api/act/:ActId/scene/:SceneId/effect/:EffectId", o.deleteSceneEffectCallback)
+	////o.engine.POST("/api/act/:ActId/scene/:SceneId/start", o.startSceneCallback)
+	////o.engine.POST("/api/act/:ActId/scene/:SceneId/next", o.nextSceneCallback)
+	//o.engine.GET("/api/act/:ActId/scene/:SceneId/effect", o.getAllSceneEffectsCallback)
+	//
+	//o.engine.GET("/api/act/:ActId/scene/:SceneId/trigger", o.getAllSceneTriggersCallback)
+	//o.engine.GET("/api/act/:ActId/scene/:SceneId/trigger/:TriggerId", o.getSceneTriggerCallback)
+	//o.engine.POST("/api/act/:ActId/scene/:SceneId/trigger/:TriggerId/trigger", o.triggerSceneTriggerCallback)
 }
 
 func (o *apiServer) registerWebEndpoints() {
@@ -175,4 +202,12 @@ func (o *apiServer) arduinoConnectionHandler() {
 			return
 		}
 	}
+}
+
+func (o *apiServer) getAllAbstracts() []*hummelapi.LEDInfectedAbstract {
+	return o.Abstracts
+}
+
+func jsonError(err error) string {
+	return fmt.Sprintf("{\"error\": \"%s\"}", err)
 }

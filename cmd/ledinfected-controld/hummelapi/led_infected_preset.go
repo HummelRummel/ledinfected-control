@@ -11,14 +11,11 @@ import (
 const presetDir = "./presets"
 
 type (
-	LEDInfectedPresets struct {
-		Presets []*LEDInfectedPreset `json:"presets"`
-	}
-
 	LEDInfectedPreset struct {
-		Name    string                                 `json:"name"`
-		Config  *LEDInfectedArduinoConfigStripeConfig  `json:"config"`
-		Palette *LEDInfectedArduinoConfigStripePalette `json:"palette"`
+		PresetID string                                 `json:"preset_id"`
+		Name     string                                 `json:"name"`
+		Config   *LEDInfectedArduinoConfigStripeConfig  `json:"config"`
+		Palette  *LEDInfectedArduinoConfigStripePalette `json:"palette"`
 	}
 )
 
@@ -42,8 +39,8 @@ func GetAllPresets() []*LEDInfectedPreset {
 			continue
 		}
 
-		if preset.Name == "" {
-			fmt.Printf("invalid preset with no name %s: %s\n", m, err)
+		if preset.PresetID == "" {
+			fmt.Printf("invalid preset: no preset ID %s: %s\n", m, err)
 			continue
 		}
 
@@ -53,8 +50,8 @@ func GetAllPresets() []*LEDInfectedPreset {
 }
 
 func UpdatePreset(preset *LEDInfectedPreset) error {
-	if preset.Name == "" {
-		return fmt.Errorf("no preset name given")
+	if preset.PresetID == "" {
+		return fmt.Errorf("no preset id given")
 	}
 	if preset.Config == nil && preset.Palette == nil {
 		return fmt.Errorf("given preset %s is empty", preset.Name)

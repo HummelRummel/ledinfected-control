@@ -626,8 +626,6 @@ class ControlStripe {
             that.clearTimeout();
         });
         this.stripeOverlayDiv = this.viewPort.getElementsByClassName("parameter_ctrl_stripe_overlay_div")[0];
-        // MOA meier fixme: overlay disabled for now, it makes more bad then good
-        this.stripeOverlayDiv.style.display = "none";
         this.stripeOverlay = this.viewPort.getElementsByClassName("parameter_ctrl_slider_stripe_overlay")[0];
         this.stripeOverlay.addEventListener('input', function () {
             that.sendConfig();
@@ -646,8 +644,6 @@ class ControlStripe {
             that.clearTimeout();
         });
         this.stripeStretchDiv = this.viewPort.getElementsByClassName("parameter_ctrl_stripe_stretch_div")[0];
-        // MOA meier fixme: strech disabled for now, it makes more bad then good
-        this.stripeStretchDiv.style.display = "none";
 
         this.stripeStretch = this.viewPort.getElementsByClassName("parameter_ctrl_slider_stripe_stretch")[0];
         this.stripeStretch.addEventListener('input', function () {
@@ -719,13 +715,14 @@ class ControlStripe {
         // show the stripe in the view
         // let svg = this.linkedAbstract.stripeView.getSVGElement()
         // let svgMin = this.linkedAbstract.stripeView.getSVGMinElement()
-        if (this.linkedAbstract.config.stripes.length == 1) {
-            this.stripesSelectCanvasMax.style.display = "none";
-            this.stripesSelectCanvasMin.style.display = "block";
-        } else {
+        // MOA meier fixme: Simplify UI for now
+        // if (this.linkedAbstract.config.stripes.length == 1) {
+        //     this.stripesSelectCanvasMax.style.display = "none";
+        //     this.stripesSelectCanvasMin.style.display = "block";
+        // } else {
             this.stripesSelectCanvasMax.style.display = "block";
             this.stripesSelectCanvasMin.style.display = "none";
-        }
+        // }
         this.stripeSelect.linkAbstract(abstract);
         //     this.stripesSelectCanvasMax.appendChild(this.linkedAbstract.controlObject.stripeViewPort.getSVGMax());
         //     this.stripesSelectCanvasMin.appendChild(this.linkedAbstract.controlObject.stripeViewPort.getSVGMin());
@@ -814,8 +811,7 @@ class ControlStripe {
         for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
             let config = this.linkedAbstract.config.stripes[i].config;
             if (config != null && config.setup.overlay_id > 1 && config.setup.overlay_id < 6) {
-                // MOA meier fixme: overlay disabled for now, it makes more bad then good
-                // this.stripeOverlayDiv.style.display = "block";
+                this.stripeOverlayDiv.style.display = "block";
             }
         }
 
@@ -1312,24 +1308,24 @@ class PatternSegment {
 
         if (section === "0") {
             this.state = !this.state;
-            let segMode = (segment % 4);
-            if ( segMode == 0) {
-                this.parent.segments_l0[segment + 1].state = this.state;
-                this.parent.segments_l0[segment + 2].state = this.state;
-                this.parent.segments_l0[segment + 3].state = this.state;
-            } else if ( segMode == 1) {
-                this.parent.segments_l0[segment - 1].state = this.state;
-                this.parent.segments_l0[segment + 1].state = this.state;
-                this.parent.segments_l0[segment + 2].state = this.state;
-            } else if ( segMode == 2) {
-                this.parent.segments_l0[segment - 2].state = this.state;
-                this.parent.segments_l0[segment - 1].state = this.state;
-                this.parent.segments_l0[segment + 1].state = this.state;
-            } else {
-                this.parent.segments_l0[segment - 3].state = this.state;
-                this.parent.segments_l0[segment - 2].state = this.state;
-                this.parent.segments_l0[segment - 1].state = this.state;
-            }
+            // let segMode = (segment % 4);
+            // if ( segMode == 0) {
+            //     this.parent.segments_l0[segment + 1].state = this.state;
+            //     this.parent.segments_l0[segment + 2].state = this.state;
+            //     this.parent.segments_l0[segment + 3].state = this.state;
+            // } else if ( segMode == 1) {
+            //     this.parent.segments_l0[segment - 1].state = this.state;
+            //     this.parent.segments_l0[segment + 1].state = this.state;
+            //     this.parent.segments_l0[segment + 2].state = this.state;
+            // } else if ( segMode == 2) {
+            //     this.parent.segments_l0[segment - 2].state = this.state;
+            //     this.parent.segments_l0[segment - 1].state = this.state;
+            //     this.parent.segments_l0[segment + 1].state = this.state;
+            // } else {
+            //     this.parent.segments_l0[segment - 3].state = this.state;
+            //     this.parent.segments_l0[segment - 2].state = this.state;
+            //     this.parent.segments_l0[segment - 1].state = this.state;
+            // }
         } else if (section === "1") {
             if (this.parent.segments_l0[segment * 2].state || this.parent.segments_l0[segment * 2 + 1].state) {
                 this.parent.segments_l0[segment * 2].state = false;
