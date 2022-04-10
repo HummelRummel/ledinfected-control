@@ -493,6 +493,7 @@ class PresetObject {
         this.config = config;
         const that = this;
         this.loadButton = document.createElement("button")
+        this.loadButton.classList.add("preset_button", "preset_theme")
         this.loadButton.innerHTML = this.config.abstract_id + " - " + this.config.preset_id + "(" + this.config.name + ")";
         this.loadButton.addEventListener('click', function () {
             that.loadCallback(that.config);

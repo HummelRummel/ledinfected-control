@@ -4,9 +4,9 @@ import "fmt"
 
 type (
 	LEDInfectedScene struct {
-		SceneID string                    `json:"scene_id"`
-		Name    string                    `json:"name"`
-		Effects []*LEDInfectedSceneEffect `json:"effects"`
+		SceneID     string                    `json:"scene_id"`
+		Description string                    `json:"description"`
+		Effects     []*LEDInfectedSceneEffect `json:"effects"`
 
 		Transitions []*LEDInfectedSceneTransition `json:"transitions"`
 	}

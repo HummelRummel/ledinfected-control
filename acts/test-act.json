@@ -1,11 +1,11 @@
 {
   "act_id": "test-act",
-  "name": "Act Name TestiTesti",
+  "description": "Act Name TestiTesti",
   "start_scene_id": "scene1_idle_state_1",
   "scenes": [
     {
       "scene_id": "scene1_idle_state_1",
-      "name": "Scene 1 Idle state 1",
+      "description": "Scene 1 Idle state 1",
       "effects": [
         {
           "abstract_id": "pfv1",
@@ -36,7 +36,7 @@
     },
     {
       "scene_id": "scene1_idle_state_2",
-      "name": "Scene 1 Idle state 2",
+      "description": "Scene 1 Idle state 2",
       "effects": [
         {
           "abstract_id": "pfv1",
@@ -67,7 +67,7 @@
     },
     {
       "scene_id": "flower1_on",
-      "name": "Flower 1 turned on, switch to next scene",
+      "description": "Flower 1 turned on, switch to next scene",
       "effects": [
         {
           "abstract_id": "flowerv1_1",
@@ -97,7 +97,7 @@
     },
     {
       "scene_id": "scene2_idle_state_1",
-      "name": "Scene 2 Idle state 1",
+      "description": "Scene 2 Idle state 1",
       "effects": [
         {
           "abstract_id": "pfv1",
@@ -122,7 +122,7 @@
     },
     {
       "scene_id": "flower2_on",
-      "name": "Flower 2 turned on, switch to next scene",
+      "description": "Flower 2 turned on, switch to next scene",
       "effects": [
         {
           "abstract_id": "flowerv1_2",
@@ -152,7 +152,7 @@
     },
     {
       "scene_id": "scenefinal_idle_state_1",
-      "name": "final scene",
+      "description": "final scene",
       "effects": [
         {
           "abstract_id": "pfv1",

@@ -96,6 +96,8 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.PATCH("/api/preset", o.updatePresetCallback)
 	o.engine.GET("/api/act", o.getAllActsCallback)
 	o.engine.GET("/api/act/:ActId", o.getActCallback)
+//	o.engine.POST("/api/act/new", o.newActCallback)
+	o.engine.PATCH("/api/act/:ActId", o.updateActCallback)
 	o.engine.GET("/api/act/:ActId/status", o.getActStatusCallback)
 	o.engine.POST("/api/act/:ActId/start", o.startActCallback)
 	o.engine.POST("/api/act/:ActId/stop", o.stopActCallback)
@@ -122,6 +124,8 @@ func (o *apiServer) registerRestAPIEndpoints() {
 func (o *apiServer) registerWebEndpoints() {
 	o.engine.Static("/assets", "./assets")
 	o.engine.StaticFile("/", "./html/index.html")
+	o.engine.StaticFile("/act", "./html/act/static/index.html")
+	o.engine.Static("/act/static", "./html/act/static")
 }
 
 func (o *apiServer) getAllCallback(c *gin.Context) {

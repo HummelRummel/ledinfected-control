@@ -13,7 +13,7 @@ const actDir = "./acts"
 type (
 	LEDInfectedAct struct {
 		ActID        string                   `json:"act_id"`
-		Name         string                   `json:"name"`
+		Description  string                   `json:"description"`
 		StartSceneID string                   `json:"start_scene_id"`
 		Scenes       []*LEDInfectedScene      `json:"scenes"`
 		Triggers     []*LEDInfectedActTrigger `json:"triggers"`
@@ -94,6 +94,26 @@ func GetAllActs(getAllAbstracts func() []*LEDInfectedAbstract) []*LEDInfectedAct
 		acts = append(acts, act)
 	}
 	return acts
+}
+
+func UpdateAct(acts []*LEDInfectedAct, act *LEDInfectedAct) error {
+	if act == nil || act.ActID == "" {
+		return fmt.Errorf("invalid act given")
+	}
+	for i, a := range acts {
+		if a.ActID == act.ActID {
+			// write the file
+			if err := writeJson(actDir+"/"+act.ActID+".json", act); err != nil {
+				return err
+			}
+
+			// update the array
+			acts[i] = act
+			return nil
+		}
+	}
+
+	return fmt.Errorf("act %s not found", act.ActID)
 }
 
 func (o *LEDInfectedAct) Start() error {

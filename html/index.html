@@ -88,21 +88,22 @@
             </div>
             <div class="slide_container" style="padding-top: 16px;">
                 <div class="flex_row">
-                    PresetID:
-                    <input class="preset_textbox preset_input_preset_id" name="PresetID" type="text" minlength="4"
+                    <label for="preset_input_preset_id" class="preset_input_label preset_theme">PresetID:</label>
+                    <input class="preset_textbox preset_input_preset_id preset_theme" id="preset_input_preset_id" name="PresetID" type="text" minlength="4"
                            maxlength="24" size="24">
-                    Name:
-                    <input class="preset_textbox preset_input_name" name="Name" type="text" minlength="4">
+                    <label for="preset_input_preset_id" class="preset_input_label preset_theme">Name:</label>
+                    <input class="preset_textbox preset_input_name preset_theme" id="preset_input_name" name="Name" type="text" minlength="4">
                 </div>
-                <div class="flex_row">
-                    Config?
-                    <input class="preset_checkbox preset_input_include_config" name="Config" type="checkbox">
-                    Preset?
-                    <input class="preset_checkbox preset_input_include_palette" name="Palette" type="checkbox">
-                    <button class="preset_buttopn preset_input_button_save" name="Save">Update/Save</button>
+                <div class="flex_row" style="padding-bottom: 8px; width: 100%">
+                    <label for="preset_input_include_config" class="preset_input_label preset_theme">Config?</label>
+                    <input class="preset_checkbox preset_input_include_config" id="preset_input_include_config" name="Config" type="checkbox">
+                    <label for="preset_input_button_save" class="preset_input_label preset_theme">Preset?</label>
+                    <input class="preset_checkbox preset_input_include_palette" id="preset_input_button_save" name="Palette" type="checkbox">
+                    <button class="preset_button preset_input_button_save preset_theme" name="Save" style="justify-self: end;">Update/Save</button>
                 </div>
-                <div class="presets_container flex_column">
-
+                <div class="presets_container_div">
+                    <div class="presets_container flex_column">
+                    </div>
                 </div>
                 <div class="button_container flex_row" width="100%" height="64px"
                      style="padding-top: 16px; padding-right: 6px; padding-left: 6px; padding-bottom: 6px; justify-content: space-between">
