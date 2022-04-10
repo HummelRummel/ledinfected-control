@@ -23,12 +23,6 @@ func (o *apiServer) getActCallback(c *gin.Context) {
 }
 
 func (o *apiServer) updateActCallback(c *gin.Context) {
-	a, err := o.getCallbackAct(c)
-	if err != nil {
-		c.String(http.StatusNotFound, jsonError(err))
-		return
-	}
-
 	data := &hummelapi.LEDInfectedAct{}
 	if err := c.BindJSON(data); err != nil {
 		c.String(http.StatusBadRequest, "")

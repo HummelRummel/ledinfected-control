@@ -113,7 +113,15 @@ func UpdateAct(acts []*LEDInfectedAct, act *LEDInfectedAct) error {
 		}
 	}
 
-	return fmt.Errorf("act %s not found", act.ActID)
+	// not found yet so add it
+	// write the file
+	if err := writeJson(actDir+"/"+act.ActID+".json", act); err != nil {
+		return err
+	}
+
+	// update the array
+	acts = append(acts, act)
+	return nil
 }
 
 func (o *LEDInfectedAct) Start() error {
