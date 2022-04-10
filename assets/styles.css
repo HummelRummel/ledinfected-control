@@ -8,6 +8,10 @@
     overflow: hidden;
 }
 
+.button_container {
+    margin-bottom: 0px;
+}
+
 .preset_select_viewport {
     witdth: 100%;
     height: 40%;

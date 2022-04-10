@@ -79,22 +79,22 @@ class ConnectionAPI {
 // Accessible via
 //   app.ledinfected
 // Contains
-//   - this.abstracts List of registers abstracts
-//   - this.arduinos  List of online arduinos
-//   - this.presets   List of available presets
+//   - this.abstractList List of registers abstracts
+//   - this.arduinoList  List of online arduinos
+//   - this.presetList   List of available presets
 /////////////////////////////////////////////////////////////////////////////////////////////
 class LEDInfectedList {
     constructor() {
-        this.abstract = new AbstractList();
-        this.arduino = new ArduinoList();
-        this.preset = new PresetList();
+        this.abstractList = new AbstractList();
+        this.arduinoList = new ArduinoList();
+        this.presetList = new PresetList();
     }
 
     async init() {
         const globalConfig = await app.connection.get("");
-        this.abstract.updateAll(globalConfig.abstracts);
-        this.arduino.updateAll(globalConfig.arduinos);
-        this.preset.updateAll(globalConfig.presets);
+        this.abstractList.updateAll(globalConfig.abstracts);
+        this.arduinoList.updateAll(globalConfig.arduinos);
+        this.presetList.updateAll(globalConfig.presets);
 
         // MOA TBD setup a callback timer, to update the list
     }
@@ -109,7 +109,7 @@ class LEDInfectedList {
 // List of abstracts objects reported by the LEDinfected-controld
 //
 // Accessible via
-//   app.ledinfected.abstract
+//   app.ledinfected.abstractList
 /////////////////////////////////////////////////////////////////////////////////////////////
 class AbstractList {
     constructor() {
@@ -136,7 +136,7 @@ class AbstractList {
 // Object to an abstract
 //
 // Accessible via
-//   app.ledinfected.abstract.objects[]
+//   app.ledinfected.abstractList.objects[]
 /////////////////////////////////////////////////////////////////////////////////////////////
 class AbstractObject {
     constructor(config) {
@@ -163,7 +163,7 @@ class AbstractObject {
 // Contains the element shown in the overview
 //
 // Accessible via
-//   app.ledinfected.abstract.objects[x].overviewObject
+//   app.ledinfected.abstractList.objects[x].overviewObject
 /////////////////////////////////////////////////////////////////////////////////////////////
 class AbstractOverviewObject {
     constructor(parent, config) {
@@ -216,7 +216,7 @@ class AbstractOverviewObject {
 // Contains the control object if the elements used in the control view
 //
 // Accessible via
-//   app.ledinfected.abstract.objects[x].controlObject
+//   app.ledinfected.abstractList.objects[x].controlObject
 /////////////////////////////////////////////////////////////////////////////////////////////
 class AbstractControlObject {
     constructor(parent, config) {
@@ -248,7 +248,7 @@ class AbstractControlObject {
 // Contains the stripe element used in the control view
 //
 // Accessible via
-//   app.ledinfected.abstract.objects[x].stripes
+//   app.ledinfected.abstractList.objects[x].stripes
 /////////////////////////////////////////////////////////////////////////////////////////////
 class AbstractControlStripeObject {
     constructor(parent, abstractConfig, areaMap) {
@@ -376,7 +376,7 @@ class AbstractControlStripeObject {
 // Abstract stripe view port
 //
 // Accessible via
-//   app.ledinfected.abstract.objects[x].stripeViewMax
+//   app.ledinfected.abstractList.objects[x].stripeViewMax
 /////////////////////////////////////////////////////////////////////////////////////////////
 class AbstractStripeViewPortObject {
     constructor(parent, stripes, abstractConfig) {
@@ -491,6 +491,17 @@ class PresetList {
 class PresetObject {
     constructor(config) {
         this.config = config;
+        const that = this;
+        this.loadButton = document.createElement("button")
+        this.loadButton.innerHTML = this.config.abstract_id + " - " + this.config.preset_id + "(" + this.config.name + ")";
+        this.loadButton.addEventListener('click', function () {
+            that.loadCallback(that.config);
+        });
+    }
+
+    linkLoadButton(loadCallback) {
+        this.loadCallback = loadCallback;
+        return this.loadButton;
     }
 }
 
@@ -559,7 +570,7 @@ class Controls {
     }
 
     showAbstract(abstractID) {
-        let abstract = app.ledInfected.abstract.getAbstract(abstractID);
+        let abstract = app.ledInfected.abstractList.getAbstract(abstractID);
         if (abstract == null) {
             console.log("showAbstract: abstract " + abstractID + "not found");
             return
@@ -567,6 +578,64 @@ class Controls {
         this.controlStripes[0].showAbstract(abstract);
     }
 }
+
+
+class PresetSelect {
+    constructor(parent) {
+        this.parent = parent;
+        const that = this;
+
+        this.presetsContainer = this.parent.viewPort.getElementsByClassName("presets_container")[0];
+        this.inputButtonSave = this.parent.viewPort.getElementsByClassName("preset_input_button_save")[0];
+        this.inputButtonSave.addEventListener('click', function () {
+            that.savePreset().then(r => console.log(`Received response: ${r}`))
+        });
+        this.inputPresetID = this.parent.viewPort.getElementsByClassName("preset_input_preset_id")[0];
+        this.inputName = this.parent.viewPort.getElementsByClassName("preset_input_name")[0];
+        this.inputIncludeConfig = this.parent.viewPort.getElementsByClassName("preset_input_include_config")[0];
+        this.inputIncludePalette = this.parent.viewPort.getElementsByClassName("preset_input_include_palette")[0];
+    }
+
+    showPresets() {
+        // fixme find a better way to clear the clildren
+        this.presetsContainer.innerHTML = "";
+
+        const that = this;
+
+        function loadPresetCallback(preset) {
+            that.parent.loadPresetSelectButtonCallback(preset);
+            that.inputPresetID.value = preset.preset_id;
+            that.inputName.value = preset.name;
+            that.inputIncludeConfig.checked = preset.config != null;
+            that.inputIncludePalette.checked = preset.palette != null;
+        }
+
+        for (let i = 0; i < app.ledInfected.presetList.objects.length; i++) {
+            this.presetsContainer.appendChild(app.ledInfected.presetList.objects[i].linkLoadButton(loadPresetCallback))
+        }
+    }
+
+    async savePreset() {
+        console.log(this.inputPresetID.value)
+        if (this.inputPresetID.value != "") {
+            let preset = new Object();
+            preset.preset_id = this.inputPresetID.value;
+            preset.name = this.inputName.value;
+            preset.abstract_id = this.parent.linkedAbstract.id
+            console.log(this.inputIncludeConfig.checked)
+            console.log(this.inputIncludePalette.checked)
+            if (this.inputIncludeConfig.checked == true) {
+                preset.config = this.parent.getCurrentConfig()
+            }
+            if (this.inputIncludePalette.checked == true) {
+                preset.palette = this.parent.getCurrentPalette()
+            }
+            console.log(preset)
+            this.parent.savePresetSelectButtonCallback(preset);
+        }
+    }
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // ControlStripe
@@ -581,6 +650,9 @@ class ControlStripe {
         this.initElements();
         this.paletteSelect = new PaletteSelect(this, this.patternSelectCanvasMax, this.patternSelectCanvasMin);
         this.stripeSelect = new StripeSelect(this, this.stripesSelectCanvasMax, this.stripesSelectCanvasMin);
+
+        this.presetSelect = new PresetSelect(this);
+
         document.body.appendChild(this.viewPort);
     }
 
@@ -658,16 +730,16 @@ class ControlStripe {
             app.ledInfected.syncMovement();
         });
 
-        // MOA meier fixme: this is just temporary
-        this.presetViewPort = this.viewPort.getElementsByClassName("preset_select_viewport")[0];
-        this.presetViewPort.style.display = "none";
+        // // MOA meier fixme: this is just temporary
+        // this.presetViewPort = this.viewPort.getElementsByClassName("preset_select_viewport")[0];
+        // this.presetViewPort.style.display = "none";
 
         this.loadPresetBtn = this.viewPort.getElementsByClassName("show_load_preset_btn")[0];
         // MOA meier fixme: overlay disabled for now, it makes more bad then good
         this.loadPresetBtn.style.display = "none";
-        this.loadPresetBtn.addEventListener('click', function () {
-            that.showLoadPreset();
-        });
+        // this.loadPresetBtn.addEventListener('click', function () {
+        //     that.showLoadPreset();
+        // });
         this.savePresetBtn = this.viewPort.getElementsByClassName("show_save_preset_btn")[0];
         this.savePresetBtn.addEventListener('click', function () {
             // MOA meier fixme: for now disable the preset and use it to write data to the arduino
@@ -683,6 +755,7 @@ class ControlStripe {
         //         that.savePresetSelectButtonCallback(preset);
         //     }
         // });
+
         this.closeBtn = this.viewPort.getElementsByClassName("close_btn")[0];
         this.closeBtn.addEventListener('click', function () {
             that.hide();
@@ -702,15 +775,17 @@ class ControlStripe {
         this.clearTimeout();
 
         this.resetTimer = window.setTimeout(
-        function() {
-            el.value = resetValue;
-            that.sendConfig();
-            that.resetTimer = null;
-        }, timeout);
+            function () {
+                el.value = resetValue;
+                that.sendConfig();
+                that.resetTimer = null;
+            }, timeout);
     }
 
     showAbstract(abstract) {
         this.linkedAbstract = abstract;
+
+        this.presetSelect.showPresets();
 
         // show the stripe in the view
         // let svg = this.linkedAbstract.stripeView.getSVGElement()
@@ -720,8 +795,8 @@ class ControlStripe {
         //     this.stripesSelectCanvasMax.style.display = "none";
         //     this.stripesSelectCanvasMin.style.display = "block";
         // } else {
-            this.stripesSelectCanvasMax.style.display = "block";
-            this.stripesSelectCanvasMin.style.display = "none";
+        this.stripesSelectCanvasMax.style.display = "block";
+        this.stripesSelectCanvasMin.style.display = "none";
         // }
         this.stripeSelect.linkAbstract(abstract);
         //     this.stripesSelectCanvasMax.appendChild(this.linkedAbstract.controlObject.stripeViewPort.getSVGMax());
@@ -765,38 +840,43 @@ class ControlStripe {
         })
     }
 
-    // MOA fixme preset
-    showSavePreset() {
-        let localThis = this;
-        this.presetSelect.updatePresets("save", function (preset) {
-            localThis.savePresetSelectButtonCallback(preset);
-        })
+    loadPresetByPresetID(presetID) {
+        for (let i = 0; i < app.ledInfected.presetList.objects.length; i++) {
+            if (app.ledInfected.presetList.objects[i].config.preset_id == presetID) {
+                this.loadPresetSelectButtonCallback(app.ledInfected.presetList.objects[i].config)
+                return
+            }
+        }
+        console.log("preset not found")
     }
 
     // MOA fixme preset
     loadPresetSelectButtonCallback(preset) {
         console.log("----LOAD PRESET-----");
         let config = Object();
-        config.config = preset.config;
-        config.palette = preset.palette;
-        console.log(config);
+        if (preset.config != null) {
+            config.config = preset.config;
+        }
+        if (preset.palette != null) {
+            config.palette = preset.palette;
+        }
         this.applyConfig(config);
         // set the config in the UI and send it to all selected arduinos
-        this.sendConfig();
-        this.sendPattern();
+        if (preset.config != null) {
+            this.sendConfig();
+        }
+        if (preset.palette != null) {
+            this.sendPattern();
+        }
     }
 
     // MOA fixme preset
     savePresetSelectButtonCallback(preset) {
         console.log("----SAVE PRESET-----")
-        let newPreset = new Object();
-        newPreset.name = preset.name;
-        newPreset.config = this.getCurrentConfig();
-        newPreset.palette = this.getCurrentPalette();
         let obj = new Object();
-        obj.config = newPreset;
+        obj.config = preset;
 
-        obj.apiPath = "/presets";
+        obj.apiPath = "/preset";
 
         console.log('---- SENDING PRESET ----')
         console.log(obj);
@@ -1581,9 +1661,10 @@ class Palette {
     constructor(palette) {
         this.palette = palette;
     }
-    getColor(index){
-        for (let i = 0; i < this.palette.palette.length; i++){
-            if(index == this.palette.palette[i].index) {
+
+    getColor(index) {
+        for (let i = 0; i < this.palette.palette.length; i++) {
+            if (index == this.palette.palette[i].index) {
                 return this.palette.palette[i];
             }
         }
@@ -1649,31 +1730,6 @@ class Preset {
 
     clearFromList() {
         this.parentHTML.removeChild(this.presetElement);
-    }
-}
-
-class PresetSelect {
-    constructor(parentHTML) {
-        this.parentHTML = parentHTML;
-        this.presets = [];
-
-        this.viewPort = this.parentHTML.getElementsByClassName("preset_select_viewport")[0];
-        // MOA meier fixme: this is just temporary
-        this.viewPort.style.display = "none";
-        this.buttonPort = this.parentHTML.getElementsByClassName("preset_select_button_port")[0];
-    }
-
-    async updatePresets(interfaceType, actionCallback) {
-        console.log(this.buttonPort)
-        this.actionCallback = actionCallback;
-        this.presetList = await overview.connection.get("/presets");
-        for (let i = 0; i < this.presets.length; i++) {
-            this.presets[i].clearFromList();
-        }
-        for (let i = 0; i < this.presetList.length; i++) {
-            this.presets.push(new Preset(this.buttonPort, this.presetList[i].name, this.presetList[i].config, this.presetList[i].palette, this.actionCallback));
-        }
-        // MoA fixme hide the input box
     }
 }
 

@@ -17,8 +17,6 @@
 <body>
 
 
-
-
 <div class="control_view_template">
     <!--    <div class="parameter_ctrl parameter_tabcontent tabcontent">-->
     <div height="auto" width="80%"
@@ -69,7 +67,7 @@
             </div>
             <div class="slide_container">
                 <div class="flex_row">
-                    <img class="slider_icon" src="assets/img/hue.png" >
+                    <img class="slider_icon" src="assets/img/hue.png">
                     <input class="slider parameter_ctrl_slider_pattern_hue"
                            type="range" min="0" max="256" step=8 value="256">
                 </div>
@@ -88,27 +86,43 @@
                            type="range" min="0" max="256" step=8 value="256">
                 </div>
             </div>
-            <div class="preset_select_viewport" style="height: 500px; width: 100%;">
-                <div class="preset_select_button_port">
+            <div class="slide_container" style="padding-top: 16px;">
+                <div class="flex_row">
+                    PresetID:
+                    <input class="preset_textbox preset_input_preset_id" name="PresetID" type="text" minlength="4"
+                           maxlength="24" size="24">
+                    Name:
+                    <input class="preset_textbox preset_input_name" name="Name" type="text" minlength="4">
                 </div>
-                <div class="preset_select_line">
-                    <input type="text" class="preset_select_preset_name_input" style="margin: auto 0 auto auto;">
+                <div class="flex_row">
+                    Config?
+                    <input class="preset_checkbox preset_input_include_config" name="Config" type="checkbox">
+                    Preset?
+                    <input class="preset_checkbox preset_input_include_palette" name="Palette" type="checkbox">
+                    <button class="preset_buttopn preset_input_button_save" name="Save">Update/Save</button>
                 </div>
-                <div class="preset_select_line">
-                    <button class="preset_select_confirm simple_preset_btn">Confirm</button>
-                    <button class="preset_select_cancel simple_preset_btn">Cancel</button>
+                <div class="presets_container flex_column">
+
                 </div>
-            </div>
-            <div class="button_container" width="100%" height="64px"
-                 style="padding-top: 16px; padding-right: 6px; padding-left: 6px; padding-bottom: 6px">
-                <div class="flex_display"
-                     style="display: flex; flex-flow: row; flex-grow: 1; flex: 1; justify-content: space-between">
+                <div class="button_container flex_row" width="100%" height="64px"
+                     style="padding-top: 16px; padding-right: 6px; padding-left: 6px; padding-bottom: 6px; justify-content: space-between">
                     <button class="sync_btn simple_picture_btn"></button>
                     <button class="show_load_preset_btn simple_picture_btn"></button>
                     <button class="show_save_preset_btn simple_picture_btn"></button>
                     <button class="close_btn simple_picture_btn"></button>
                 </div>
             </div>
+            <!--            <div class="preset_select_viewport" style="height: 500px; width: 100%;">-->
+            <!--                <div class="preset_select_button_port">-->
+            <!--                </div>-->
+            <!--                <div class="preset_select_line">-->
+            <!--                    <input type="text" class="preset_select_preset_name_input" style="margin: auto 0 auto auto;">-->
+            <!--                </div>-->
+            <!--                <div class="preset_select_line">-->
+            <!--                    <button class="preset_select_confirm simple_preset_btn">Confirm</button>-->
+            <!--                    <button class="preset_select_cancel simple_preset_btn">Cancel</button>-->
+            <!--                </div>-->
+            <!--            </div>-->
         </div>
     </div>
     <!--    </div>-->

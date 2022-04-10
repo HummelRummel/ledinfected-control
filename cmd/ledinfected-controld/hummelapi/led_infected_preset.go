@@ -12,10 +12,11 @@ const presetDir = "./presets"
 
 type (
 	LEDInfectedPreset struct {
-		PresetID string                                 `json:"preset_id"`
-		Name     string                                 `json:"name"`
-		Config   *LEDInfectedArduinoConfigStripeConfig  `json:"config"`
-		Palette  *LEDInfectedArduinoConfigStripePalette `json:"palette"`
+		PresetID   string                                 `json:"preset_id"`
+		Name       string                                 `json:"name"`
+		AbstractID string                                 `json:"abstract_id"`
+		Config     *LEDInfectedArduinoConfigStripeConfig  `json:"config"`
+		Palette    *LEDInfectedArduinoConfigStripePalette `json:"palette"`
 	}
 )
 
@@ -44,28 +45,40 @@ func GetAllPresets() []*LEDInfectedPreset {
 			continue
 		}
 
+		for _, p := range presets {
+			if p.PresetID == preset.PresetID {
+				fmt.Printf("invalid preset: preset ID %s: already used (%s)\n", preset.PresetID, m)
+				continue
+			}
+		}
+
 		presets = append(presets, preset)
 	}
 	return presets
 }
 
 func UpdatePreset(preset *LEDInfectedPreset) error {
+	if preset == nil {
+		return fmt.Errorf("nil preset given")
+	}
 	if preset.PresetID == "" {
 		return fmt.Errorf("no preset id given")
 	}
 	if preset.Config == nil && preset.Palette == nil {
-		return fmt.Errorf("given preset %s is empty", preset.Name)
+		return fmt.Errorf("given preset %s contains no configuration", preset.Name)
 	}
-	return preset.update()
-}
 
-func (o *LEDInfectedPreset) update() error {
-	jsonedPreset, err := json.Marshal(o)
+	fileName := ""
+	if preset.AbstractID != "" {
+		fileName = preset.AbstractID + "_"
+	}
+	fileName = fileName + preset.PresetID + ".json"
+	jsonPreset, err := json.Marshal(preset)
 	if err != nil {
 		return err
 	}
 	if err := os.MkdirAll(presetDir, 0755); err != nil {
 		return err
 	}
-	return ioutil.WriteFile(presetDir+"/"+o.Name+".json", jsonedPreset, 0644)
+	return ioutil.WriteFile(presetDir+"/"+fileName, jsonPreset, 0644)
 }
