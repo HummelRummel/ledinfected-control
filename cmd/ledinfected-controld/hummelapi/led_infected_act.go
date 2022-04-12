@@ -160,8 +160,6 @@ func (o *LEDInfectedAct) Pause() error {
 		o.Status.appendError(fmt.Errorf("WARN: unhandled act (%s) state %s", o.ActID, o.Status.State))
 	}
 
-	// fixme stop the timers of the currently active scene
-
 	o.Status.State = "PAUSED"
 	return o.disableScene()
 }

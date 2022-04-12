@@ -1,6 +1,6 @@
 {
   "act_id": "test-act",
-  "description": "Act Name TestiTesti asdf",
+  "description": "Act Name TestiTesti",
   "start_scene_id": "scene1_idle_state_2",
   "scenes": [
     {

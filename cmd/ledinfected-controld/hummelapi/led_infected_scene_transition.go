@@ -70,10 +70,14 @@ func (o *LEDInfectedSceneTransition) Stop() error {
 		fmt.Printf("STOP: %d sec timer for scene %s\n", *o.Trigger.TimeoutS, o.SceneID)
 	}
 	o.timer.Stop()
+	select {
+	case <-o.timer.C:
+	default:
+	}
 
 	select {
 	case o.stop <- struct{}{}:
-	default:
+	case <-time.After(time.Millisecond * 200):
 	}
 	return nil
 }

@@ -13,6 +13,8 @@ const imageBasePathAbstracts = imageBasePath
 // fixme this needs to be check if still needed, at least a rename is needed
 const assetImgBaseDir = "/assets/img/abstracts/"
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // LEDInfectedApp
 // It contains all the objects and is the global entry point
@@ -139,7 +141,13 @@ class LEDInfectedList {
         this.arduinoList.updateAll(globalConfig.arduinos);
         this.presetList.updateAll(globalConfig.presets);
         this.actList.updateAll(globalConfig.acts);
-        this.liveAct = globalConfig.live_act
+        this.liveAct = globalConfig.live_act;
+
+        if (this.liveAct != null) {
+            app.overview.actButton.innerHTML = "Live Act - " + this.liveAct.act_id + "(" + this.liveAct.status.active_scene.scene_id + ")";
+        } else {
+            app.overview.actButton.innerHTML = "Live Act - None active";
+        }
     }
 
 
@@ -691,6 +699,8 @@ class Overview {
         this.actButton.classList.add("show_act_control_button", "act_button", "act_theme");
         this.actButton.style.left = "0px";
         this.actButton.style.top = "0px";
+        this.actButton.style.paddingLeft = "16px";
+        this.actButton.style.paddingRight = "16px";
         this.actButton.style.position = "absolute";
         this.actButton.style.zIndex = 3;
         this.actButton.innerHTML = "Live Act";
@@ -909,7 +919,8 @@ class ActView {
                 alert("No Act selected");
                 return
             }
-            let resp = await app.connection.post("/act/" + that.linkedAct.id + "/trigger/next/trigger")
+            let resp = await app.connection.post("/act/" + that.linkedAct.id + "/trigger/next/trigger");
+            await sleep(300);
             await app.ledInfected.listUpdateCallback();
             that.updateAct();
         });
@@ -927,7 +938,7 @@ class ActView {
         });
         this.editActBtn = this.viewPort.getElementsByClassName("act_view_edit_act")[0];
         this.editActBtn.addEventListener('click', function () {
-            if (that.linkedAct == null){
+            if (that.linkedAct == null) {
                 alert("No Act selected");
                 return;
             }
