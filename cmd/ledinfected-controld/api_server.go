@@ -20,7 +20,7 @@ type (
 		Abstracts []*hummelapi.LEDInfectedAbstract `json:"abstracts"`
 		Presets   []*hummelapi.LEDInfectedPreset   `json:"presets"`
 		Acts      []*hummelapi.LEDInfectedAct      `json:"acts"`
-		ActiveAct *hummelapi.LEDInfectedAct        `json:"active_act"`
+		LiveAct   *hummelapi.LEDInfectedAct        `json:"live_act"`
 
 		engine *gin.Engine
 		stop_  chan struct{}
@@ -97,10 +97,12 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.GET("/api/act", o.getAllActsCallback)
 	o.engine.POST("/api/act", o.updateActCallback)
 	o.engine.GET("/api/act/:ActId", o.getActCallback)
-//	o.engine.POST("/api/act/new", o.newActCallback)
+	//	o.engine.POST("/api/act/new", o.newActCallback)
 	o.engine.GET("/api/act/:ActId/status", o.getActStatusCallback)
 	o.engine.POST("/api/act/:ActId/start", o.startActCallback)
 	o.engine.POST("/api/act/:ActId/stop", o.stopActCallback)
+	o.engine.POST("/api/act/:ActId/pause", o.pauseActCallback)
+	o.engine.POST("/api/act/:ActId/resume", o.resumeActCallback)
 	o.engine.GET("/api/act/:ActId/trigger", o.getAllActTriggersCallback)
 	o.engine.GET("/api/act/:ActId/trigger/:TriggerId", o.getActTriggerCallback)
 	o.engine.POST("/api/act/:ActId/trigger/:TriggerId/trigger", o.triggerActTriggerCallback)
@@ -210,6 +212,11 @@ func (o *apiServer) arduinoConnectionHandler() {
 
 func (o *apiServer) getAllAbstracts() []*hummelapi.LEDInfectedAbstract {
 	return o.Abstracts
+}
+
+
+func (o *apiServer) setLiveAct(act *hummelapi.LEDInfectedAct) {
+	o.LiveAct = act
 }
 
 func jsonError(err error) string {

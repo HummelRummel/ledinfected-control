@@ -16,6 +16,53 @@
 </head>
 <body>
 
+<div class="act_view_template">
+    <div class="acts_container_div">
+        <div class="acts_container flex_column">
+
+        </div>
+    </div>
+    <div class="act_view_container">
+        <div class="act_view_header act_theme" style="padding-left: 4px; padding-right:  8px;">None Selected
+        </div>
+        <div class="act_view_status flex_row">
+            <div class="act_theme" style="padding-left: 8px; padding-right:  4px;">State:</div>
+            <div class="act_view_status_state act_theme" style="padding-left: 4px; padding-right:  8px;">NOT_LIVE
+            </div>
+            <div class="act_theme" style="padding-left: 8px; padding-right:  4px;">Active SceneID:</div>
+            <div class="act_view_status_active_scene_id act_theme" style="padding-left: 4px; padding-right:  8px;">
+                none
+            </div>
+        </div>
+        <div class="act_view_actions flex_row" style="justify-content: space-between;">
+            <button class="act_view_action_start act_button act_theme"
+                    style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">START
+            </button>
+            <button class="act_view_action_stop act_button act_theme"
+                    style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">STOP
+            </button>
+            <button class="act_view_action_pause act_button act_theme"
+                    style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">PAUSE
+            </button>
+            <button class="act_view_action_resume act_button act_theme"
+                    style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">RESUME
+            </button>
+            <button class="act_view_action_next_scene act_button act_theme"
+                    style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">NEXT
+            </button>
+        </div>
+    </div>
+    <div class="button_container flex_row" width="100%" height="64px"
+         style="padding-top: 16px; padding-right: 6px; padding-left: 6px; padding-bottom: 6px; justify-content: space-between;">
+        <button class="act_view_update_button act_button act_theme"
+                style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">Refresh
+        </button>
+        <button class="act_view_edit_act act_button act_theme"
+                style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">Edit Act
+        </button>
+        <button class="live_act_close_btn close_btn simple_picture_btn"></button>
+    </div>
+</div>
 
 <div class="control_view_template">
     <!--    <div class="parameter_ctrl parameter_tabcontent tabcontent">-->
@@ -89,17 +136,23 @@
             <div class="slide_container" style="padding-top: 16px;">
                 <div class="flex_row">
                     <label for="preset_input_preset_id" class="preset_input_label preset_theme">PresetID:</label>
-                    <input class="preset_textbox preset_input_preset_id preset_theme" id="preset_input_preset_id" name="PresetID" type="text" minlength="4"
+                    <input class="preset_textbox preset_input_preset_id preset_theme" id="preset_input_preset_id"
+                           name="PresetID" type="text" minlength="4"
                            maxlength="24" size="24">
                     <label for="preset_input_preset_id" class="preset_input_label preset_theme">Name:</label>
-                    <input class="preset_textbox preset_input_name preset_theme" id="preset_input_name" name="Name" type="text" minlength="4">
+                    <input class="preset_textbox preset_input_name preset_theme" id="preset_input_name" name="Name"
+                           type="text" minlength="4">
                 </div>
                 <div class="flex_row" style="padding-bottom: 8px; width: 100%">
                     <label for="preset_input_include_config" class="preset_input_label preset_theme">Config?</label>
-                    <input class="preset_checkbox preset_input_include_config" id="preset_input_include_config" name="Config" type="checkbox">
+                    <input class="preset_checkbox preset_input_include_config" id="preset_input_include_config"
+                           name="Config" type="checkbox">
                     <label for="preset_input_button_save" class="preset_input_label preset_theme">Preset?</label>
-                    <input class="preset_checkbox preset_input_include_palette" id="preset_input_button_save" name="Palette" type="checkbox">
-                    <button class="preset_button preset_input_button_save preset_theme" name="Save" style="justify-self: end;">Update/Save</button>
+                    <input class="preset_checkbox preset_input_include_palette" id="preset_input_button_save"
+                           name="Palette" type="checkbox">
+                    <button class="preset_button preset_input_button_save preset_theme" name="Save"
+                            style="justify-self: end;">Update/Save
+                    </button>
                 </div>
                 <div class="presets_container_div">
                     <div class="presets_container flex_column">
@@ -110,7 +163,7 @@
                     <button class="sync_btn simple_picture_btn"></button>
                     <button class="show_load_preset_btn simple_picture_btn"></button>
                     <button class="show_save_preset_btn simple_picture_btn"></button>
-                    <button class="close_btn simple_picture_btn"></button>
+                    <button class="controls_close_btn close_btn simple_picture_btn"></button>
                 </div>
             </div>
             <!--            <div class="preset_select_viewport" style="height: 500px; width: 100%;">-->

@@ -52,7 +52,7 @@ func GetAllActs(getAllAbstracts func() []*LEDInfectedAbstract) []*LEDInfectedAct
 
 		// fill missing fields
 		act.Status = &LEDInfectedActStatus{
-			State: "INACTIVE",
+			State: "NOT_LIVE",
 		}
 		presets := GetAllPresets()
 		for _, s := range act.Scenes {
@@ -96,39 +96,39 @@ func GetAllActs(getAllAbstracts func() []*LEDInfectedAbstract) []*LEDInfectedAct
 	return acts
 }
 
-func UpdateAct(acts []*LEDInfectedAct, act *LEDInfectedAct) error {
+func UpdateAct(acts []*LEDInfectedAct, act *LEDInfectedAct) ([]*LEDInfectedAct, error) {
 	if act == nil || act.ActID == "" {
-		return fmt.Errorf("invalid act given")
+		return acts, fmt.Errorf("invalid act given")
 	}
 	for i, a := range acts {
 		if a.ActID == act.ActID {
 			// write the file
 			if err := writeJson(actDir+"/"+act.ActID+".json", act); err != nil {
-				return err
+				return acts, err
 			}
 
 			// update the array
 			acts[i] = act
-			return nil
+			return acts, nil
 		}
 	}
 
 	// not found yet so add it
 	// write the file
 	if err := writeJson(actDir+"/"+act.ActID+".json", act); err != nil {
-		return err
+		return acts, err
 	}
 
 	// update the array
 	acts = append(acts, act)
-	return nil
+	return acts, nil
 }
 
 func (o *LEDInfectedAct) Start() error {
 	switch o.Status.State {
-	case "RUNNING":
-		return fmt.Errorf("failed to start act %s: already running", o.ActID)
-	case "STOP", "INACTIVE":
+	case "NOT_LIVE":
+	case "RUNNING", "PAUSED":
+		return fmt.Errorf("failed to start act %s: not stopped", o.ActID)
 	default:
 		o.Status.appendError(fmt.Errorf("WARN: unhandled act (%s) state %s", o.ActID, o.Status.State))
 	}
@@ -138,15 +138,45 @@ func (o *LEDInfectedAct) Start() error {
 
 func (o *LEDInfectedAct) Stop() error {
 	switch o.Status.State {
-	case "RUNNING":
-	case "STOP", "INACTIVE":
-		return fmt.Errorf("failed to stop act %s: not running", o.ActID)
+	case "RUNNING", "PAUSED":
+	case "NOT_LIVE":
+		return fmt.Errorf("failed to stop act %s: already stopped", o.ActID)
 	default:
 		o.Status.appendError(fmt.Errorf("WARN: unhandled act (%s) state %s", o.ActID, o.Status.State))
 	}
 
-	o.Status.State = "STOP"
+	o.Status.State = "NOT_LIVE"
+	err := o.disableScene()
+	o.Status.ActiveScene = nil
+	return err
+}
+
+func (o *LEDInfectedAct) Pause() error {
+	switch o.Status.State {
+	case "RUNNING":
+	case "PAUSED", "NOT_LIVE":
+		return fmt.Errorf("failed to pause act %s: not running", o.ActID)
+	default:
+		o.Status.appendError(fmt.Errorf("WARN: unhandled act (%s) state %s", o.ActID, o.Status.State))
+	}
+
+	// fixme stop the timers of the currently active scene
+
+	o.Status.State = "PAUSED"
 	return o.disableScene()
+}
+
+func (o *LEDInfectedAct) Resume() error {
+	switch o.Status.State {
+	case "PAUSED":
+	case "RUNNING", "NOT_LIVE":
+		return fmt.Errorf("failed to stop act %s: not paused", o.ActID)
+	default:
+		o.Status.appendError(fmt.Errorf("WARN: unhandled act (%s) state %s", o.ActID, o.Status.State))
+	}
+
+	o.Status.State = "RUNNING"
+	return o.enableScene()
 }
 
 func (o *LEDInfectedAct) enableScene() error {

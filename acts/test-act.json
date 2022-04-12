@@ -1,7 +1,7 @@
 {
   "act_id": "test-act",
-  "description": "Act Name TestiTesti",
-  "start_scene_id": "scene1_idle_state_1",
+  "description": "Act Name TestiTesti asdf",
+  "start_scene_id": "scene1_idle_state_2",
   "scenes": [
     {
       "scene_id": "scene1_idle_state_1",
@@ -9,26 +9,38 @@
       "effects": [
         {
           "abstract_id": "pfv1",
-          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
           "preset_id": "slow_blue"
         }
       ],
       "transitions": [
         {
           "trigger": {
-            "act_trigger_id": "t1"
+            "act_trigger_id": "t1",
+            "timeout_s": null
           },
           "scene_id": "flower1_on"
         },
         {
           "trigger": {
+            "act_trigger_id": null,
             "timeout_s": 10
           },
           "scene_id": "scene1_idle_state_2"
         },
         {
           "trigger": {
-            "act_trigger_id": "next"
+            "act_trigger_id": "next",
+            "timeout_s": null
           },
           "scene_id": "flower1_on"
         }
@@ -40,26 +52,38 @@
       "effects": [
         {
           "abstract_id": "pfv1",
-          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
           "preset_id": "slow_blue_purple"
         }
       ],
       "transitions": [
         {
           "trigger": {
-            "act_trigger_id": "t1"
+            "act_trigger_id": "t1",
+            "timeout_s": null
           },
           "scene_id": "flower1_on"
         },
         {
           "trigger": {
+            "act_trigger_id": null,
             "timeout_s": 10
           },
           "scene_id": "scene1_idle_state_1"
         },
         {
           "trigger": {
-            "act_trigger_id": "next"
+            "act_trigger_id": "next",
+            "timeout_s": null
           },
           "scene_id": "flower1_on"
         }
@@ -71,25 +95,38 @@
       "effects": [
         {
           "abstract_id": "flowerv1_1",
-          "stripe_ids": ["circle"],
+          "stripe_ids": [
+            "circle"
+          ],
           "preset_id": "red_purple"
         },
         {
           "abstract_id": "pfv1",
-          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
           "preset_id": "red_purple"
         }
       ],
       "transitions": [
         {
           "trigger": {
+            "act_trigger_id": null,
             "timeout_s": 10
           },
           "scene_id": "scene2_idle_state_1"
         },
         {
           "trigger": {
-            "act_trigger_id": "next"
+            "act_trigger_id": "next",
+            "timeout_s": null
           },
           "scene_id": "scene2_idle_state_1"
         }
@@ -101,20 +138,31 @@
       "effects": [
         {
           "abstract_id": "pfv1",
-          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
           "preset_id": "slow_blue_purple"
         }
       ],
       "transitions": [
         {
           "trigger": {
-            "act_trigger_id": "t2"
+            "act_trigger_id": "t2",
+            "timeout_s": null
           },
           "scene_id": "flower2_on"
         },
         {
           "trigger": {
-            "act_trigger_id": "next"
+            "act_trigger_id": "next",
+            "timeout_s": null
           },
           "scene_id": "flower2_on"
         }
@@ -126,25 +174,38 @@
       "effects": [
         {
           "abstract_id": "flowerv1_2",
-          "stripe_ids": ["circle"],
+          "stripe_ids": [
+            "circle"
+          ],
           "preset_id": "red_purple"
         },
         {
           "abstract_id": "pfv1",
-          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
           "preset_id": "red_purple"
         }
       ],
       "transitions": [
         {
           "trigger": {
+            "act_trigger_id": null,
             "timeout_s": 10
           },
           "scene_id": "scenefinal_idle_state_1"
         },
         {
           "trigger": {
-            "act_trigger_id": "next"
+            "act_trigger_id": "next",
+            "timeout_s": null
           },
           "scene_id": "scenefinal_idle_state_1"
         }
@@ -156,20 +217,31 @@
       "effects": [
         {
           "abstract_id": "pfv1",
-          "stripe_ids": ["radial1", "radial2", "radial3", "radial4", "radial5", "radial6", "radial7", "radial8"],
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
           "preset_id": "red_purple"
         }
       ],
       "transitions": [
         {
           "trigger": {
-            "act_trigger_id": "t2"
+            "act_trigger_id": "t2",
+            "timeout_s": null
           },
           "scene_id": "flower2_on"
         },
         {
           "trigger": {
-            "act_trigger_id": "next"
+            "act_trigger_id": "next",
+            "timeout_s": null
           },
           "scene_id": "flower2_on"
         }
@@ -178,16 +250,25 @@
   ],
   "triggers": [
     {
-      "act_trigger_id": "t1"
+      "act_trigger_id": "t1",
+      "active": false
     },
     {
-      "act_trigger_id": "t2"
+      "act_trigger_id": "t2",
+      "active": false
     },
     {
-      "act_trigger_id": "t3"
+      "act_trigger_id": "t3",
+      "active": false
     },
     {
-      "act_trigger_id": "next"
+      "act_trigger_id": "next",
+      "active": false
     }
-  ]
+  ],
+  "status": {
+    "state": "NOT_LIVE",
+    "active_scene": null,
+    "errors": null
+  }
 }

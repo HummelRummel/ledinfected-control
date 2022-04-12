@@ -33,6 +33,14 @@ class LEDInfectedApp {
         this.ledInfected = new LEDInfectedList();
         this.overview = new Overview();
         this.controls = new Controls();
+
+        const that = this;
+
+        function callback() {
+            that.controls.actView.show()
+        }
+
+        this.overview.actButton.addEventListener("click", callback);
     }
 
     async init() {
@@ -54,10 +62,21 @@ class ConnectionAPI {
     }
 
     async get(ep) {
-        const response = await fetch(this.baseEP + ep);
-        const jsonResponse = await response.json();
-        return jsonResponse
+        return await fetch(this.baseEP + ep).then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            return response;
+        }).then(async function (response) {
+            if (response.status == 200) {
+                const jsonResponse = await response.json();
+                return jsonResponse
+            }
+        }).catch(function (error) {
+            return null;
+        });
     }
+
 
     async post(ep, jsonBody) {
         const response = await fetch(this.baseEP + ep, {
@@ -88,16 +107,41 @@ class LEDInfectedList {
         this.abstractList = new AbstractList();
         this.arduinoList = new ArduinoList();
         this.presetList = new PresetList();
+        this.actList = new ActList();
     }
 
     async init() {
+        const that = this;
+
+        // MOA TBD setup a callback timer, to update the list
+        function callback() {
+            that.listUpdateCallback();
+            app.controls.actView.updateAct();
+        }
+
+        // do the initial update
+        that.listUpdateCallback();
+
+        setInterval(callback, 10000)
+    }
+
+    async listUpdateCallback() {
         const globalConfig = await app.connection.get("");
+        if (globalConfig == null) {
+            this.isOnline = false;
+            console.log(this.isOnline)
+            return;
+        }
+        this.isOnline = true;
+        console.log(this.isOnline)
+
         this.abstractList.updateAll(globalConfig.abstracts);
         this.arduinoList.updateAll(globalConfig.arduinos);
         this.presetList.updateAll(globalConfig.presets);
-
-        // MOA TBD setup a callback timer, to update the list
+        this.actList.updateAll(globalConfig.acts);
+        this.liveAct = globalConfig.live_act
     }
+
 
     syncMovement() {
         app.connection.post("/sync", "{}");
@@ -117,8 +161,22 @@ class AbstractList {
     }
 
     updateAll(abstractConfigList) {
+        let old = this.objects;
+        this.objects = [];
         for (let i = 0; i < abstractConfigList.length; i++) {
-            this.objects.push(new AbstractObject(abstractConfigList[i]))
+            let found = false;
+            for (let j = 0; j < old.length; j++) {
+                if (old[j].config.abstract_id == abstractConfigList[i].abstract_id) {
+                    // already exists just update it
+                    old[j].updateConfig(abstractConfigList[i]);
+                    this.objects.push(old[j]);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                this.objects.push(new AbstractObject(abstractConfigList[i]))
+            }
         }
     }
 
@@ -147,6 +205,27 @@ class AbstractObject {
         this.controlObject = new AbstractControlObject(this, config);
 
         app.overview.addAbstract(this.overviewObject.getElementID(), this.overviewObject.getHTML());
+    }
+
+    updateConfig(newConfig) {
+        for (let i = 0; i < newConfig.stripes.length; i++) {
+            for (let j = 0; j < this.config.stripes.length; j++) {
+                if ((newConfig.stripes[i].setup.arduino_id == this.config.stripes[j].setup.arduino_id) &&
+                    (newConfig.stripes[i].setup.arduino_stripe_id == this.config.stripes[j].setup.arduino_stripe_id)) {
+                    this.config.stripes[j].config = newConfig.stripes[i].config;
+                    break;
+                }
+            }
+        }
+        // TBD need to handle the linked arduino separately
+        if (JSON.stringify(newConfig) === JSON.stringify(this.config)) {
+            // nothing changed
+            return
+        }
+
+        // config changed, reload the page to be sure everything is setup correctly
+        // should only happen in case an abstract is reconfigured
+        location.reload();
     }
 
     getSelectedStripes() {
@@ -430,7 +509,7 @@ class AbstractStripeViewPortObject {
 // List of arduinos objects reported by the LEDinfected-controld
 //
 // Accessible via
-//   app.ledinfected.arduino
+//   app.ledinfected.arduinoList
 /////////////////////////////////////////////////////////////////////////////////////////////
 class ArduinoList {
     constructor() {
@@ -438,7 +517,7 @@ class ArduinoList {
     }
 
     updateAll(arduinoConfigList) {
-        // MOA fixme remove old arduinos
+        this.objects = [];
         if (arduinoConfigList == null) {
             return
         }
@@ -467,7 +546,7 @@ class ArduinoObject {
 // List of presets objects reported by the LEDinfected-controld
 //
 // Accessible via
-//   app.ledinfected.preset
+//   app.ledinfected.presetList
 /////////////////////////////////////////////////////////////////////////////////////////////
 class PresetList {
     constructor() {
@@ -475,10 +554,24 @@ class PresetList {
     }
 
     updateAll(presetConfigList) {
+        let old = this.objects;
+        this.objects = [];
         for (let i = 0; i < presetConfigList.length; i++) {
-            this.objects.push(new PresetObject(presetConfigList[i]))
+            let found = false;
+            for (let j = 0; j < old.length; j++) {
+                if (old[j].config.preset_id == presetConfigList[i].preset_id) {
+                    old[j].updateConfig(presetConfigList[i]);
+                    this.objects.push(old[j]);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                this.objects.push(new PresetObject(presetConfigList[i]))
+            }
         }
     }
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -500,9 +593,86 @@ class PresetObject {
         });
     }
 
+    updateConfig(newConfig) {
+        if (newConfig != null) {
+            this.config = newConfig;
+        }
+    }
+
     linkLoadButton(loadCallback) {
         this.loadCallback = loadCallback;
         return this.loadButton;
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// ActList
+// List of act objects reported by the LEDinfected-controld
+//
+// Accessible via
+//   app.ledinfected.actList
+/////////////////////////////////////////////////////////////////////////////////////////////
+class ActList {
+    constructor() {
+        this.objects = [];
+    }
+
+    updateAll(actConfigList) {
+        let old = this.objects;
+        this.objects = [];
+        for (let i = 0; i < actConfigList.length; i++) {
+            let found = false;
+            for (let j = 0; j < old.length; j++) {
+                if (old[j].config.act_id == actConfigList[i].act_id) {
+                    old[j].updateConfig(actConfigList[i]);
+                    this.objects.push(old[j]);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                this.objects.push(new ActObject(actConfigList[i]))
+            }
+        }
+    }
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// ActObject
+// Object to a act
+//
+// Accessible via
+//   app.ledinfected.actList.objects[]
+/////////////////////////////////////////////////////////////////////////////////////////////
+class ActObject {
+    constructor(config) {
+        this.config = config;
+        this.id = config.act_id;
+        const that = this;
+        this.actSelectButton = document.createElement("button")
+        this.actSelectButton.classList.add("act_button", "act_theme")
+        this.updateState();
+        this.actSelectButton.addEventListener('click', function () {
+            app.controls.actView.selectAct(that);
+            //that.loadCallback(that.config);
+        });
+    }
+
+    updateState() {
+        this.actSelectButton.innerHTML = this.config.act_id + " - " + this.config.status.state + "(" + this.config.description + ")";
+    }
+
+    updateConfig(newConfig) {
+        if (newConfig != null) {
+            this.config = newConfig;
+        }
+        this.updateState();
+    }
+
+    getHTMLElement() {
+        return this.actSelectButton;
     }
 }
 
@@ -517,13 +687,22 @@ class Overview {
     constructor() {
         this.viewPort = document.createElement("div");
         this.viewPort.classList.add("class_overview_viewport");
+        this.actButton = document.createElement("button");
+        this.actButton.classList.add("show_act_control_button", "act_button", "act_theme");
+        this.actButton.style.left = "0px";
+        this.actButton.style.top = "0px";
+        this.actButton.style.position = "absolute";
+        this.actButton.style.zIndex = 3;
+        this.actButton.innerHTML = "Live Act";
+        this.viewPort.appendChild(this.actButton);
+
         document.body.appendChild(this.viewPort);
 
         this.addWindAnimation();
     }
 
     initHummeln() {
-        createHummel(this.viewPort);
+        //createHummel(this.viewPort);
     }
 
     addWindAnimation() {
@@ -568,6 +747,8 @@ class Controls {
         this.controlStripes = [];
 
         this.controlStripes.push(new ControlStripe());
+
+        this.actView = new ActView();
     }
 
     showAbstract(abstractID) {
@@ -639,6 +820,222 @@ class PresetSelect {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+// ActView
+// It contains the control interface for acts
+//
+// Accessible via
+//   app.controls
+/////////////////////////////////////////////////////////////////////////////////////////////
+class ActView {
+    constructor() {
+        this.initViewPort();
+        this.initElements();
+
+        document.body.appendChild(this.viewPort);
+    }
+
+    initViewPort() {
+        let htmlTemplate = document.body.getElementsByClassName("act_view_template")[0];
+        this.viewPort = htmlTemplate.cloneNode(true);
+        this.viewPort.classList.remove("act_view_template");
+        this.viewPort.classList.add("actView")
+        this.viewPort.style.display = "none";
+    }
+
+    initElements() {
+        const that = this;
+        // the canvas for the stripe svg
+        this.actListContainer = this.viewPort.getElementsByClassName('acts_container')[0];
+
+        this.selectedActHeader = this.viewPort.getElementsByClassName('act_view_header')[0];
+
+        this.selectedActStatusState = this.viewPort.getElementsByClassName('act_view_status_state')[0];
+        this.selectedActStatusActiveSceneID = this.viewPort.getElementsByClassName('act_view_status_active_scene_id')[0];
+
+        this.selectedActActionButtonStart = this.viewPort.getElementsByClassName('act_view_action_start')[0];
+        this.selectedActActionButtonStart.addEventListener('click', async function () {
+            if (that.linkedAct == null) {
+                alert("No Act selected");
+                return
+            }
+            if (app.ledInfected.liveAct != null) {
+                console.log(app.ledInfected.liveAct)
+                if (app.ledInfected.liveAct.act_id != that.linkedAct.id) {
+                    let confirmAction = confirm("Act '" + app.ledInfected.liveAct.act_id + "' is already live. Interrupt it and start act '" + that.linkedAct.id + "'?");
+                    if (confirmAction) {
+                        await app.connection.post("/act/" + app.ledInfected.liveAct.act_id + "/stop");
+                    } else {
+                        return;
+                    }
+                }
+            }
+            await app.connection.post("/act/" + that.linkedAct.id + "/start");
+            await app.ledInfected.listUpdateCallback();
+            that.updateAct();
+        });
+        this.selectedActActionButtonStop = this.viewPort.getElementsByClassName('act_view_action_stop')[0];
+        this.selectedActActionButtonStop.addEventListener('click', async function () {
+            if (that.linkedAct == null) {
+                alert("No Act selected");
+                return
+            }
+            let resp = await app.connection.post("/act/" + that.linkedAct.id + "/stop")
+            await app.ledInfected.listUpdateCallback();
+            that.updateAct();
+        });
+        this.selectedActActionButtonPause = this.viewPort.getElementsByClassName('act_view_action_pause')[0];
+        this.selectedActActionButtonPause.addEventListener('click', async function () {
+            if (that.linkedAct == null) {
+                alert("No Act selected");
+                return
+            }
+            let resp = await app.connection.post("/act/" + that.linkedAct.id + "/pause")
+            await app.ledInfected.listUpdateCallback();
+            that.updateAct();
+        });
+        this.selectedActActionButtonResume = this.viewPort.getElementsByClassName('act_view_action_resume')[0];
+        this.selectedActActionButtonResume.addEventListener('click', async function () {
+            if (that.linkedAct == null) {
+                alert("No Act selected");
+                return
+            }
+            let resp = await app.connection.post("/act/" + that.linkedAct.id + "/resume")
+            await app.ledInfected.listUpdateCallback();
+            that.updateAct();
+        });
+        this.selectedActActionButtonNextScene = this.viewPort.getElementsByClassName('act_view_action_next_scene')[0];
+        this.selectedActActionButtonNextScene.addEventListener('click', async function () {
+            if (that.linkedAct == null) {
+                alert("No Act selected");
+                return
+            }
+            let resp = await app.connection.post("/act/" + that.linkedAct.id + "/trigger/next/trigger")
+            await app.ledInfected.listUpdateCallback();
+            that.updateAct();
+        });
+
+        this.updateButton = this.viewPort.getElementsByClassName('act_view_update_button')[0];
+        this.updateButton.addEventListener('click', async function () {
+            await app.ledInfected.listUpdateCallback();
+            that.updateAct();
+        });
+
+        this.closeBtn = this.viewPort.getElementsByClassName("live_act_close_btn")[0];
+        this.closeBtn.style = "margin-left: auto;"
+        this.closeBtn.addEventListener('click', function () {
+            that.hide();
+        });
+        this.editActBtn = this.viewPort.getElementsByClassName("act_view_edit_act")[0];
+        this.editActBtn.addEventListener('click', function () {
+            if (that.linkedAct == null){
+                alert("No Act selected");
+                return;
+            }
+            window.location.href = "/act?act_id=" + that.linkedAct.id;
+        });
+    }
+
+    clearTimeout() {
+        if (this.resetTimer != null) {
+            // in your click function, call clearTimeout
+            window.clearTimeout(this.resetTimer);
+            this.resetTimer = null;
+        }
+    }
+
+    setTimeout(el, resetValue, timeout) {
+        let that = this;
+        this.clearTimeout();
+
+        this.resetTimer = window.setTimeout(
+            function () {
+                el.value = resetValue;
+                that.sendConfig();
+                that.resetTimer = null;
+            }, timeout);
+    }
+
+    show() {
+        this.actListContainer.innerHTML = "";
+        for (let i = 0; i < app.ledInfected.actList.objects.length; i++) {
+            if (app.ledInfected.liveAct != null) {
+                if (app.ledInfected.liveAct.act_id == app.ledInfected.actList.objects[i].config.act_id) {
+                    this.selectAct(app.ledInfected.actList.objects[i])
+
+                }
+            }
+            this.actListContainer.appendChild(app.ledInfected.actList.objects[i].getHTMLElement());
+        }
+        this.updateAct()
+
+        this.viewPort.style.animation = "fadeInEffect 1s";
+        this.viewPort.style.display = "block";
+    }
+
+    selectAct(act) {
+        this.linkedAct = act;
+
+        this.updateAct();
+    }
+
+    updateAct() {
+        if (this.linkedAct == null) {
+            this.selectedActActionButtonStart.disabled = true;
+            this.selectedActActionButtonStop.disabled = true;
+            this.selectedActActionButtonPause.disabled = true;
+            this.selectedActActionButtonResume.disabled = true;
+            this.selectedActActionButtonNextScene.disabled = true;
+            this.editActBtn.disabled = true;
+            return
+        }
+        switch (this.linkedAct.config.status.state) {
+            case "NOT_LIVE":
+                this.selectedActActionButtonStart.disabled = false;
+                this.selectedActActionButtonStop.disabled = true;
+                this.selectedActActionButtonPause.disabled = true;
+                this.selectedActActionButtonResume.disabled = true;
+                this.selectedActActionButtonNextScene.disabled = true;
+                this.editActBtn.disabled = false;
+                break;
+            case "RUNNING":
+                this.selectedActActionButtonStart.disabled = true;
+                this.selectedActActionButtonStop.disabled = false;
+                this.selectedActActionButtonPause.disabled = false;
+                this.selectedActActionButtonResume.disabled = true;
+                this.selectedActActionButtonNextScene.disabled = false;
+                this.editActBtn.disabled = true;
+                break;
+            case "PAUSED":
+                this.selectedActActionButtonStart.disabled = true;
+                this.selectedActActionButtonStop.disabled = false;
+                this.selectedActActionButtonPause.disabled = true;
+                this.selectedActActionButtonResume.disabled = false;
+                this.selectedActActionButtonNextScene.disabled = true;
+                this.editActBtn.disabled = true;
+                break;
+        }
+
+        this.selectedActHeader.innerHTML = this.linkedAct.config.act_id + " (" + this.linkedAct.config.description + ")";
+        this.selectedActStatusState.innerHTML = this.linkedAct.config.status.state;
+        if (this.linkedAct.config.status.active_scene != null) {
+            this.selectedActStatusActiveSceneID.innerHTML = this.linkedAct.config.status.active_scene.scene_id;
+        } else {
+            this.selectedActStatusActiveSceneID.innerHTML = "none";
+        }
+    }
+
+    hide() {
+        this.viewPort.style.animation = "fadeOutEffect 1s";
+        let that = this;
+        // this is to hide and remove the stripe object it after the fade out
+        setTimeout(function () {
+            that.viewPort.style.display = "none";
+        }, 900);
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 // ControlStripe
 // It contains one stripe of the control view port
 //
@@ -658,7 +1055,6 @@ class ControlStripe {
     }
 
     initViewPort() {
-        console.log(document.body);
         let htmlTemplate = document.body.getElementsByClassName("control_view_template")[0];
         this.viewPort = htmlTemplate.cloneNode(true);
         this.viewPort.classList.remove("control_view_template");
@@ -757,7 +1153,7 @@ class ControlStripe {
         //     }
         // });
 
-        this.closeBtn = this.viewPort.getElementsByClassName("close_btn")[0];
+        this.closeBtn = this.viewPort.getElementsByClassName("controls_close_btn")[0];
         this.closeBtn.addEventListener('click', function () {
             that.hide();
         });
@@ -1908,7 +2304,7 @@ class Hummel {
 }
 
 function createHummel(parentElement) {
-    // new Hummel("123", parentElement)
+    new Hummel("123", parentElement)
 }
 
 

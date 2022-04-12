@@ -24,12 +24,13 @@ func (o *apiServer) getActCallback(c *gin.Context) {
 
 func (o *apiServer) updateActCallback(c *gin.Context) {
 	data := &hummelapi.LEDInfectedAct{}
-	if err := c.BindJSON(data); err != nil {
+	err := c.BindJSON(data)
+	if err != nil {
 		c.String(http.StatusBadRequest, "")
 		return
 	}
 
-	if err := hummelapi.UpdateAct(o.Acts, data); err != nil {
+	if o.Acts, err = hummelapi.UpdateAct(o.Acts, data); err != nil {
 		c.String(http.StatusBadRequest, jsonError(err))
 		return
 	}
@@ -53,13 +54,13 @@ func (o *apiServer) startActCallback(c *gin.Context) {
 		c.String(http.StatusNotFound, jsonError(err))
 		return
 	}
-	if o.ActiveAct != nil {
-		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("another act (%s) is already active", o.ActiveAct.ActID)))
+	if o.LiveAct != nil {
+		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("another act (%s) is already active", o.LiveAct.ActID)))
 		return
 	}
 
-	o.ActiveAct = a
-	if err := o.ActiveAct.Start(); err != nil {
+	o.LiveAct = a
+	if err := o.LiveAct.Start(); err != nil {
 		c.String(http.StatusBadRequest, jsonError(err))
 		return
 	}
@@ -73,17 +74,67 @@ func (o *apiServer) stopActCallback(c *gin.Context) {
 		c.String(http.StatusNotFound, jsonError(err))
 		return
 	}
-	if o.ActiveAct == nil {
+	if o.LiveAct == nil {
 		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("no act is running")))
 		return
 	}
 
-	if o.ActiveAct.ActID != a.ActID {
-		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("act %s is currently not runnig", o.ActiveAct.ActID)))
+	if o.LiveAct.ActID != a.ActID {
+		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("act %s is currently not runnig", o.LiveAct.ActID)))
 		return
 	}
 
-	if err := o.ActiveAct.Stop(); err != nil {
+	if err := o.LiveAct.Stop(); err != nil {
+		c.String(http.StatusBadRequest, jsonError(err))
+		return
+	}
+	o.LiveAct = nil
+	c.JSON(http.StatusOK, a.Status)
+	return
+}
+
+func (o *apiServer) pauseActCallback(c *gin.Context) {
+	a, err := o.getCallbackAct(c)
+	if err != nil {
+		c.String(http.StatusNotFound, jsonError(err))
+		return
+	}
+	if o.LiveAct == nil {
+		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("no act is running")))
+		return
+	}
+
+	if o.LiveAct.ActID != a.ActID {
+		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("act %s is currently not runnig", o.LiveAct.ActID)))
+		return
+	}
+
+	if err := o.LiveAct.Pause(); err != nil {
+		c.String(http.StatusBadRequest, jsonError(err))
+		return
+	}
+	c.JSON(http.StatusOK, a.Status)
+	return
+}
+
+
+func (o *apiServer) resumeActCallback(c *gin.Context) {
+	a, err := o.getCallbackAct(c)
+	if err != nil {
+		c.String(http.StatusNotFound, jsonError(err))
+		return
+	}
+	if o.LiveAct == nil {
+		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("no act is running")))
+		return
+	}
+
+	if o.LiveAct.ActID != a.ActID {
+		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("act %s is currently not runnig", o.LiveAct.ActID)))
+		return
+	}
+
+	if err := o.LiveAct.Resume(); err != nil {
 		c.String(http.StatusBadRequest, jsonError(err))
 		return
 	}
@@ -111,7 +162,6 @@ func (o *apiServer) getActTriggerCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, t)
 	return
 }
-
 
 func (o *apiServer) triggerActTriggerCallback(c *gin.Context) {
 	_, t, err := o.getCallbackActTrigger(c)
