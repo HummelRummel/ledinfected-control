@@ -11,6 +11,7 @@ type (
 		SceneID string                   `json:"scene_id"`
 
 		timer       *time.Timer
+		endTime     time.Time
 		actTrigger  *LEDInfectedActTrigger
 		triggerChan <-chan struct{}
 		stop        chan struct{}
@@ -31,6 +32,7 @@ func (o *LEDInfectedSceneTransition) Run() error {
 			}
 			fmt.Printf("SETUP: %d sec timer for scene %s\n", *o.Trigger.TimeoutS, o.SceneID)
 			o.timer.Reset(timeout)
+			o.endTime = time.Now().Add(timeout)
 		}
 	}
 
@@ -58,6 +60,17 @@ func (o *LEDInfectedSceneTransition) Run() error {
 
 	go doRun()
 	return nil
+}
+
+func (o *LEDInfectedSceneTransition) UpdateTimer() {
+	if o.Trigger.TimeoutS != nil {
+		remainingInt := (o.endTime.Sub(time.Now())/time.Second) + 1
+		if remainingInt < 0 {
+			remainingInt = time.Duration(*o.Trigger.TimeoutS)
+		}
+		remainingUint := uint32(remainingInt)
+		o.Trigger.RemainingS = &remainingUint
+	}
 }
 
 func (o *LEDInfectedSceneTransition) Stop() error {

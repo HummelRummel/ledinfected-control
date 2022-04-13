@@ -407,6 +407,14 @@ table {
     border-bottom: 2px solid black;
 }
 
+.frame {
+    padding: 4px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: #FFFFFF;
+    border: 4px solid #888888;
+    border-radius: 8px;
+}
 
 /* ACT CSS themes */
 .act_theme {
@@ -450,6 +458,10 @@ table {
 .act_button:focus-visible {
     box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px;
     transition: box-shadow .2s;
+}
+
+.act_trigger_button {
+    width: 100px;
 }
 
 .act_button:active {

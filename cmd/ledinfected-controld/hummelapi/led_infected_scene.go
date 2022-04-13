@@ -41,3 +41,9 @@ func (o *LEDInfectedScene) Stop() error {
 	}
 	return lastErr
 }
+
+func (o *LEDInfectedScene) UpdateTimer() {
+	for _, t := range o.Transitions {
+		t.UpdateTimer()
+	}
+}

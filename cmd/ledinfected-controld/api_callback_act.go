@@ -8,6 +8,7 @@ import (
 )
 
 func (o *apiServer) getAllActsCallback(c *gin.Context) {
+	o.updateTimer()
 	c.JSON(http.StatusOK, o.Acts)
 	return
 }
@@ -18,6 +19,7 @@ func (o *apiServer) getActCallback(c *gin.Context) {
 		c.String(http.StatusNotFound, jsonError(err))
 		return
 	}
+	a.UpdateTimer()
 	c.JSON(http.StatusOK, a)
 	return
 }
@@ -44,6 +46,7 @@ func (o *apiServer) getActStatusCallback(c *gin.Context) {
 		c.String(http.StatusNotFound, jsonError(err))
 		return
 	}
+	a.UpdateTimer()
 	c.JSON(http.StatusOK, a.Status)
 	return
 }
@@ -64,6 +67,7 @@ func (o *apiServer) startActCallback(c *gin.Context) {
 		c.String(http.StatusBadRequest, jsonError(err))
 		return
 	}
+	a.UpdateTimer()
 	c.JSON(http.StatusOK, a.Status)
 	return
 }
@@ -89,6 +93,7 @@ func (o *apiServer) stopActCallback(c *gin.Context) {
 		return
 	}
 	o.LiveAct = nil
+	a.UpdateTimer()
 	c.JSON(http.StatusOK, a.Status)
 	return
 }
@@ -113,10 +118,10 @@ func (o *apiServer) pauseActCallback(c *gin.Context) {
 		c.String(http.StatusBadRequest, jsonError(err))
 		return
 	}
+	a.UpdateTimer()
 	c.JSON(http.StatusOK, a.Status)
 	return
 }
-
 
 func (o *apiServer) resumeActCallback(c *gin.Context) {
 	a, err := o.getCallbackAct(c)
@@ -138,6 +143,7 @@ func (o *apiServer) resumeActCallback(c *gin.Context) {
 		c.String(http.StatusBadRequest, jsonError(err))
 		return
 	}
+	a.UpdateTimer()
 	c.JSON(http.StatusOK, a.Status)
 	return
 }

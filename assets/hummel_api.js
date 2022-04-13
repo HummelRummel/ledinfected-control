@@ -118,7 +118,7 @@ class LEDInfectedList {
         // MOA TBD setup a callback timer, to update the list
         function callback() {
             that.listUpdateCallback();
-            app.controls.actView.updateAct();
+            app.controls.actView.refreshAct();
         }
 
         // do the initial update
@@ -131,11 +131,11 @@ class LEDInfectedList {
         const globalConfig = await app.connection.get("");
         if (globalConfig == null) {
             this.isOnline = false;
-            console.log(this.isOnline)
+            app.overview.onlineState.innerHTML = "OFFLINE"
             return;
         }
         this.isOnline = true;
-        console.log(this.isOnline)
+        app.overview.onlineState.innerHTML = "ONLINE"
 
         this.abstractList.updateAll(globalConfig.abstracts);
         this.arduinoList.updateAll(globalConfig.arduinos);
@@ -340,7 +340,6 @@ class AbstractControlObject {
 class AbstractControlStripeObject {
     constructor(parent, abstractConfig, areaMap) {
         this.parent = parent;
-        console.log(areaMap);
         this.id = areaMap.stripe_id;
         // MOA fixme set the area map
         this.areaMapMax = areaMap.max_view;
@@ -658,6 +657,8 @@ class ActObject {
     constructor(config) {
         this.config = config;
         this.id = config.act_id;
+        this.scenes = [];
+
         const that = this;
         this.actSelectButton = document.createElement("button")
         this.actSelectButton.classList.add("act_button", "act_theme")
@@ -666,6 +667,12 @@ class ActObject {
             app.controls.actView.selectAct(that);
             //that.loadCallback(that.config);
         });
+
+        if (this.config.scenes != null) {
+            for (let i = 0; i < this.config.scenes.length; i++) {
+                this.scenes.push(new ActSceneObject(this, this.config.scenes[i]));
+            }
+        }
     }
 
     updateState() {
@@ -675,12 +682,189 @@ class ActObject {
     updateConfig(newConfig) {
         if (newConfig != null) {
             this.config = newConfig;
+            for (let i = 0; i < newConfig.scenes.length; i++) {
+                for (let j = 0; j < this.scenes.length; j++) {
+                    if (newConfig.scenes[i].scene_id == this.scenes[j].id) {
+                        this.scenes[j].updateConfig(newConfig.scenes[i]);
+                    }
+                }
+            }
         }
         this.updateState();
     }
 
-    getHTMLElement() {
+    getButtonHTMLElement() {
         return this.actSelectButton;
+    }
+
+    getActiveScene() {
+        if (this.config.status.active_scene == null) {
+            return null
+        }
+        for (let i = 0; i < this.scenes.length; i++) {
+            if (this.scenes[i].id == this.config.status.active_scene.scene_id) {
+                return this.scenes[i];
+            }
+        }
+        return null
+    }
+
+    getScenesHTMLElement() {
+        let base = document.createElement("div");
+        for (let i = 0; i < this.scenes.length; i++) {
+            base.appendChild(this.scenes[i].getScenesViewHTMLElement());
+        }
+        return base;
+    }
+
+    getActiveSceneHTMLElement() {
+        let activeScene = this.getActiveScene();
+        if (activeScene == null) {
+            return document.createElement("div")
+        }
+
+        return activeScene.getActiveSceneHTMLElement();
+    }
+}
+
+class ActSceneObject {
+    constructor(parent, config) {
+        this.parent = parent;
+        this.config = config;
+        this.id = this.config.scene_id;
+
+        this.effects = [];
+        for (let i = 0; i < this.config.effects.length; i++) {
+            this.effects.push(new ActSceneEffectObject(this.config.effects[i]));
+        }
+        this.transitions = [];
+        for (let i = 0; i < this.config.transitions.length; i++) {
+            if (this.config.transitions[i].trigger.timeout_s == null) {
+                this.transitions.push(new ActSceneTransitionObject(this, this.config.transitions[i]));
+            }
+        }
+        for (let i = 0; i < this.config.transitions.length; i++) {
+            if (this.config.transitions[i].trigger.timeout_s != null) {
+                this.transitions.push(new ActSceneTransitionObject(this, this.config.transitions[i]));
+            }
+        }
+
+        this.scenesViewElement = document.createElement("div");
+        this.scenesViewElement.classList.add("flex_row");
+        this.scenesViewLabel = document.createElement("div");
+        this.scenesViewLabel.classList.add("act_theme");
+        this.scenesViewLabel.innerHTML = this.config.scene_id;
+        this.scenesViewElement.appendChild(this.scenesViewLabel);
+        this.scenesViewEditButton = document.createElement("button");
+        this.scenesViewEditButton.classList.add("act_theme", "act_button");
+        this.scenesViewEditButton.style.marginLeft = "auto";
+        this.scenesViewEditButton.style.paddingLeft = "16px";
+        this.scenesViewEditButton.style.paddingRight = "16px";
+        this.scenesViewEditButton.innerHTML = "Edit";
+        if (this.parent.config.status.active_scene != null) {
+            this.scenesViewEditButton.disabled = true;
+        } else {
+            this.scenesViewEditButton.disabled = false;
+        }
+        this.scenesViewElement.appendChild(this.scenesViewEditButton);
+
+    }
+
+    updateConfig(config) {
+        this.config = config;
+        for (let i = 0; i < this.config.transitions.length; i++) {
+            for (let j = 0; j < this.transitions.length; j++) {
+                if (this.transitions[j].isIt(this.config.transitions[i]) == true) {
+                    this.transitions[j].updateConfig(this.config.transitions[i]);
+                }
+            }
+        }
+        if (this.parent.config.status.active_scene != null) {
+            this.scenesViewEditButton.disabled = true;
+        } else {
+            this.scenesViewEditButton.disabled = false;
+        }
+    }
+
+    getScenesViewHTMLElement() {
+        return this.scenesViewElement;
+    }
+
+    getActiveSceneHTMLElement() {
+        let activeSceneElement = document.createElement("div");
+        for (let i = 0; i < this.transitions.length; i++) {
+            activeSceneElement.appendChild(this.transitions[i].getActiveSceneTransitionHTMLElement())
+        }
+        return activeSceneElement;
+    }
+}
+
+class ActSceneEffectObject {
+    constructor(config) {
+        this.config = config;
+    }
+
+    updateConfig(config) {
+        this.config = config;
+    }
+}
+
+class ActSceneTransitionObject {
+    constructor(parent, config) {
+        this.parent = parent;
+        this.config = config;
+
+        const that = this;
+
+        this.activeSceneTransitionElement = document.createElement("div");
+        this.activeSceneTransitionElement.classList.add("flex_row");
+
+        this.activeSceneTransitionButton = document.createElement("button");
+        this.activeSceneTransitionButton.classList.add("act_button", "act_theme", "act_trigger_button");
+        if (this.config.trigger.act_trigger_id != null) {
+            this.activeSceneTransitionElement.addEventListener("click", async function () {
+                let resp = await app.connection.post("/act/" + that.parent.parent.id + "/trigger/" + that.config.trigger.act_trigger_id + "/trigger");
+                await sleep(300);
+                await app.ledInfected.listUpdateCallback();
+                app.controls.actView.refreshAct();
+            })
+        }
+        this.activeSceneTransitionElement.appendChild(this.activeSceneTransitionButton);
+
+        this.activeSceneTransitionScene = document.createElement("div");
+        this.activeSceneTransitionScene.classList.add("act_theme");
+        this.activeSceneTransitionScene.innerHTML = this.config.scene_id;
+        this.activeSceneTransitionElement.appendChild(this.activeSceneTransitionScene);
+    }
+
+    isIt(config) {
+        if (config.trigger.act_trigger_id != null) {
+            if (config.trigger.act_trigger_id == this.config.trigger.act_trigger_id) {
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    updateConfig(config) {
+        if (this.config.trigger.act_trigger_id == null) {
+            this.config.trigger.remaining_s = config.trigger.remaining_s;
+        }
+    }
+
+    getActiveSceneTransitionHTMLElement() {
+        if (this.config.trigger.act_trigger_id == null) {
+            let timeout = this.config.trigger.timeout_s;
+            if (this.config.trigger.remaining_s != null) {
+                timeout = this.config.trigger.remaining_s;
+            }
+            this.activeSceneTransitionButton.innerHTML = timeout + " sec";
+        } else {
+            this.activeSceneTransitionButton.innerHTML = this.config.trigger.act_trigger_id;
+        }
+
+        return this.activeSceneTransitionElement;
     }
 }
 
@@ -705,6 +889,17 @@ class Overview {
         this.actButton.style.zIndex = 3;
         this.actButton.innerHTML = "Live Act";
         this.viewPort.appendChild(this.actButton);
+
+        this.onlineState = document.createElement("div");
+        this.onlineState.classList.add("act_button", "act_theme");
+        this.onlineState.style.right = "0px";
+        this.onlineState.style.top = "0px";
+        this.onlineState.style.paddingLeft = "16px";
+        this.onlineState.style.paddingRight = "16px";
+        this.onlineState.style.position = "absolute";
+        this.onlineState.style.zIndex = 3;
+        this.onlineState.innerHTML = "WAITING";
+        this.viewPort.appendChild(this.onlineState);
 
         document.body.appendChild(this.viewPort);
 
@@ -731,7 +926,7 @@ class Overview {
         if (el.length == 0) {
             this.viewPort.appendChild(newHTMLEl);
         } else {
-            console.log("addAbstract: already found an overview element with the id " + elementID);
+            alert("addAbstract: already found an overview element with the id " + elementID);
         }
     }
 
@@ -740,7 +935,7 @@ class Overview {
         if (el.length == 1) {
             this.viewPort.removeChild(el);
         } else {
-            console.log("removeAbstract: could not find an overview element with the id " + elementID);
+            alert("removeAbstract: could not find an overview element with the id " + elementID);
         }
     }
 }
@@ -764,7 +959,7 @@ class Controls {
     showAbstract(abstractID) {
         let abstract = app.ledInfected.abstractList.getAbstract(abstractID);
         if (abstract == null) {
-            console.log("showAbstract: abstract " + abstractID + "not found");
+            alert("showAbstract: abstract " + abstractID + "not found");
             return
         }
         this.controlStripes[0].showAbstract(abstract);
@@ -808,21 +1003,17 @@ class PresetSelect {
     }
 
     async savePreset() {
-        console.log(this.inputPresetID.value)
         if (this.inputPresetID.value != "") {
             let preset = new Object();
             preset.preset_id = this.inputPresetID.value;
             preset.name = this.inputName.value;
             preset.abstract_id = this.parent.linkedAbstract.id
-            console.log(this.inputIncludeConfig.checked)
-            console.log(this.inputIncludePalette.checked)
             if (this.inputIncludeConfig.checked == true) {
                 preset.config = this.parent.getCurrentConfig()
             }
             if (this.inputIncludePalette.checked == true) {
                 preset.palette = this.parent.getCurrentPalette()
             }
-            console.log(preset)
             this.parent.savePresetSelectButtonCallback(preset);
         }
     }
@@ -869,7 +1060,6 @@ class ActView {
                 return
             }
             if (app.ledInfected.liveAct != null) {
-                console.log(app.ledInfected.liveAct)
                 if (app.ledInfected.liveAct.act_id != that.linkedAct.id) {
                     let confirmAction = confirm("Act '" + app.ledInfected.liveAct.act_id + "' is already live. Interrupt it and start act '" + that.linkedAct.id + "'?");
                     if (confirmAction) {
@@ -881,7 +1071,7 @@ class ActView {
             }
             await app.connection.post("/act/" + that.linkedAct.id + "/start");
             await app.ledInfected.listUpdateCallback();
-            that.updateAct();
+            that.refreshAct();
         });
         this.selectedActActionButtonStop = this.viewPort.getElementsByClassName('act_view_action_stop')[0];
         this.selectedActActionButtonStop.addEventListener('click', async function () {
@@ -891,7 +1081,7 @@ class ActView {
             }
             let resp = await app.connection.post("/act/" + that.linkedAct.id + "/stop")
             await app.ledInfected.listUpdateCallback();
-            that.updateAct();
+            that.refreshAct();
         });
         this.selectedActActionButtonPause = this.viewPort.getElementsByClassName('act_view_action_pause')[0];
         this.selectedActActionButtonPause.addEventListener('click', async function () {
@@ -901,7 +1091,7 @@ class ActView {
             }
             let resp = await app.connection.post("/act/" + that.linkedAct.id + "/pause")
             await app.ledInfected.listUpdateCallback();
-            that.updateAct();
+            that.refreshAct();
         });
         this.selectedActActionButtonResume = this.viewPort.getElementsByClassName('act_view_action_resume')[0];
         this.selectedActActionButtonResume.addEventListener('click', async function () {
@@ -911,7 +1101,7 @@ class ActView {
             }
             let resp = await app.connection.post("/act/" + that.linkedAct.id + "/resume")
             await app.ledInfected.listUpdateCallback();
-            that.updateAct();
+            that.refreshAct();
         });
         this.selectedActActionButtonNextScene = this.viewPort.getElementsByClassName('act_view_action_next_scene')[0];
         this.selectedActActionButtonNextScene.addEventListener('click', async function () {
@@ -922,20 +1112,19 @@ class ActView {
             let resp = await app.connection.post("/act/" + that.linkedAct.id + "/trigger/next/trigger");
             await sleep(300);
             await app.ledInfected.listUpdateCallback();
-            that.updateAct();
+            that.refreshAct();
         });
 
-        this.updateButton = this.viewPort.getElementsByClassName('act_view_update_button')[0];
-        this.updateButton.addEventListener('click', async function () {
+        this.activeSceneDiv = this.viewPort.getElementsByClassName('act_view_active_scene')[0];
+
+        this.scenesView = this.viewPort.getElementsByClassName('act_view_scenes')[0];
+
+        this.refreshButton = this.viewPort.getElementsByClassName('act_view_refresh_button')[0];
+        this.refreshButton.addEventListener('click', async function () {
             await app.ledInfected.listUpdateCallback();
-            that.updateAct();
+            that.refreshAct();
         });
 
-        this.closeBtn = this.viewPort.getElementsByClassName("live_act_close_btn")[0];
-        this.closeBtn.style = "margin-left: auto;"
-        this.closeBtn.addEventListener('click', function () {
-            that.hide();
-        });
         this.editActBtn = this.viewPort.getElementsByClassName("act_view_edit_act")[0];
         this.editActBtn.addEventListener('click', function () {
             if (that.linkedAct == null) {
@@ -943,6 +1132,13 @@ class ActView {
                 return;
             }
             window.location.href = "/act?act_id=" + that.linkedAct.id;
+        });
+
+        this.closeBtn = this.viewPort.getElementsByClassName("live_act_close_btn")[0];
+        this.closeBtn.style = "margin-left: auto;"
+        this.closeBtn.addEventListener('click', function () {
+            that.resetAutoUpdate();
+            that.hide();
         });
     }
 
@@ -975,9 +1171,9 @@ class ActView {
 
                 }
             }
-            this.actListContainer.appendChild(app.ledInfected.actList.objects[i].getHTMLElement());
+            this.actListContainer.appendChild(app.ledInfected.actList.objects[i].getButtonHTMLElement());
         }
-        this.updateAct()
+        this.refreshAct()
 
         this.viewPort.style.animation = "fadeInEffect 1s";
         this.viewPort.style.display = "block";
@@ -985,11 +1181,15 @@ class ActView {
 
     selectAct(act) {
         this.linkedAct = act;
+        this.setAutoUpdate(1);
 
-        this.updateAct();
+        this.refreshAct();
     }
 
-    updateAct() {
+    refreshAct() {
+        this.activeSceneDiv.innerHTML = "";
+        this.scenesView.innerHTML = "";
+
         if (this.linkedAct == null) {
             this.selectedActActionButtonStart.disabled = true;
             this.selectedActActionButtonStop.disabled = true;
@@ -1032,6 +1232,26 @@ class ActView {
             this.selectedActStatusActiveSceneID.innerHTML = this.linkedAct.config.status.active_scene.scene_id;
         } else {
             this.selectedActStatusActiveSceneID.innerHTML = "none";
+        }
+
+        this.scenesView.appendChild(this.linkedAct.getScenesHTMLElement());
+        this.activeSceneDiv.appendChild(this.linkedAct.getActiveSceneHTMLElement());
+    }
+
+
+    setAutoUpdate(timeout) {
+        this.resetAutoUpdate();
+
+        this.ticker = setInterval(async function () {
+            await app.ledInfected.listUpdateCallback();
+            app.controls.actView.refreshAct();
+        }, timeout * 1000);
+    }
+
+    resetAutoUpdate() {
+        if (this.ticker != null) {
+            clearInterval(this.ticker);
+            this.ticker = null;
         }
     }
 
@@ -1255,12 +1475,11 @@ class ControlStripe {
                 return
             }
         }
-        console.log("preset not found")
+        alert("preset not found")
     }
 
     // MOA fixme preset
     loadPresetSelectButtonCallback(preset) {
-        console.log("----LOAD PRESET-----");
         let config = Object();
         if (preset.config != null) {
             config.config = preset.config;
@@ -1280,22 +1499,16 @@ class ControlStripe {
 
     // MOA fixme preset
     savePresetSelectButtonCallback(preset) {
-        console.log("----SAVE PRESET-----")
         let obj = new Object();
         obj.config = preset;
 
         obj.apiPath = "/preset";
-
-        console.log('---- SENDING PRESET ----')
-        console.log(obj);
-        console.log(JSON.stringify(obj.config));
 
         app.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }
 
     applyConfig(newConfig) {
         this.stripeOverlayDiv.style.display = "none";
-        console.log(this.linkedAbstract)
         for (let i = 0; i < this.linkedAbstract.config.stripes.length; i++) {
             let config = this.linkedAbstract.config.stripes[i].config;
             if (config != null && config.setup.overlay_id > 1 && config.setup.overlay_id < 6) {
@@ -1414,7 +1627,6 @@ class ControlStripe {
     }
 
     setCurrentPatternPalette(palette) {
-        console.log(palette);
         for (let i = 0; i < 16; i++) {
             let paletteIndex = palette[i].index - 1;
             if (palette[i].h == 255) {
@@ -1443,7 +1655,7 @@ class ControlStripe {
         let selectedStripes = this.linkedAbstract.getSelectedStripes();
 
         if (selectedStripes.length == 0) {
-            console.log("no stripes selected")
+            alert("no stripes selected")
             return;
         }
 
@@ -1454,10 +1666,6 @@ class ControlStripe {
         obj.config.stripe_ids = selectedStripes;
         obj.config.palette = this.getCurrentPalette();
 
-        console.log('---- SENDING PATTERN ----')
-        console.log(obj);
-        console.log(JSON.stringify(obj.config));
-
         app.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }
 
@@ -1465,7 +1673,7 @@ class ControlStripe {
         let selectedStripes = this.linkedAbstract.getSelectedStripes();
 
         if (selectedStripes.length == 0) {
-            console.log("no stripes selected")
+            alert("no stripes selected")
             return;
         }
 
@@ -1476,9 +1684,6 @@ class ControlStripe {
         obj.config.stripe_ids = selectedStripes;
         obj.config.config = this.getCurrentConfig();
 
-        console.log('---- SENDING CONFIG ----')
-        console.log(obj);
-
         app.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }
 
@@ -1486,7 +1691,7 @@ class ControlStripe {
         let selectedStripes = this.linkedAbstract.getSelectedStripes();
 
         if (selectedStripes.length == 0) {
-            console.log("no stripes selected")
+            alert("no stripes selected")
             return;
         }
 
@@ -1495,9 +1700,6 @@ class ControlStripe {
 
         obj.config = new Object();
         obj.config.stripe_ids = selectedStripes;
-
-        console.log('---- SAVE CURRENT CONFIG ----')
-        console.log(obj);
 
         app.connection.post(obj.apiPath, JSON.stringify(obj.config));
     }
@@ -1515,7 +1717,6 @@ class StripeSelect {
         // MOA meier fixme: this is only for temporary better usability
         this.toggleSvgEl.style.display = "none";
         this.toggleSvgEl.addEventListener('click', function () {
-            console.log("toggle stripe")
             if (that.stripeSelectMax.svgParent.style.display === "none") {
                 that.stripeSelectMax.svgParent.style.display = "block";
                 that.stripeSelectMin.svgParent.style.display = "none";
@@ -1850,8 +2051,6 @@ class PatternSegment {
 
     setVisibility(s) {
         if (s == true) {
-            // console.log(this.id + " - state: " + this.state);
-            // console.log(this.selectedViewportElements);
             for (let i = 0; i < this.selectedViewportElements.length; i++) {
                 this.selectedViewportElements[i].setAttribute("visibility", "visible");
             }
@@ -1887,7 +2086,6 @@ class PatternSegment {
             }
         } else {
             let oneActive = false;
-            console.log(this.parent.segments_l0);
             for (let i = 0; i < 16; i++) {
                 if (this.parent.segments_l0[i].state) {
                     oneActive = true;
@@ -2210,9 +2408,7 @@ class Hummel {
         // with each move we also want to update the start X and Y
         hummel.startPosX = e.clientX;
         hummel.startPosY = e.clientY;
-        console.log(hummel.hummelID + " mouse move: " + newPosX + "," + newPosY);
 
-        // console.log(hummel.elements.hummel.style)
         // set the element's new position:
         hummel.posX = hummel.elements.hummel.offsetLeft - newPosX
         hummel.posY = hummel.elements.hummel.offsetTop - newPosY
@@ -2233,21 +2429,17 @@ class Hummel {
 
         if (hummel.posX < minX) {
             hummel.direction = getRandomInt(45, 135);
-            //console.log("minX reached, new direction: "+ hummel.direction)
 
             hummel.speed = maxSpeed;
         } else if (hummel.posX > maxX) {
             hummel.direction = getRandomInt(225, 315);
-            //console.log("maxX reached, new direction: "+ hummel.direction)
 
             hummel.speed = maxSpeed;
         } else if (hummel.posY < minY) {
             hummel.direction = getRandomInt(135, 225);
-            //console.log("minY reached, new direction: "+ hummel.direction)
             hummel.speed = maxSpeed;
         } else if (hummel.posY > maxY) {
             hummel.direction = getRandomInt(-45, 45);
-            //console.log("maxY reached, new direction: "+ hummel.direction)
 
             hummel.speed = maxSpeed;
         } else {
@@ -2255,10 +2447,8 @@ class Hummel {
             if (seed == 0) {
                 let oldSpeed = hummel.Speed;
                 hummel.speed = getRandomInt(0, 100);
-                //console.log("change speed from "+oldSpeed+" to "+ hummel.speed)
             } else if (seed == 1) {
                 hummel.direction = getRandomInt(0, 360);
-                //console.log("change direction from "+ oldDirection +" to " + hummel.direction);
             } else if (seed == 2) {
                 hummel.speed = 100;
                 let loopValue = 360;
@@ -2269,9 +2459,7 @@ class Hummel {
                 }
                 hummel.loopSpeed = getRandomInt(3, 10);
                 hummel.loopEnd = getRandomInt(1, 360);
-                console.log(hummel.hummelID + ": do a loop with " + loopValue)
             } else if ((seed > 100) && (seed < 200)) {
-                //console.log("direction correction")
                 hummel.direction += getRandomInt(-2, 2);
             }
         }
@@ -2279,7 +2467,6 @@ class Hummel {
         hummel.direction += getRandomInt(-1, 1);
 
         if (hummel.loopEnd > 0) {
-            //console.log(hummel.hummelID + ": loop action")
             if (hummel.direction > hummel.loopEnd) {
                 hummel.direction -= hummel.loopSpeed;
                 if (hummel.direction < hummel.loopEnd) {
@@ -2305,8 +2492,6 @@ class Hummel {
         // do the movement
         hummel.posX += (Math.cos((hummel.direction - 90) * (Math.PI / 180)) * (hummel.speed / 20));
         hummel.posY += (Math.sin((hummel.direction - 90) * (Math.PI / 180)) * (hummel.speed / 20));
-
-        //  console.log(hummel.direction + ": "+ Math.cos((180 / Math.PI) * hummel.direction) + "/" + Math.sin((180 / Math.PI) * hummel.direction))
 
         hummel.elements.hummel.style.left = hummel.posX + "px";
         hummel.elements.hummel.style.top = hummel.posY + "px";

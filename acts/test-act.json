@@ -1,6 +1,6 @@
 {
   "act_id": "test-act",
-  "description": "Act Name TestiTesti",
+  "description": "Act Name TestiTesti asxasd",
   "start_scene_id": "scene1_idle_state_2",
   "scenes": [
     {
@@ -26,21 +26,24 @@
         {
           "trigger": {
             "act_trigger_id": "t1",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "flower1_on"
         },
         {
           "trigger": {
             "act_trigger_id": null,
-            "timeout_s": 10
+            "timeout_s": 10,
+            "remaining_s": 10
           },
           "scene_id": "scene1_idle_state_2"
         },
         {
           "trigger": {
             "act_trigger_id": "next",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "flower1_on"
         }
@@ -69,21 +72,24 @@
         {
           "trigger": {
             "act_trigger_id": "t1",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "flower1_on"
         },
         {
           "trigger": {
             "act_trigger_id": null,
-            "timeout_s": 10
+            "timeout_s": 10,
+            "remaining_s": 10
           },
           "scene_id": "scene1_idle_state_1"
         },
         {
           "trigger": {
             "act_trigger_id": "next",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "flower1_on"
         }
@@ -119,14 +125,16 @@
         {
           "trigger": {
             "act_trigger_id": null,
-            "timeout_s": 10
+            "timeout_s": 10,
+            "remaining_s": 10
           },
           "scene_id": "scene2_idle_state_1"
         },
         {
           "trigger": {
             "act_trigger_id": "next",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "scene2_idle_state_1"
         }
@@ -155,14 +163,16 @@
         {
           "trigger": {
             "act_trigger_id": "t2",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "flower2_on"
         },
         {
           "trigger": {
             "act_trigger_id": "next",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "flower2_on"
         }
@@ -198,14 +208,16 @@
         {
           "trigger": {
             "act_trigger_id": null,
-            "timeout_s": 10
+            "timeout_s": 10,
+            "remaining_s": 10
           },
           "scene_id": "scenefinal_idle_state_1"
         },
         {
           "trigger": {
             "act_trigger_id": "next",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "scenefinal_idle_state_1"
         }
@@ -234,14 +246,16 @@
         {
           "trigger": {
             "act_trigger_id": "t2",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "flower2_on"
         },
         {
           "trigger": {
             "act_trigger_id": "next",
-            "timeout_s": null
+            "timeout_s": null,
+            "remaining_s": null
           },
           "scene_id": "flower2_on"
         }

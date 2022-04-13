@@ -131,6 +131,7 @@ func (o *apiServer) registerWebEndpoints() {
 }
 
 func (o *apiServer) getAllCallback(c *gin.Context) {
+	o.updateTimer()
 	c.JSON(http.StatusOK, o)
 	return
 }
@@ -214,9 +215,14 @@ func (o *apiServer) getAllAbstracts() []*hummelapi.LEDInfectedAbstract {
 	return o.Abstracts
 }
 
-
 func (o *apiServer) setLiveAct(act *hummelapi.LEDInfectedAct) {
 	o.LiveAct = act
+}
+
+func (o *apiServer) updateTimer() {
+	for _, a := range o.Acts {
+		a.UpdateTimer()
+	}
 }
 
 func jsonError(err error) string {

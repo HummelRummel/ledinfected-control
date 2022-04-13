@@ -177,6 +177,12 @@ func (o *LEDInfectedAct) Resume() error {
 	return o.enableScene()
 }
 
+func (o *LEDInfectedAct) UpdateTimer() {
+	for _, s := range o.Scenes {
+		s.UpdateTimer()
+	}
+}
+
 func (o *LEDInfectedAct) enableScene() error {
 	if o.Status.ActiveScene == nil {
 		found := false

@@ -4,5 +4,6 @@ type (
 	LEDInfectedSceneTrigger struct {
 		ActTriggerID *string `json:"act_trigger_id"`
 		TimeoutS     *uint32 `json:"timeout_s"`
+		RemainingS   *uint32 `json:"remaining_s"`
 	}
 )
