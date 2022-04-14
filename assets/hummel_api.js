@@ -225,12 +225,22 @@ class AbstractObject {
                 }
             }
         }
-        // TBD need to handle the linked arduino separately
-        if (JSON.stringify(newConfig) === JSON.stringify(this.config)) {
+
+        // prepare copy to compare with stripped arduino
+        let newCopy = JSON.parse(JSON.stringify(newConfig));
+        for (let i = 0; i < newCopy.stripes.length; i++) {
+            newCopy.stripes[i].config = null;
+        }
+        let curCopy = JSON.parse(JSON.stringify(this.config));
+        for (let i = 0; i < curCopy.stripes.length; i++) {
+            curCopy.stripes[i].config = null;
+        }
+        if (JSON.stringify(newCopy) === JSON.stringify(curCopy)) {
             // nothing changed
             return
         }
 
+        this.config = newConfig;
         // config changed, reload the page to be sure everything is setup correctly
         // should only happen in case an abstract is reconfigured
         location.reload();
@@ -682,10 +692,12 @@ class ActObject {
     updateConfig(newConfig) {
         if (newConfig != null) {
             this.config = newConfig;
-            for (let i = 0; i < newConfig.scenes.length; i++) {
-                for (let j = 0; j < this.scenes.length; j++) {
-                    if (newConfig.scenes[i].scene_id == this.scenes[j].id) {
-                        this.scenes[j].updateConfig(newConfig.scenes[i]);
+            if ( newConfig.scenes != null ) {
+                for (let i = 0; i < newConfig.scenes.length; i++) {
+                    for (let j = 0; j < this.scenes.length; j++) {
+                        if (newConfig.scenes[i].scene_id == this.scenes[j].id) {
+                            this.scenes[j].updateConfig(newConfig.scenes[i]);
+                        }
                     }
                 }
             }
@@ -740,7 +752,9 @@ class ActSceneObject {
         this.transitions = [];
         for (let i = 0; i < this.config.transitions.length; i++) {
             if (this.config.transitions[i].trigger.timeout_s == null) {
-                this.transitions.push(new ActSceneTransitionObject(this, this.config.transitions[i]));
+                if (this.config.transitions[i].trigger.act_trigger_id != "next" ){
+                    this.transitions.push(new ActSceneTransitionObject(this, this.config.transitions[i]));
+                }
             }
         }
         for (let i = 0; i < this.config.transitions.length; i++) {
