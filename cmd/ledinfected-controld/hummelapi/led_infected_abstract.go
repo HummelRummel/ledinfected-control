@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 type (
@@ -306,6 +307,20 @@ func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripe
 		}
 	}
 	return nil
+}
+
+func (o *LEDInfectedAbstract) Sync() {
+	wg := sync.WaitGroup{}
+	for _, a := range o.linkedArduinos {
+		wg.Add(1)
+		go func(ard *LEDInfectedArduino) {
+			if err := ard.GlobalSync(); err != nil {
+				fmt.Printf("failed to sync ardunio %d: %s\n", ard.GetID(), err)
+			}
+			defer wg.Done()
+		}(a)
+	}
+	wg.Wait()
 }
 
 func (o *LEDInfectedAbstract) SaveMulti(stripeIDs ...string) error {

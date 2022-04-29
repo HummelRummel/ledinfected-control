@@ -42,6 +42,7 @@ type (
 		arduinoID  uint8
 		numStripes uint8
 
+		inputChans   []chan *LEDInfectedResponse
 		responseChan chan *LEDInfectedResponse
 		writer       *slip.Writer
 
@@ -103,6 +104,16 @@ func (o *LEDInfectedArduinoConnection) Close() {
 	o.port.Close()
 }
 
+func (o *LEDInfectedArduinoConnection) RegisterInput(inputID uint8) (<-chan *LEDInfectedResponse, error) {
+	if len(o.inputChans) != int(inputID) {
+		return nil, fmt.Errorf("unexpected inputID %d, expected inputID %d", inputID, len(o.inputChans))
+	}
+
+	newChan := make(chan *LEDInfectedResponse)
+	o.inputChans = append(o.inputChans, newChan)
+	return newChan, nil
+}
+
 func (o *LEDInfectedArduinoConnection) readHandler() {
 	reader := slip.NewReader(o.port)
 	for {
@@ -122,15 +133,30 @@ func (o *LEDInfectedArduinoConnection) readHandler() {
 
 		ledInfectedResponse, err := castLEDInfectedResponse(buf)
 		if err != nil {
-			fmt.Printf("could not cast response: %s\n", err)
+			fmt.Printf("could not cast received package: %s\n", err)
 			continue
 		}
 
-		fmt.Printf("RESPONSE: %s\n", ledInfectedResponse)
-		select {
-		case o.responseChan <- ledInfectedResponse:
-		case <-time.After(time.Second):
-			fmt.Printf("no one is listening for response: %s\n", ledInfectedResponse)
+		switch ledInfectedResponse.rspCode {
+		case ledInfectedResponseCodeInputButton:
+			fallthrough
+		case ledInfectedResponseCodeInputTrigger:
+			fmt.Printf("received trigger\n")
+			inputID := ledInfectedResponse.rspCmdID
+			if inputID < uint8(len(o.inputChans)) {
+				select {
+				case o.inputChans[inputID] <- ledInfectedResponse:
+				case <-time.After(time.Millisecond * 100):
+					fmt.Printf("no one is listenig, dropping input from %d inputID\n", inputID)
+				}
+			}
+		default:
+			fmt.Printf("RESPONSE: %s\n", ledInfectedResponse)
+			select {
+			case o.responseChan <- ledInfectedResponse:
+			case <-time.After(time.Second):
+				fmt.Printf("no one is listening for response: %s\n", ledInfectedResponse)
+			}
 		}
 	}
 }
@@ -139,9 +165,6 @@ func (o *LEDInfectedArduinoConnection) WaitRepsonse(cmd *LEDInfectedCommand, tim
 	for {
 		select {
 		case response := <-o.responseChan:
-			if err := response.Check(); err != nil {
-				return nil, fmt.Errorf("response with invalid checksum received: %s", err)
-			}
 			if !cmd.IsResponse(response) {
 				fmt.Printf("response for wrong command (%s, expected cmdID %d)\n", response, cmd.cmdID)
 				continue
@@ -229,22 +252,36 @@ func (o *LEDInfectedArduinoConnection) globalGetSetup() (*LEDInfectedArduinoConf
 		return nil, err
 	}
 
-	if response.rspDataLen < 4 {
-		return nil, fmt.Errorf("invalid arduino version, expects 4 global setup message size to be 4, received %d", response.rspDataLen)
-	}
-
-	setup := &LEDInfectedArduinoConfigGlobalSetup{
-		ID:         response.rspData[0],
-		NumStripes: response.rspData[1],
-		DevFile:    o.devFile,
-		Version: LEDInfectedArduinoVersion{
-			Major: response.rspData[2],
-			Minor: response.rspData[3],
-		},
+	var setup *LEDInfectedArduinoConfigGlobalSetup
+	switch response.rspDataLen {
+	case 4:
+		setup = &LEDInfectedArduinoConfigGlobalSetup{
+			ID:         response.rspData[0],
+			NumStripes: response.rspData[1],
+			NumInputs:  0,
+			DevFile:    o.devFile,
+			Version: LEDInfectedArduinoVersion{
+				Major: response.rspData[2],
+				Minor: response.rspData[3],
+			},
+		}
+	case 5:
+		setup = &LEDInfectedArduinoConfigGlobalSetup{
+			ID:         response.rspData[0],
+			NumStripes: response.rspData[3],
+			NumInputs:  response.rspData[4],
+			DevFile:    o.devFile,
+			Version: LEDInfectedArduinoVersion{
+				Major: response.rspData[1],
+				Minor: response.rspData[2],
+			},
+		}
+	default:
+		return nil, fmt.Errorf("invalid arduino version, expects global setup message size to be 4 or 5, received %d", response.rspDataLen)
 	}
 
 	if setup.Version.Major != neededArduinoMajorVersion {
-		return nil , fmt.Errorf("invalid arduino version, needed %d.xx, but arduino has %d.%d", neededArduinoMajorVersion, setup.Version.Major, setup.Version.Minor)
+		return nil, fmt.Errorf("invalid arduino version, needed %d.xx, but arduino has %d.%d", neededArduinoMajorVersion, setup.Version.Major, setup.Version.Minor)
 	}
 	return setup, nil
 }

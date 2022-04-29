@@ -1,0 +1,189 @@
+{
+  "act_id": "hummel-karaoke",
+  "description": "HummelRummel Karaoke Light Show",
+  "start_scene_id": "hummel-idle",
+  "scenes": [
+    {
+      "scene_id": "hummel-idle",
+      "description": "HummelRummel Idle Scene",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
+          "preset_id": "idleBBee"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "run-button",
+            "timeout_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "gluecksrad-init"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "gluecksrad-init"
+        }
+      ]
+    },
+    {
+      "scene_id": "gluecksrad-init",
+      "description": "Gluecksrad Initial Scene",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
+          "preset_id": "gluecksrad-stripe-alt"
+        },
+       {                                       
+          "abstract_id": "pfv1",                
+          "stripe_ids": [                       
+            "radial1",                          
+            "radial2",                          
+            "radial3",                          
+            "radial4",                          
+            "radial5",                          
+            "radial6",                          
+            "radial7",                          
+            "radial8"                           
+          ],                                    
+          "preset_id": "gluecksrad-stop"  
+        }                                
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "run-button",
+            "timeout_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "gluecksrad-run"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "gluecksrad-run"
+        }
+      ]
+    },
+    {
+      "scene_id": "gluecksrad-run",
+      "description": "Gluecksrad Run Scene",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
+          "preset_id": "gluecksrad-start"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 4,
+            "timeout_max_s": 2,
+            "remaining_s": null
+          },
+          "scene_id": "gluecksrad-stop"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "gluecksrad-stop"
+        }
+      ]
+    },
+    {
+      "scene_id": "gluecksrad-stop",
+      "description": "Gluecksrad Stop Scene",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8"
+          ],
+          "preset_id": "gluecksrad-stop"
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "run-button",
+            "timeout_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "hummel-idle"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "hummel-idle"
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "act_trigger_id": "run-button",
+      "active": false
+    },
+    {
+      "act_trigger_id": "next",
+      "active": false
+    }
+  ],
+  "status": {
+    "state": "NOT_LIVE",
+    "active_scene": null,
+    "errors": null
+  }
+}

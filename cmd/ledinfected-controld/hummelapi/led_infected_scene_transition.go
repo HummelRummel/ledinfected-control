@@ -2,6 +2,7 @@ package hummelapi
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 )
 
@@ -13,7 +14,7 @@ type (
 		timer       *time.Timer
 		endTime     time.Time
 		actTrigger  *LEDInfectedActTrigger
-		triggerChan <-chan struct{}
+		triggerChan <-chan uint8
 		stop        chan struct{}
 		act         *LEDInfectedAct
 		nextScene   *LEDInfectedScene
@@ -27,10 +28,18 @@ func (o *LEDInfectedSceneTransition) Run() error {
 	} else {
 		if o.Trigger.TimeoutS != nil {
 			timeout := time.Duration(*o.Trigger.TimeoutS) * time.Second
+			if o.Trigger.TimeoutMaxS != nil {
+				if *o.Trigger.TimeoutMaxS < *o.Trigger.TimeoutS {
+					fmt.Printf("timeout max (%d) is lower than the timeout (%d) value, disable randomization\n", *o.Trigger.TimeoutMaxS, *o.Trigger.TimeoutS)
+				} else {
+					maxMilliSec := int(*o.Trigger.TimeoutMaxS - *o.Trigger.TimeoutS*1000)
+					timeout = timeout + (time.Duration(rand.Intn(maxMilliSec)) * time.Millisecond)
+				}
+			}
 			if timeout == 0 {
 				timeout = time.Millisecond * 200
 			}
-			fmt.Printf("SETUP: %d sec timer for scene %s\n", *o.Trigger.TimeoutS, o.SceneID)
+			fmt.Printf("SETUP: %d sec timer for scene %s\n", timeout/time.Second, o.SceneID)
 			o.timer.Reset(timeout)
 			o.endTime = time.Now().Add(timeout)
 		}
@@ -64,7 +73,7 @@ func (o *LEDInfectedSceneTransition) Run() error {
 
 func (o *LEDInfectedSceneTransition) UpdateTimer() {
 	if o.Trigger.TimeoutS != nil {
-		remainingInt := (o.endTime.Sub(time.Now())/time.Second) + 1
+		remainingInt := (o.endTime.Sub(time.Now()) / time.Second) + 1
 		if remainingInt < 0 {
 			remainingInt = time.Duration(*o.Trigger.TimeoutS)
 		}

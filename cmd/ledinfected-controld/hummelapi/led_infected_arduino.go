@@ -12,6 +12,8 @@ type (
 		Global *LEDInfectedArduinoConfigGlobalSetup `json:"global"`
 
 		Stripes []*LEDInfectedArduinoStripe `json:"stripes"`
+
+		Inputs []*LEDInfectedArduinoInput `json:"inputs"`
 	}
 )
 
@@ -49,10 +51,28 @@ func NewLEDInfectedArduino(devFile string) (*LEDInfectedArduino, error) {
 		o.Stripes = append(o.Stripes, stripe)
 	}
 
+	for i := 0; i < int(setup.NumInputs); i++ {
+		fmt.Printf("MOA: get input[%d]\n", i)
+		input, err := newLEDInfectedArduinoInput(o, uint8(i))
+		if err != nil {
+			for _, inp := range o.Inputs {
+				inp.Stop()
+			}
+			o.connection.Close()
+			return nil, err
+		}
+		fmt.Printf("MOA: get input[%d] done\n", i)
+		o.Inputs = append(o.Inputs, input)
+	}
+
 	return o, nil
 }
 
 func (o *LEDInfectedArduino) Close() {
+	for _,inp := range o.Inputs {
+		inp.Stop()
+	}
+
 	o.connection.Close()
 }
 

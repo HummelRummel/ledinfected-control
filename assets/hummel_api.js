@@ -150,7 +150,6 @@ class LEDInfectedList {
         }
     }
 
-
     syncMovement() {
         app.connection.post("/sync", "{}");
     }
@@ -589,6 +588,15 @@ class PresetList {
         }
     }
 
+    getPresetByID(preset_id) {
+        for (let i = 0; i < this.objects.length; i++) {
+            if (this.objects[i].id == preset_id) {
+                return this.objects[i];
+            }
+        }
+        return null;
+    }
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -601,6 +609,7 @@ class PresetList {
 class PresetObject {
     constructor(config) {
         this.config = config;
+        this.id = config.preset_id;
         const that = this;
         this.loadButton = document.createElement("button")
         this.loadButton.classList.add("preset_button", "preset_theme")
@@ -692,7 +701,7 @@ class ActObject {
     updateConfig(newConfig) {
         if (newConfig != null) {
             this.config = newConfig;
-            if ( newConfig.scenes != null ) {
+            if (newConfig.scenes != null) {
                 for (let i = 0; i < newConfig.scenes.length; i++) {
                     for (let j = 0; j < this.scenes.length; j++) {
                         if (newConfig.scenes[i].scene_id == this.scenes[j].id) {
@@ -744,6 +753,7 @@ class ActSceneObject {
         this.parent = parent;
         this.config = config;
         this.id = this.config.scene_id;
+        const that = this;
 
         this.effects = [];
         for (let i = 0; i < this.config.effects.length; i++) {
@@ -752,9 +762,7 @@ class ActSceneObject {
         this.transitions = [];
         for (let i = 0; i < this.config.transitions.length; i++) {
             if (this.config.transitions[i].trigger.timeout_s == null) {
-                if (this.config.transitions[i].trigger.act_trigger_id != "next" ){
-                    this.transitions.push(new ActSceneTransitionObject(this, this.config.transitions[i]));
-                }
+                this.transitions.push(new ActSceneTransitionObject(this, this.config.transitions[i]));
             }
         }
         for (let i = 0; i < this.config.transitions.length; i++) {
@@ -775,13 +783,77 @@ class ActSceneObject {
         this.scenesViewEditButton.style.paddingLeft = "16px";
         this.scenesViewEditButton.style.paddingRight = "16px";
         this.scenesViewEditButton.innerHTML = "Edit";
+        this.scenesViewEditButton.addEventListener("click", function () {
+            if (app.controls.actView.sceneEditViewSceneID.innerHTML != "") {
+                app.controls.actView.sceneEditViewDiscard.click();
+            }
+            that.loadSceneEdit()
+        })
+        this.scenesViewElement.appendChild(this.scenesViewEditButton);
+        this.scenesViewApplyButton = document.createElement("button");
+        this.scenesViewApplyButton.classList.add("act_theme", "act_button");
+        this.scenesViewApplyButton.style.paddingLeft = "16px";
+        this.scenesViewApplyButton.style.paddingRight = "16px";
+        this.scenesViewApplyButton.innerHTML = "Apply";
+        this.scenesViewApplyButton.addEventListener("click", function () {
+            that.applyEffect()
+        })
+        this.scenesViewElement.appendChild(this.scenesViewApplyButton);
+
         if (this.parent.config.status.active_scene != null) {
             this.scenesViewEditButton.disabled = true;
         } else {
             this.scenesViewEditButton.disabled = false;
         }
-        this.scenesViewElement.appendChild(this.scenesViewEditButton);
 
+    }
+
+    loadSceneEdit() {
+        const that = this;
+        app.controls.actView.sceneEditViewSceneID.innerHTML = this.id;
+        app.controls.actView.sceneEditViewEffects.innerHTML = "";
+        for (let i = 0; i < this.effects.length; i++) {
+            app.controls.actView.sceneEditViewEffects.appendChild(this.effects[i].getSceneEditEffectHTMLElements());
+        }
+        app.controls.actView.sceneEditViewTransitions.innerHTML = "";
+        for (let i = 0; i < this.transitions.length; i++) {
+            app.controls.actView.sceneEditViewTransitions.appendChild(this.transitions[i].getSceneEditTransitionHTMLElements());
+        }
+
+        function applyEffectCallback() {
+            for (let i = 0; i < that.effects.length; i++) {
+                that.effects[i].applyPendingEffect();
+            }
+        }
+
+        function saveEffectCallback() {
+            for (let i = 0; i < that.effects.length; i++) {
+                // that.effects[i].savePendingEffect();
+            }
+            console.log("MOA TBD save the act")
+            closeEdit();
+        }
+
+        function closeEdit() {
+            app.controls.actView.hideSceneDetail();
+            app.controls.actView.sceneEditViewSceneID.innerHTML = "";
+            app.controls.actView.sceneEditViewApply.removeEventListener('click', applyEffectCallback);
+            app.controls.actView.sceneEditViewSave.removeEventListener('click', saveEffectCallback);
+            app.controls.actView.sceneEditViewDiscard.removeEventListener('click', closeEdit);
+            console.log("MOA close edit");
+        }
+
+        app.controls.actView.sceneEditViewApply.addEventListener('click', applyEffectCallback);
+        app.controls.actView.sceneEditViewSave.addEventListener('click', saveEffectCallback);
+        app.controls.actView.sceneEditViewDiscard.addEventListener("click", closeEdit);
+        app.controls.actView.showSceneDetail();
+        console.log("SHOW DETAIL", this.id);
+    }
+
+    applyEffect() {
+        for (let i = 0; i < this.effects.length; i++) {
+            this.effects[i].applyEffect();
+        }
     }
 
     updateConfig(config) {
@@ -807,7 +879,9 @@ class ActSceneObject {
     getActiveSceneHTMLElement() {
         let activeSceneElement = document.createElement("div");
         for (let i = 0; i < this.transitions.length; i++) {
-            activeSceneElement.appendChild(this.transitions[i].getActiveSceneTransitionHTMLElement())
+            if (this.transitions[i].config.trigger.act_trigger_id != "next") {
+                activeSceneElement.appendChild(this.transitions[i].getActiveSceneTransitionHTMLElement())
+            }
         }
         return activeSceneElement;
     }
@@ -816,10 +890,54 @@ class ActSceneObject {
 class ActSceneEffectObject {
     constructor(config) {
         this.config = config;
+
+        this.sceneEditView = document.createElement("div");
+        this.sceneEditView.classList.add("flex_row");
+        this.sceneEditViewPresetID = document.createElement("select");
+        for (let i = 0; i < app.ledInfected.presetList.objects.length; i++) {
+            let option = document.createElement("option");
+            option.value = app.ledInfected.presetList.objects[i].id;
+            option.innerHTML = app.ledInfected.presetList.objects[i].id + " (" + app.ledInfected.presetList.objects[i].config.abstract_id + ")";
+            this.sceneEditViewPresetID.appendChild(option);
+        }
+        this.sceneEditViewPresetID.classList.add("act_dropdown", "act_theme");
+        this.sceneEditViewPresetID.value = this.config.preset_id;
+        this.sceneEditView.appendChild(this.sceneEditViewPresetID);
+        this.sceneEditViewAbstractID = document.createElement("div");
+        this.sceneEditViewAbstractID.classList.add("act_theme");
+        this.sceneEditViewAbstractID.innerHTML = this.config.abstract_id;
+        this.sceneEditView.appendChild(this.sceneEditViewAbstractID);
+        this.sceneEditViewStripeIDs = document.createElement("div");
+        this.sceneEditViewStripeIDs.classList.add("act_theme");
+        this.sceneEditViewStripeIDs.innerHTML = this.config.stripe_ids;
+        this.sceneEditView.appendChild(this.sceneEditViewStripeIDs);
     }
 
     updateConfig(config) {
         this.config = config;
+    }
+
+    async applyEffect() {
+        const preset = app.ledInfected.presetList.getPresetByID(this.config.preset_id);
+        if (preset == null) {
+            alert("preset not found: " + this.config.preset_id);
+            return;
+        }
+        if (preset.config.config != null) {
+            await sendAbstractConfig(this.config.abstract_id, this.config.stripe_ids, preset.config.config);
+        }
+        console.log(preset.config)
+        if (preset.config.palette != null) {
+            await sendAbstractPalette(this.config.abstract_id, this.config.stripe_ids, preset.config.palette);
+        }
+    }
+
+    applyPendingEffect() {
+
+    }
+
+    getSceneEditEffectHTMLElements() {
+        return this.sceneEditView;
     }
 }
 
@@ -849,6 +967,66 @@ class ActSceneTransitionObject {
         this.activeSceneTransitionScene.classList.add("act_theme");
         this.activeSceneTransitionScene.innerHTML = this.config.scene_id;
         this.activeSceneTransitionElement.appendChild(this.activeSceneTransitionScene);
+
+        this.sceneEditTransitionElement = document.createElement("div");
+        this.sceneEditTransitionElement.classList.add("flex_row");
+
+        this.sceneEditTransitionSceneID = document.createElement("select");
+        for (let i = 0; i < this.parent.parent.config.scenes.length; i++) {
+            let option = document.createElement("option");
+            option.value = this.parent.parent.config.scenes[i].scene_id;
+            option.innerHTML = this.parent.parent.config.scenes[i].scene_id;
+            this.sceneEditTransitionSceneID.appendChild(option);
+        }
+        this.sceneEditTransitionSceneID.classList.add("act_dropdown", "act_theme");
+        this.sceneEditTransitionSceneID.value = this.config.scene_id;
+        this.sceneEditTransitionSceneID.style.minWidth = "200px";
+        this.sceneEditTransitionElement.appendChild(this.sceneEditTransitionSceneID);
+
+        this.sceneEditTransitionTriggerType = document.createElement("input");
+        this.sceneEditTransitionTriggerType.setAttribute("type", "checkbox");
+        this.sceneEditTransitionTriggerType.classList.add("act_checkbox", "margin_left_auto");
+
+        this.sceneEditTransitionElement.appendChild(this.sceneEditTransitionTriggerType);
+        this.sceneEditTransitionTriggerType.addEventListener("click", function () {
+            that.updateTrigger();
+        });
+        this.sceneEditTransitionTriggerTimeout = document.createElement("input");
+        this.sceneEditTransitionTriggerTimeout.setAttribute("type", "number");
+        this.sceneEditTransitionTriggerTimeout.classList.add("act_dropdown", "act_theme");
+        this.sceneEditTransitionTriggerTimeout.style.width = "100px";
+        this.sceneEditTransitionTriggerTimeout.min = 1;
+        this.sceneEditTransitionElement.appendChild(this.sceneEditTransitionTriggerTimeout);
+
+        this.sceneEditTransitionTriggerActTriggerID = document.createElement("select");
+        for (let i = 0; i < this.parent.parent.config.triggers.length; i++) {
+            let option = document.createElement("option");
+            option.value = this.parent.parent.config.triggers[i].act_trigger_id;
+            option.innerHTML = this.parent.parent.config.triggers[i].act_trigger_id;
+            this.sceneEditTransitionTriggerActTriggerID.appendChild(option);
+        }
+        this.sceneEditTransitionTriggerActTriggerID.classList.add("act_dropdown", "act_theme");
+        this.sceneEditTransitionTriggerActTriggerID.style.width = "100px";
+        this.sceneEditTransitionElement.appendChild(this.sceneEditTransitionTriggerActTriggerID);
+
+        if (this.config.trigger.timeout_s != null) {
+            this.sceneEditTransitionTriggerType.setAttribute("checked", true);
+            this.sceneEditTransitionTriggerTimeout.value = this.config.trigger.timeout_s;
+        } else {
+            this.sceneEditTransitionTriggerType.removeAttribute("checked");
+            this.sceneEditTransitionTriggerActTriggerID.value = this.config.trigger.act_trigger_id;
+        }
+        this.updateTrigger();
+    }
+
+    updateTrigger() {
+        if (this.sceneEditTransitionTriggerType.checked == true) {
+            this.sceneEditTransitionTriggerActTriggerID.setAttribute("hidden", true);
+            this.sceneEditTransitionTriggerTimeout.removeAttribute("hidden");
+        } else {
+            this.sceneEditTransitionTriggerTimeout.setAttribute("hidden", true);
+            this.sceneEditTransitionTriggerActTriggerID.removeAttribute("hidden");
+        }
     }
 
     isIt(config) {
@@ -879,6 +1057,10 @@ class ActSceneTransitionObject {
         }
 
         return this.activeSceneTransitionElement;
+    }
+
+    getSceneEditTransitionHTMLElements() {
+        return this.sceneEditTransitionElement;
     }
 }
 
@@ -1133,6 +1315,15 @@ class ActView {
 
         this.scenesView = this.viewPort.getElementsByClassName('act_view_scenes')[0];
 
+        this.sceneEditView = this.viewPort.getElementsByClassName('act_view_edit_scene')[0];
+
+        this.sceneEditViewSceneID = this.viewPort.getElementsByClassName('act_view_edit_scene_scene_id')[0];
+        this.sceneEditViewEffects = this.viewPort.getElementsByClassName('act_view_edit_scene_effects')[0];
+        this.sceneEditViewTransitions = this.viewPort.getElementsByClassName('act_view_edit_scene_transitions')[0];
+        this.sceneEditViewApply = this.viewPort.getElementsByClassName('act_view_edit_scene_apply')[0];
+        this.sceneEditViewSave = this.viewPort.getElementsByClassName('act_view_edit_scene_save')[0];
+        this.sceneEditViewDiscard = this.viewPort.getElementsByClassName('act_view_edit_scene_discard')[0];
+
         this.refreshButton = this.viewPort.getElementsByClassName('act_view_refresh_button')[0];
         this.refreshButton.addEventListener('click', async function () {
             await app.ledInfected.listUpdateCallback();
@@ -1154,6 +1345,14 @@ class ActView {
             that.resetAutoUpdate();
             that.hide();
         });
+    }
+
+    hideSceneDetail() {
+        this.sceneEditView.setAttribute("hidden", true);
+    }
+
+    showSceneDetail() {
+        this.sceneEditView.removeAttribute("hidden");
     }
 
     clearTimeout() {
@@ -1667,38 +1866,12 @@ class ControlStripe {
 
     sendPattern() {
         let selectedStripes = this.linkedAbstract.getSelectedStripes();
-
-        if (selectedStripes.length == 0) {
-            alert("no stripes selected")
-            return;
-        }
-
-        let obj = new Object();
-        obj.config = new Object();
-
-        obj.apiPath = "/abstract/" + this.linkedAbstract.id + "/stripes/palette";
-        obj.config.stripe_ids = selectedStripes;
-        obj.config.palette = this.getCurrentPalette();
-
-        app.connection.post(obj.apiPath, JSON.stringify(obj.config));
+        sendAbstractPalette(this.linkedAbstract.id, selectedStripes, this.getCurrentPalette());
     }
 
     sendConfig() {
         let selectedStripes = this.linkedAbstract.getSelectedStripes();
-
-        if (selectedStripes.length == 0) {
-            alert("no stripes selected")
-            return;
-        }
-
-        let obj = new Object();
-        obj.apiPath = "/abstract/" + this.linkedAbstract.id + "/stripes/config";
-
-        obj.config = new Object();
-        obj.config.stripe_ids = selectedStripes;
-        obj.config.config = this.getCurrentConfig();
-
-        app.connection.post(obj.apiPath, JSON.stringify(obj.config));
+        sendAbstractConfig(this.linkedAbstract.id, selectedStripes, this.getCurrentConfig());
     }
 
     saveConfig() {
@@ -2312,6 +2485,42 @@ function randomTranslate(b, min, max) {
     return b + "% { transform: translate(" + getRandomInt(min, max) + "px, " + getRandomInt(min, max) + "px); }\n"
 }
 
+function sendAbstractPalette(abstract_id, stripe_ids, palette) {
+    if (stripe_ids.length == 0) {
+        alert("no stripes selected")
+        return;
+    }
+
+    let obj = new Object();
+    obj.config = new Object();
+
+    obj.apiPath = "/abstract/" + abstract_id + "/stripes/palette";
+    obj.config.stripe_ids = stripe_ids;
+    if (palette.palette == null) {
+        obh.config.palette = new Object();
+        obj.config.palette.palette = palette;
+    } else {
+        obj.config.palette = palette;
+    }
+
+    app.connection.post(obj.apiPath, JSON.stringify(obj.config));
+}
+
+async function sendAbstractConfig(abstract_id, stripe_ids, config) {
+    if (stripe_ids.length == 0) {
+        alert("no stripes selected")
+        return;
+    }
+
+    let obj = new Object();
+    obj.apiPath = "/abstract/" + abstract_id + "/stripes/config";
+
+    obj.config = new Object();
+    obj.config.stripe_ids = stripe_ids;
+    obj.config.config = config;
+
+    await app.connection.post(obj.apiPath, JSON.stringify(obj.config));
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////

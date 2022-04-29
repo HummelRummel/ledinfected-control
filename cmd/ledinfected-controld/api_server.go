@@ -176,7 +176,12 @@ func (o *apiServer) arduinoConnectionHandler() {
 					} else {
 						for _, a := range o.Abstracts {
 							if err := a.UpdateArduino(arduino); err != nil {
-								fmt.Printf("failed to set arduino in abstract %d: %s\n", a.AbstractID, err)
+								fmt.Printf("failed to set arduino in abstract %s: %s\n", a.AbstractID, err)
+							}
+						}
+						for _, a := range o.Acts {
+							if err := a.UpdateArduino(arduino); err != nil {
+								fmt.Printf("failed to set arduino in act %string: %s\n", a.ActID, err)
 							}
 						}
 						o.Arduinos = append(o.Arduinos, arduino)

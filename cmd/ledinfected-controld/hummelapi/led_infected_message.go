@@ -53,6 +53,8 @@ const (
 	ledInfectedResponseCodeInvalidStripe   = 0x04
 	ledInfectedResponseCodeInvalidLen      = 0x05
 	ledInfectedResponseCodeInvalidChecksum = 0x06
+	ledInfectedResponseCodeInputTrigger    = 0xd1
+	ledInfectedResponseCodeInputButton     = 0xd2
 	ledInfectedResponseCodeError           = 0xff
 )
 
@@ -94,6 +96,10 @@ func (o *LEDInfectedResponse) getRspString() string {
 		return "INVALID_LEN"
 	case ledInfectedResponseCodeInvalidChecksum:
 		return "INVALID_CHECKSUM"
+	case ledInfectedResponseCodeInputTrigger:
+		return "INPUT_TRIGGER"
+	case ledInfectedResponseCodeInputButton:
+		return "INPUT_BUTTON"
 	case ledInfectedResponseCodeError:
 		return "ERROR"
 	}
@@ -149,13 +155,18 @@ func castLEDInfectedResponse(buf []byte) (*LEDInfectedResponse, error) {
 	if len(data) != int(buf[2]) {
 		return nil, fmt.Errorf("unexpected data len")
 	}
-	return &LEDInfectedResponse{
+	r := &LEDInfectedResponse{
 		rspCode:    buf[0],
 		rspCmdID:   buf[1],
 		rspDataLen: buf[2],
 		rspData:    data,
 		checksum:   uint16(0xff&buf[len(buf)-1]) + (uint16(0xff&buf[len(buf)-2]) << 8),
-	}, nil
+	}
+
+	if err := r.Check(); err != nil {
+		return nil, fmt.Errorf("response with invalid checksum received: %s", err)
+	}
+	return r, nil
 }
 
 func (o *LEDInfectedCommand) IsResponse(other *LEDInfectedResponse) bool {

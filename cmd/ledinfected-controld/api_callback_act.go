@@ -176,7 +176,7 @@ func (o *apiServer) triggerActTriggerCallback(c *gin.Context) {
 		return
 	}
 
-	t.Trigger()
+	t.TriggerCallback(1)
 	c.JSON(http.StatusOK, t)
 	return
 }

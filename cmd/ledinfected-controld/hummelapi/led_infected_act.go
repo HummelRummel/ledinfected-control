@@ -217,3 +217,19 @@ func (o *LEDInfectedAct) getActTrigger(actTriggerID string) (*LEDInfectedActTrig
 
 	return nil, fmt.Errorf("act trigger %s not found", actTriggerID)
 }
+
+func (o*LEDInfectedAct) UpdateArduino(arduino *LEDInfectedArduino) error {
+	for _,trigger := range o.Triggers {
+		if trigger.LinkedInput != nil {
+			if trigger.LinkedInput.ArduinoID == arduino.GetID() {
+				for _, arduinoInput := range arduino.Inputs {
+					fmt.Printf("trigger.LinkedInput.ArduinoInputID: %d, arduinoInput.ArduinoInputID: %d\n", trigger.LinkedInput.ArduinoInputID, arduinoInput.ArduinoInputID)
+					if trigger.LinkedInput.ArduinoInputID == arduinoInput.ArduinoInputID {
+						arduinoInput.RegisterInputCallback(trigger.TriggerCallback)
+					}
+				}
+			}
+		}
+	}
+	return nil
+}

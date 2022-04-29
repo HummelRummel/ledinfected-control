@@ -18,6 +18,7 @@ type (
 	LEDInfectedArduinoConfigGlobalSetup struct {
 		ID         uint8                     `json:"arduino_id"`
 		NumStripes uint8                     `json:"num_stripes"`
+		NumInputs  uint8                     `json:"num_inputs"`
 		DevFile    string                    `json:"dev_file"`
 		Version    LEDInfectedArduinoVersion `json:"version"`
 	}
