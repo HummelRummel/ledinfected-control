@@ -29,10 +29,10 @@ func (o *LEDInfectedSceneTransition) Run() error {
 		if o.Trigger.TimeoutS != nil {
 			timeout := time.Duration(*o.Trigger.TimeoutS) * time.Second
 			if o.Trigger.TimeoutMaxS != nil {
-				if *o.Trigger.TimeoutMaxS < *o.Trigger.TimeoutS {
+				if *o.Trigger.TimeoutMaxS <= *o.Trigger.TimeoutS {
 					fmt.Printf("timeout max (%d) is lower than the timeout (%d) value, disable randomization\n", *o.Trigger.TimeoutMaxS, *o.Trigger.TimeoutS)
 				} else {
-					maxMilliSec := int(*o.Trigger.TimeoutMaxS - *o.Trigger.TimeoutS*1000)
+					maxMilliSec := int((*o.Trigger.TimeoutMaxS - *o.Trigger.TimeoutS) * 1000)
 					timeout = timeout + (time.Duration(rand.Intn(maxMilliSec)) * time.Millisecond)
 				}
 			}
