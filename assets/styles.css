@@ -129,6 +129,23 @@
     }
 }
 
+.act_ctrl_view {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 480px;
+    height: 100%;
+    background: #ffffff;
+    z-index: 4;
+    overflow-y: auto;
+}
+
+@media only screen and (max-width: 480px) {
+    .act_ctrl_view {
+        width: 100%;
+    }
+}
+
 area {
     cursor: pointer;
 }
@@ -281,6 +298,10 @@ table {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
     visibility: visible;
+}
+
+.template {
+    display: none;
 }
 
 .control_view_template {
@@ -502,7 +523,11 @@ table {
     opacity: 1;
 }
 
-.acts_container_div {
-    max-height: 48px;
+.overflow_y {
     overflow-y: auto;
 }
+
+.height_line {
+    max-height: 48px;
+}
+

@@ -16,9 +16,88 @@
 </head>
 <body>
 
-<div class="act_view_template">
-    <div class="acts_container_div">
-        <div class="acts_container flex_column">
+<div class="act_view_template template">
+    <div class="act_select_view height_line overflow_y">
+        <div class="act_select_container flex_column">
+            <!--Will be filled later-->
+        </div>
+    </div>
+    <div class="act_status_view segment">
+        <div class="act_status_detail_view sub_segment">
+        </div>
+        <div class="act_status_control_view sub_segment">
+            <div class="act_status_control_general_view">
+            </div>
+            <div class="act_status_control_trigger_view">
+                <div class="act_status_control_trigger_container">
+                </div>
+            </div>
+        </div>
+        <div class="act_status_live_scene sub_segment">
+
+        </div>
+    </div>
+    <div class="act_scenes_view segment">
+        <div class="act_scenes_header_view">
+            <div>Act Scenes</div>
+            <div class="act_scenes_add_scene button">+</div>
+        </div>
+        <div class="act_scenes_detail_view flex_column">
+            <div class="act_scenes_detail_container"></div>
+        </div>
+    </div>
+    <div class="act_triggers_view segment">
+        <div class="act_triggers_header_view">
+            <div>Act Triggers</div>
+            <div class="act_triggers_add_trigger button">+</div>
+        </div>
+        <div class="act_triggers_detail_view flex_column">
+            <div class="act_triggers_detail_container"></div>
+        </div>
+    </div>
+</div>
+
+<div class="scene_detail_template template sub_segment">
+    <div class="scene_short_view height_line">
+        <div class="scene_detail_toggle_button"></div>
+        <div class="scene_id">not-set</div>
+        <div class="start_flag">Start</div>
+        <div class="apply_button">Apply</div>
+        <div class="remove_scene_button">-</div>
+    </div>
+    <div class="scene_details_view">
+        <div class="scene_description">not-set</div>
+        <div class="scene_effects_view sub_sub_segment">
+            <div class="scene_effects_header_view">
+                <div>Scene Effects</div>
+                <div class="scene_effects_add_effect button">+</div>
+            </div>
+            <div class="scene_effects_detail_view flex_column">
+                <div class="scene_effects_detail_container"></div>
+            </div>
+        </div>
+        <div class="scene_triggers_view sub_sub_segment">
+            <div class="scene_triggers_header_view">
+                <div>Scene Triggers</div>
+                <div class="scene_triggers_add_effect button">+</div>
+            </div>
+            <div class="scene_triggers_detail_view flex_column">
+                <div class="scene_triggers_detail_container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="effect_detail_template template sub_el_segment">
+</div>
+<div class="scene_trigger_detail_template template sub_el_segment">
+</div>
+<div class="act_trigger_detail_template template sub_segment">
+</div>
+
+<div class="act_view_template2">
+    <div class="height_line overflow_y">
+        <div class="act_select_container flex_column">
 
         </div>
     </div>
@@ -56,7 +135,7 @@
         <div class="frame">
             <div class="frame">
                 <div class="act_theme">Live Scene</div>
-                <div class="act_view_active_scene">
+                <div class="act_view_live_scene">
 
                 </div>
             </div>

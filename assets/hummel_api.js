@@ -30,19 +30,22 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 /////////////////////////////////////////////////////////////////////////////////////////////
 class LEDInfectedApp {
     constructor() {
-        this.connection = new ConnectionAPI();
+        const that = this;
 
+        this.connection = new ConnectionAPI();
         this.ledInfected = new LEDInfectedList();
         this.overview = new Overview();
         this.controls = new Controls();
 
-        const that = this;
-
         function callback() {
             that.controls.actView.show()
         }
-
         this.overview.actButton.addEventListener("click", callback);
+
+        function callback() {
+            that.controls.actCtrlView.show()
+        }
+        this.overview.showActControlViewBtn.addEventListener("click", callback);
     }
 
     async init() {
@@ -251,6 +254,10 @@ class AbstractObject {
 
     removeObject() {
         app.overview.removeAbstract(this.overviewObject.getElementID());
+    }
+
+    getEffectAbstractSelectViewPort(preselectedStripeIDs) {
+
     }
 }
 
@@ -1085,6 +1092,16 @@ class Overview {
         this.actButton.style.zIndex = 3;
         this.actButton.innerHTML = "Live Act";
         this.viewPort.appendChild(this.actButton);
+        this.showActControlViewBtn = document.createElement("button");
+        this.showActControlViewBtn.classList.add("show_act_control_button", "act_button", "act_theme");
+        this.showActControlViewBtn.style.left = "0px";
+        this.showActControlViewBtn.style.top = "48px";
+        this.showActControlViewBtn.style.paddingLeft = "16px";
+        this.showActControlViewBtn.style.paddingRight = "16px";
+        this.showActControlViewBtn.style.position = "absolute";
+        this.showActControlViewBtn.style.zIndex = 3;
+        this.showActControlViewBtn.innerHTML = "Live Act";
+        this.viewPort.appendChild(this.showActControlViewBtn);
 
         this.onlineState = document.createElement("div");
         this.onlineState.classList.add("act_button", "act_theme");
@@ -1150,6 +1167,8 @@ class Controls {
         this.controlStripes.push(new ControlStripe());
 
         this.actView = new ActView();
+
+        this.actCtrlView = new ActCtrlView();
     }
 
     showAbstract(abstractID) {
@@ -1217,6 +1236,139 @@ class PresetSelect {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+// ActCtrlView
+// It contains the control interface for acts
+//
+// Accessible via
+//   app.controls
+/////////////////////////////////////////////////////////////////////////////////////////////
+class ActCtrlView {
+    constructor() {
+        this.initViewPort();
+        this.initElements();
+
+        document.body.appendChild(this.viewPort);
+    }
+
+    initViewPort() {
+        let htmlTemplate = document.body.getElementsByClassName("act_view_template")[0];
+        this.viewPort = htmlTemplate.cloneNode(true);
+        this.viewPort.classList.remove("act_view_template", "template");
+        this.viewPort.classList.add("act_ctrl_view")
+        this.viewPort.style.display = "none";
+    }
+
+    initElements() {
+        const that = this;
+        // the canvas for the stripe svg
+        this.actSelectContainer = this.viewPort.getElementsByClassName('act_select_container')[0];
+    }
+
+    show() {
+        this.actSelectContainer.innerHTML = "";
+        for (let i = 0; i < app.ledInfected.actList.objects.length; i++) {
+            if (app.ledInfected.liveAct != null) {
+                if (app.ledInfected.liveAct.act_id == app.ledInfected.actList.objects[i].config.act_id) {
+                    this.selectAct(app.ledInfected.actList.objects[i])
+
+                }
+            }
+            this.actSelectContainer.appendChild(app.ledInfected.actList.objects[i].getButtonHTMLElement());
+        }
+     //   this.refreshAct()
+
+        this.viewPort.style.animation = "fadeInEffect 1s";
+        this.viewPort.style.display = "block";
+    }
+
+    selectAct(act) {
+        this.linkedAct = act;
+        this.setAutoUpdate(1);
+
+        this.refreshAct();
+    }
+
+    refreshAct() {
+        this.liveSceneDiv.innerHTML = "";
+        this.scenesView.innerHTML = "";
+
+        if (this.linkedAct == null) {
+            this.selectedActActionButtonStart.disabled = true;
+            this.selectedActActionButtonStop.disabled = true;
+            this.selectedActActionButtonPause.disabled = true;
+            this.selectedActActionButtonResume.disabled = true;
+            this.selectedActActionButtonNextScene.disabled = true;
+            this.editActBtn.disabled = true;
+            return
+        }
+        switch (this.linkedAct.config.status.state) {
+            case "NOT_LIVE":
+                this.selectedActActionButtonStart.disabled = false;
+                this.selectedActActionButtonStop.disabled = true;
+                this.selectedActActionButtonPause.disabled = true;
+                this.selectedActActionButtonResume.disabled = true;
+                this.selectedActActionButtonNextScene.disabled = true;
+                this.editActBtn.disabled = false;
+                break;
+            case "RUNNING":
+                this.selectedActActionButtonStart.disabled = true;
+                this.selectedActActionButtonStop.disabled = false;
+                this.selectedActActionButtonPause.disabled = false;
+                this.selectedActActionButtonResume.disabled = true;
+                this.selectedActActionButtonNextScene.disabled = false;
+                this.editActBtn.disabled = true;
+                break;
+            case "PAUSED":
+                this.selectedActActionButtonStart.disabled = true;
+                this.selectedActActionButtonStop.disabled = false;
+                this.selectedActActionButtonPause.disabled = true;
+                this.selectedActActionButtonResume.disabled = false;
+                this.selectedActActionButtonNextScene.disabled = true;
+                this.editActBtn.disabled = true;
+                break;
+        }
+
+        this.selectedActHeader.innerHTML = this.linkedAct.config.act_id + " (" + this.linkedAct.config.description + ")";
+        this.selectedActStatusState.innerHTML = this.linkedAct.config.status.state;
+        if (this.linkedAct.config.status.active_scene != null) {
+            this.selectedActStatusActiveSceneID.innerHTML = this.linkedAct.config.status.active_scene.scene_id;
+        } else {
+            this.selectedActStatusActiveSceneID.innerHTML = "none";
+        }
+
+        this.scenesView.appendChild(this.linkedAct.getScenesHTMLElement());
+        this.liveSceneDiv.appendChild(this.linkedAct.getActiveSceneHTMLElement());
+    }
+
+
+    setAutoUpdate(timeout) {
+        this.resetAutoUpdate();
+
+        this.ticker = setInterval(async function () {
+            await app.ledInfected.listUpdateCallback();
+            app.controls.actView.refreshAct();
+        }, timeout * 1000);
+    }
+
+    resetAutoUpdate() {
+        if (this.ticker != null) {
+            clearInterval(this.ticker);
+            this.ticker = null;
+        }
+    }
+
+    hide() {
+        this.viewPort.style.animation = "fadeOutEffect 1s";
+        let that = this;
+        // this is to hide and remove the stripe object it after the fade out
+        setTimeout(function () {
+            that.viewPort.style.display = "none";
+        }, 900);
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 // ActView
 // It contains the control interface for acts
 //
@@ -1232,7 +1384,7 @@ class ActView {
     }
 
     initViewPort() {
-        let htmlTemplate = document.body.getElementsByClassName("act_view_template")[0];
+        let htmlTemplate = document.body.getElementsByClassName("act_view_template2")[0];
         this.viewPort = htmlTemplate.cloneNode(true);
         this.viewPort.classList.remove("act_view_template");
         this.viewPort.classList.add("actView")
@@ -1242,7 +1394,7 @@ class ActView {
     initElements() {
         const that = this;
         // the canvas for the stripe svg
-        this.actListContainer = this.viewPort.getElementsByClassName('acts_container')[0];
+        this.actSelectContainer = this.viewPort.getElementsByClassName('act_select_container')[0];
 
         this.selectedActHeader = this.viewPort.getElementsByClassName('act_view_header')[0];
 
@@ -1311,7 +1463,7 @@ class ActView {
             that.refreshAct();
         });
 
-        this.activeSceneDiv = this.viewPort.getElementsByClassName('act_view_active_scene')[0];
+        this.liveSceneDiv = this.viewPort.getElementsByClassName('act_view_live_scene')[0];
 
         this.scenesView = this.viewPort.getElementsByClassName('act_view_scenes')[0];
 
@@ -1376,7 +1528,7 @@ class ActView {
     }
 
     show() {
-        this.actListContainer.innerHTML = "";
+        this.actSelectContainer.innerHTML = "";
         for (let i = 0; i < app.ledInfected.actList.objects.length; i++) {
             if (app.ledInfected.liveAct != null) {
                 if (app.ledInfected.liveAct.act_id == app.ledInfected.actList.objects[i].config.act_id) {
@@ -1384,7 +1536,7 @@ class ActView {
 
                 }
             }
-            this.actListContainer.appendChild(app.ledInfected.actList.objects[i].getButtonHTMLElement());
+            this.actSelectContainer.appendChild(app.ledInfected.actList.objects[i].getButtonHTMLElement());
         }
         this.refreshAct()
 
@@ -1400,7 +1552,7 @@ class ActView {
     }
 
     refreshAct() {
-        this.activeSceneDiv.innerHTML = "";
+        this.liveSceneDiv.innerHTML = "";
         this.scenesView.innerHTML = "";
 
         if (this.linkedAct == null) {
@@ -1448,7 +1600,7 @@ class ActView {
         }
 
         this.scenesView.appendChild(this.linkedAct.getScenesHTMLElement());
-        this.activeSceneDiv.appendChild(this.linkedAct.getActiveSceneHTMLElement());
+        this.liveSceneDiv.appendChild(this.linkedAct.getActiveSceneHTMLElement());
     }
 
 
