@@ -1,0 +1,354 @@
+{
+  "act_id": "3000_grad_am_meer",
+  "description": "3000 Grad am Meer",
+  "start_scene_id": "root",
+  "scenes": [
+    {
+      "scene_id": "root",
+      "description": "Hier beginnt alles",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8",
+            "circle"
+          ],
+          "preset_id": "idleBBee",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "heartbeat_red_yellow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "heartbeat_red_yellow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "heartbeat_red_yellow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower4",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "heartbeat_red_yellow",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "all rainbow"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "all rainbow"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "all rainbow"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "all rainbow"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "all rainbow"
+        }
+      ]
+    },
+    {
+      "scene_id": "all rainbow",
+      "description": "Hier beginnt alles",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8",
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower4",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        }
+      ]
+    },
+    {
+      "scene_id": "test",
+      "description": "Hier beginnt alles",
+      "effects": [
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8",
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower4",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "Rainbow",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "act_trigger_id": "flower1",
+      "active": false,
+      "linked_input": {
+        "arduino_id": 44,
+        "arduino_input_id": 0
+      }
+    },
+    {
+      "act_trigger_id": "flower2",
+      "active": false,
+      "linked_input": {
+        "arduino_id": 44,
+        "arduino_input_id": 1
+      }
+    },
+    {
+      "act_trigger_id": "flower3",
+      "active": false,
+      "linked_input": {
+        "arduino_id": 44,
+        "arduino_input_id": 2
+      }
+    },
+    {
+      "act_trigger_id": "flower4",
+      "active": false,
+      "linked_input": {
+        "arduino_id": 44,
+        "arduino_input_id": 3
+      }
+    },
+    {
+      "act_trigger_id": "next",
+      "active": false,
+      "linked_input": null
+    }
+  ],
+  "status": {
+    "state": "NOT_LIVE",
+    "active_scene": null,
+    "errors": null
+  }
+}
