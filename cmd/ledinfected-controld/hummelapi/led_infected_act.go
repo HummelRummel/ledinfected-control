@@ -124,6 +124,16 @@ func UpdateAct(acts []*LEDInfectedAct, act *LEDInfectedAct) ([]*LEDInfectedAct, 
 	return acts, nil
 }
 
+func (o *LEDInfectedAct) UpdateScene(sceneConfig *LEDInfectedScene) {
+	for i, _ := range o.Scenes {
+		if o.Scenes[i].SceneID == sceneConfig.SceneID {
+			o.Scenes[i] = sceneConfig
+			return
+		}
+	}
+	o.Scenes = append(o.Scenes, sceneConfig)
+}
+
 func (o *LEDInfectedAct) Start() error {
 	switch o.Status.State {
 	case "NOT_LIVE":
@@ -218,8 +228,8 @@ func (o *LEDInfectedAct) getActTrigger(actTriggerID string) (*LEDInfectedActTrig
 	return nil, fmt.Errorf("act trigger %s not found", actTriggerID)
 }
 
-func (o*LEDInfectedAct) UpdateArduino(arduino *LEDInfectedArduino) error {
-	for _,trigger := range o.Triggers {
+func (o *LEDInfectedAct) UpdateArduino(arduino *LEDInfectedArduino) error {
+	for _, trigger := range o.Triggers {
 		if trigger.LinkedInput != nil {
 			if trigger.LinkedInput.ArduinoID == arduino.GetID() {
 				for _, arduinoInput := range arduino.Inputs {

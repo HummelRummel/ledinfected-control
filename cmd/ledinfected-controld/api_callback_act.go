@@ -181,6 +181,29 @@ func (o *apiServer) triggerActTriggerCallback(c *gin.Context) {
 	return
 }
 
+func (o *apiServer) postActUpdateSceneCallback(c *gin.Context) {
+	a, err := o.getCallbackAct(c)
+	if err != nil {
+		c.String(http.StatusNotFound, jsonError(err))
+		return
+	}
+
+	sceneConfig := &hummelapi.LEDInfectedScene{}
+	if err := c.BindJSON(sceneConfig); err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	a.UpdateScene(sceneConfig)
+	if _, err := hummelapi.UpdateAct(o.Acts, a); err != nil {
+		c.String(http.StatusBadRequest, jsonError(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, "{}")
+	return
+}
+
 ////////////////////////////////////////////////////////
 // helper functions
 ////////////////////////////////////////////////////////

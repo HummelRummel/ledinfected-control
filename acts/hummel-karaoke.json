@@ -20,29 +20,32 @@
             "radial8",
             "circle"
           ],
-	  "sync": true,
-          "preset_id": "idleBBee"
+          "preset_id": "idleBBee",
+          "sync": false
         },
-	{
-	  "abstract_id": "flowerv1_1",
+        {
+          "abstract_id": "flowerv1_1",
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "flowerFlashAlt" 
-	},
+          "preset_id": "flowerFlashAlt",
+          "sync": false
+        },
         {
-          "abstract_id": "flowerv1_2",   
+          "abstract_id": "flowerv1_2",
           "stripe_ids": [
-            "circle"  
-          ],                               
-          "preset_id": "flowerFlashAlt2"          
-        }       
+            "circle"
+          ],
+          "preset_id": "flowerFlashAlt2",
+          "sync": false
+        }
       ],
       "transitions": [
         {
           "trigger": {
             "act_trigger_id": "run-button",
             "timeout_s": null,
+            "timeout_max_s": null,
             "remaining_s": null
           },
           "scene_id": "gluecksrad-init"
@@ -51,6 +54,7 @@
           "trigger": {
             "act_trigger_id": "next",
             "timeout_s": null,
+            "timeout_max_s": null,
             "remaining_s": null
           },
           "scene_id": "gluecksrad-init"
@@ -74,30 +78,32 @@
             "radial8",
             "circle"
           ],
-          "preset_id": "gluecksrad-stripe-alt"
+          "preset_id": "gluecksrad-stripe-alt",
+          "sync": false
         },
-       {                                       
-          "abstract_id": "pfv1",                
-          "stripe_ids": [                       
-            "radial1",                          
-            "radial2",                          
-            "radial3",                          
-            "radial4",                          
-            "radial5",                          
-            "radial6",                          
-            "radial7",                          
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
             "radial8",
-            "circle"                           
-          ],                                    
-          "preset_id": "gluecksrad-stop",  
+            "circle"
+          ],
+          "preset_id": "gluecksrad-stop",
           "sync": true
-        }                                
+        }
       ],
       "transitions": [
         {
           "trigger": {
             "act_trigger_id": "run-button",
             "timeout_s": null,
+            "timeout_max_s": null,
             "remaining_s": null
           },
           "scene_id": "gluecksrad-run"
@@ -106,6 +112,7 @@
           "trigger": {
             "act_trigger_id": "next",
             "timeout_s": null,
+            "timeout_max_s": null,
             "remaining_s": null
           },
           "scene_id": "gluecksrad-run"
@@ -129,22 +136,25 @@
             "radial8",
             "circle"
           ],
-          "preset_id": "gluecksrad-start"
+          "preset_id": "gluecksrad-start",
+          "sync": false
         },
         {
-          "abstract_id": "flowerv1_1",   
+          "abstract_id": "flowerv1_1",
           "stripe_ids": [
-            "circle"  
-          ],                               
-          "preset_id": "flowerFlash"    
-        },                                 
-        {                                  
-          "abstract_id": "flowerv1_2", 
-          "stripe_ids": [              
-            "circle"                   
-          ],                               
-          "preset_id": "flowerFlash2"    
-        }                                  
+            "circle"
+          ],
+          "preset_id": "flowerFlash",
+          "sync": false
+        },
+        {
+          "abstract_id": "flowerv1_2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "flowerFlash2",
+          "sync": false
+        }
       ],
       "transitions": [
         {
@@ -152,7 +162,7 @@
             "act_trigger_id": null,
             "timeout_s": 4,
             "timeout_max_s": 6,
-            "remaining_s": null
+            "remaining_s": 4
           },
           "scene_id": "gluecksrad-stop"
         },
@@ -160,6 +170,7 @@
           "trigger": {
             "act_trigger_id": "next",
             "timeout_s": null,
+            "timeout_max_s": null,
             "remaining_s": null
           },
           "scene_id": "gluecksrad-stop"
@@ -183,44 +194,50 @@
             "radial8",
             "circle"
           ],
-          "preset_id": "gluecksrad-stop"
+          "preset_id": "gluecksrad-stop",
+          "sync": false
         },
         {
-          "abstract_id": "flowerv1_1",   
+          "abstract_id": "flowerv1_1",
           "stripe_ids": [
-            "circle"  
-          ],                               
-          "preset_id": "flowerFlashAlt"    
-        },                                 
-        {                                  
-          "abstract_id": "flowerv1_2", 
-          "stripe_ids": [              
-            "circle"                   
-          ],                               
-          "preset_id": "flowerFlashAlt2"    
-        }                                  
+            "circle"
+          ],
+          "preset_id": "flowerFlashAlt",
+          "sync": false
+        },
+        {
+          "abstract_id": "flowerv1_2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "flowerFlashAlt2",
+          "sync": false
+        }
       ],
       "transitions": [
         {
           "trigger": {
             "act_trigger_id": "run-button",
             "timeout_s": null,
+            "timeout_max_s": null,
             "remaining_s": null
           },
           "scene_id": "hummel-idle"
         },
-	{
+        {
           "trigger": {
             "act_trigger_id": null,
             "timeout_s": 30,
-            "remaining_s": null
+            "timeout_max_s": null,
+            "remaining_s": 30
           },
           "scene_id": "hummel-idle"
-	},
+        },
         {
           "trigger": {
             "act_trigger_id": "next",
             "timeout_s": null,
+            "timeout_max_s": null,
             "remaining_s": null
           },
           "scene_id": "hummel-idle"
@@ -233,18 +250,22 @@
       "act_trigger_id": "run-button",
       "active": false,
       "linked_input": {
-	"arduino_id": 130,
-      	"arduino_input_id": 0
+        "arduino_id": 130,
+        "arduino_input_id": 0
       }
     },
     {
       "act_trigger_id": "next",
-      "active": false
+      "active": false,
+      "linked_input": null
     }
   ],
   "status": {
     "state": "NOT_LIVE",
     "active_scene": null,
-    "errors": null
+    "errors": [
+      "failed to get next scene ",
+      "failed to get next scene "
+    ]
   }
 }

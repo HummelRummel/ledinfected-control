@@ -106,6 +106,7 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.GET("/api/act/:ActId/trigger", o.getAllActTriggersCallback)
 	o.engine.GET("/api/act/:ActId/trigger/:TriggerId", o.getActTriggerCallback)
 	o.engine.POST("/api/act/:ActId/trigger/:TriggerId/trigger", o.triggerActTriggerCallback)
+	o.engine.POST("/api/act/:ActId/update_scene", o.postActUpdateSceneCallback)
 	//o.engine.GET("/api/act/:ActId/scene", o.getAllScenesCallback)
 	//o.engine.GET("/api/act/:ActId/scene/:SceneId", o.getSceneCallback)
 	//o.engine.GET("/api/act/:ActId/scene/:SceneId/status", o.getSceneStatusCallback)
