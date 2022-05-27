@@ -4,7 +4,7 @@ GOOS=linux GOARCH=arm go build ./cmd/ledinfected-controld
 
 IP="${1}"
 if [[ -z "${2}" ]]; then
-    FILES="ledinfected-controld assets/ example-configs/ html/"
+    FILES="ledinfected-controld assets/ configs/ acts presets html/"
 else
     FILES="${2}"
 fi

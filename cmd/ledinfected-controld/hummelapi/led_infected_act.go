@@ -54,52 +54,58 @@ func GetAllActs(getAllAbstracts func() []*LEDInfectedAbstract) []*LEDInfectedAct
 		act.Status = &LEDInfectedActStatus{
 			State: "NOT_LIVE",
 		}
-		presets := GetAllPresets()
-		for _, s := range act.Scenes {
-			for _, e := range s.Effects {
-				for _, p := range presets {
-					if p.PresetID == e.PresetID {
-						e.preset = p
-					}
-				}
-				for _, a := range act.getAllAbstracts() {
-					if a.AbstractID == e.AbstractID {
-						e.abstract = a
-					}
-				}
-			}
-			for _, t := range s.Transitions {
-				t.timer = time.NewTimer(time.Minute)
-				t.timer.Stop()
-				t.act = act
-				t.stop = make(chan struct{})
-				if t.Trigger.ActTriggerID != nil {
-					actTrigger, err := act.getActTrigger(*t.Trigger.ActTriggerID)
-					if err != nil {
-						act.Status.appendError(fmt.Errorf("failed to get act trigger %s: %s", m, err))
-					}
-					t.actTrigger = actTrigger
-				}
-				for _, is := range act.Scenes {
-					if is.SceneID == t.SceneID {
-						t.nextScene = is
-					}
-				}
-				if t.nextScene == nil {
-					act.Status.appendError(fmt.Errorf("failed to get next scene %s", t.SceneID))
-				}
-			}
-		}
+		linkAct(act)
 
 		acts = append(acts, act)
 	}
 	return acts
 }
 
+func linkAct(act *LEDInfectedAct) {
+	presets := GetAllPresets()
+	for _, s := range act.Scenes {
+		for _, e := range s.Effects {
+			for _, p := range presets {
+				if p.PresetID == e.PresetID {
+					e.preset = p
+				}
+			}
+			for _, a := range act.getAllAbstracts() {
+				if a.AbstractID == e.AbstractID {
+					e.abstract = a
+				}
+			}
+		}
+		for _, t := range s.Transitions {
+			t.timer = time.NewTimer(time.Minute)
+			t.timer.Stop()
+			t.act = act
+			t.stop = make(chan struct{})
+			if t.Trigger.ActTriggerID != nil {
+				actTrigger, err := act.getActTrigger(*t.Trigger.ActTriggerID)
+				if err != nil {
+					act.Status.appendError(fmt.Errorf("failed to get act trigger %s: %s", act.ActID, err))
+				}
+				t.actTrigger = actTrigger
+			}
+			for _, is := range act.Scenes {
+				if is.SceneID == t.SceneID {
+					t.nextScene = is
+				}
+			}
+			if t.nextScene == nil {
+				act.Status.appendError(fmt.Errorf("failed to get next scene %s", t.SceneID))
+			}
+		}
+	}
+}
+
 func UpdateAct(acts []*LEDInfectedAct, act *LEDInfectedAct) ([]*LEDInfectedAct, error) {
 	if act == nil || act.ActID == "" {
 		return acts, fmt.Errorf("invalid act given")
 	}
+	linkAct(act)
+
 	for i, a := range acts {
 		if a.ActID == act.ActID {
 			// write the file
@@ -107,6 +113,7 @@ func UpdateAct(acts []*LEDInfectedAct, act *LEDInfectedAct) ([]*LEDInfectedAct, 
 				return acts, err
 			}
 
+			acts[i].Stop()
 			// update the array
 			acts[i] = act
 			return acts, nil
