@@ -258,6 +258,47 @@ func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeCo
 	return nil
 }
 
+func (o *LEDInfectedAbstract) SetConfigBrightness(brightness uint8, stripeIDs ...string) error {
+	config := o.GetArduinoStripeConfig()
+	if config == nil {
+		fmt.Printf("skipping brightness config for %s, no arduino online\n", o.AbstractID)
+		return nil
+	}
+	config.Config.Brightness = brightness
+	fmt.Printf("applying brightness config to abstract %s\n", o.AbstractID)
+	return o.SetConfig(config.Config, stripeIDs...)
+}
+
+func (o *LEDInfectedAbstract) SetConfigSpeed(speed int8, stripeIDs ...string) error {
+	config := o.GetArduinoStripeConfig()
+	if config == nil {
+		fmt.Printf("skipping speed config for %s, no arduino online\n", o.AbstractID)
+	}
+	config.Config.MovementSpeed = speed
+	fmt.Printf("applying speed config to abstract %s\n", o.AbstractID)
+	return o.SetConfig(config.Config, stripeIDs...)
+}
+
+func (o *LEDInfectedAbstract) SetConfigStretch(stretch int8, stripeIDs ...string) error {
+	config := o.GetArduinoStripeConfig()
+	if config == nil {
+		fmt.Printf("skipping stretch config for %s, no arduino online\n", o.AbstractID)
+	}
+	config.Config.Stretch = stretch
+	fmt.Printf("applying stretch config to abstract %s\n", o.AbstractID)
+	return o.SetConfig(config.Config, stripeIDs...)
+}
+
+func (o *LEDInfectedAbstract) SetConfigOverlay(overlay uint8, stripeIDs ...string) error {
+	config := o.GetArduinoStripeConfig()
+	if config == nil {
+		fmt.Printf("skipping overlay config for %s, no arduino online\n", o.AbstractID)
+	}
+	config.Config.OverlayRatio = overlay
+	fmt.Printf("applying overlay config to abstract %s\n", o.AbstractID)
+	return o.SetConfig(config.Config, stripeIDs...)
+}
+
 func (o *LEDInfectedAbstract) SetPalette(palette *LEDInfectedArduinoConfigStripePalette, stripeIDs ...string) error {
 	selectedStripes := []LedInfectedAbstractStripeArduinoSetup{}
 
@@ -340,6 +381,14 @@ func (o *LEDInfectedAbstract) SaveMulti(stripeIDs ...string) error {
 	return nil
 }
 
+func (o *LEDInfectedAbstract) GetArduinoStripeConfig() *LEDInfectedArduinoStripeConfig {
+	for _, s := range o.Stripes {
+		if s.Config != nil {
+			return s.Config
+		}
+	}
+	return nil
+}
 func (o *LEDInfectedAbstractStripe) SetSetup(setup *LEDInfectedAbstractStripeSetup) error {
 	o.Setup = setup
 	return nil

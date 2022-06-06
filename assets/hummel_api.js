@@ -1434,27 +1434,27 @@ class ActCtrlView {
     }
 
     show() {
-        this.actSelectContainer.innerHTML = "";
-        for (let i = 0; i < app.ledInfected.actList.objects.length; i++) {
-            if (app.ledInfected.liveAct != null) {
-                if (app.ledInfected.liveAct.act_id == app.ledInfected.actList.objects[i].config.act_id) {
-                    this.selectAct(app.ledInfected.actList.objects[i])
-
-                }
-            }
-            this.actSelectContainer.appendChild(app.ledInfected.actList.objects[i].getButtonHTMLElement());
-        }
-        //   this.refreshAct()
-
-        this.viewPort.style.animation = "fadeInEffect 1s";
-        this.viewPort.style.display = "block";
+        // this.actSelectContainer.innerHTML = "";
+        // for (let i = 0; i < app.ledInfected.actList.objects.length; i++) {
+        //     if (app.ledInfected.liveAct != null) {
+        //         if (app.ledInfected.liveAct.act_id == app.ledInfected.actList.objects[i].config.act_id) {
+        //             this.selectAct(app.ledInfected.actList.objects[i])
+        //
+        //         }
+        //     }
+        //     this.actSelectContainer.appendChild(app.ledInfected.actList.objects[i].getButtonHTMLElement());
+        // }
+        // //   this.refreshAct()
+        //
+        // this.viewPort.style.animation = "fadeInEffect 1s";
+        // this.viewPort.style.display = "block";
     }
 
     selectAct(act) {
-        this.linkedAct = act;
-        this.setAutoUpdate(1);
-
-        this.refreshAct();
+        // this.linkedAct = act;
+        // this.setAutoUpdate(1);
+        //
+        // this.refreshAct();
     }
 
     refreshAct() {
@@ -1527,12 +1527,12 @@ class ActCtrlView {
     }
 
     hide() {
-        this.viewPort.style.animation = "fadeOutEffect 1s";
-        let that = this;
-        // this is to hide and remove the stripe object it after the fade out
-        setTimeout(function () {
-            that.viewPort.style.display = "none";
-        }, 900);
+        // this.viewPort.style.animation = "fadeOutEffect 1s";
+        // let that = this;
+        // // this is to hide and remove the stripe object it after the fade out
+        // setTimeout(function () {
+        //     that.viewPort.style.display = "none";
+        // }, 900);
     }
 }
 

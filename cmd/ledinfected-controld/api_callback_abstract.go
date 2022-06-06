@@ -106,6 +106,86 @@ func (o *apiServer) setAbstractStripeConfigMultiCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, "{}")
 }
 
+func (o *apiServer) setAbstractStripeConfigBrightnessMultiCallback(c *gin.Context) {
+	a, err := o.getCallbackAbstract(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	type multiSelect struct {
+		StripeIDs  []string `json:"stripe_ids"`
+		Brightness uint8    `json:"brightness"`
+	}
+	data := &multiSelect{}
+	if err := c.BindJSON(data); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	a.SetConfigBrightness(data.Brightness, data.StripeIDs...)
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setAbstractStripeConfigSpeedMultiCallback(c *gin.Context) {
+	a, err := o.getCallbackAbstract(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	type multiSelect struct {
+		StripeIDs []string `json:"stripe_ids"`
+		Speed     int8     `json:"speed"`
+	}
+	data := &multiSelect{}
+	if err := c.BindJSON(data); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	a.SetConfigSpeed(data.Speed, data.StripeIDs...)
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setAbstractStripeConfigStretchMultiCallback(c *gin.Context) {
+	a, err := o.getCallbackAbstract(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	type multiSelect struct {
+		StripeIDs []string `json:"stripe_ids"`
+		Stretch   int8     `json:"stretch"`
+	}
+	data := &multiSelect{}
+	if err := c.BindJSON(data); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	a.SetConfigStretch(data.Stretch, data.StripeIDs...)
+	c.JSON(http.StatusOK, "{}")
+}
+
+func (o *apiServer) setAbstractStripeConfigOverlayMultiCallback(c *gin.Context) {
+	a, err := o.getCallbackAbstract(c)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+	type multiSelect struct {
+		StripeIDs []string `json:"stripe_ids"`
+		Overlay   uint8    `json:"overlay"`
+	}
+	data := &multiSelect{}
+	if err := c.BindJSON(data); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	a.SetConfigOverlay(data.Overlay, data.StripeIDs...)
+	c.JSON(http.StatusOK, "{}")
+}
+
 func (o *apiServer) setAbstractStripePaletteByIDCallback(c *gin.Context) {
 	_, s, err := o.getCallbackAbstractAndStripe(c)
 	if err != nil {
@@ -154,7 +234,7 @@ func (o *apiServer) setAbstractStripeSaveMultiCallback(c *gin.Context) {
 		return
 	}
 	type multiSelect struct {
-		StripeIDs []string                                         `json:"stripe_ids"`
+		StripeIDs []string `json:"stripe_ids"`
 	}
 	data := &multiSelect{}
 	if err := c.BindJSON(data); err != nil {

@@ -64,6 +64,7 @@ func (o *apiServer) startActCallback(c *gin.Context) {
 
 	o.LiveAct = a
 	if err := o.LiveAct.Start(); err != nil {
+		fmt.Printf("ERROR start: %s\n", err)
 		c.String(http.StatusBadRequest, jsonError(err))
 		return
 	}

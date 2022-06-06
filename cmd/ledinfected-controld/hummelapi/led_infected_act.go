@@ -66,7 +66,7 @@ func linkAct(act *LEDInfectedAct) {
 	for _, s := range act.Scenes {
 		for _, e := range s.Effects {
 			for _, p := range presets {
-				if p.PresetID == e.PresetID {
+				if p.PresetID == e.EffectPresetID {
 					e.preset = p
 				}
 			}
