@@ -201,6 +201,54 @@ class AbstractList {
             }
         }
     }
+
+    async sendAbstractSpeed(abstract_id, stripe_ids, value) {
+        if (stripe_ids.length == 0) {
+            alert("no stripes selected")
+            return;
+        }
+
+        let obj = new Object();
+        obj.apiPath = "/abstract/" + abstract_id + "/stripes/config-speed";
+
+        obj.config = new Object();
+        obj.config.stripe_ids = stripe_ids;
+        obj.config.speed = parseInt(value);
+
+        await app.connection.post(obj.apiPath, JSON.stringify(obj.config));
+    }
+
+    async sendAbstractStretch(abstract_id, stripe_ids, value) {
+        if (stripe_ids.length == 0) {
+            alert("no stripes selected")
+            return;
+        }
+
+        let obj = new Object();
+        obj.apiPath = "/abstract/" + abstract_id + "/stripes/config-stretch";
+
+        obj.config = new Object();
+        obj.config.stripe_ids = stripe_ids;
+        obj.config.stretch = parseInt(value);
+
+        await app.connection.post(obj.apiPath, JSON.stringify(obj.config));
+    }
+
+    async sendAbstractOverlay(abstract_id, stripe_ids, value) {
+        if (stripe_ids.length == 0) {
+            alert("no stripes selected")
+            return;
+        }
+
+        let obj = new Object();
+        obj.apiPath = "/abstract/" + abstract_id + "/stripes/config-overlay";
+
+        obj.config = new Object();
+        obj.config.stripe_ids = stripe_ids;
+        obj.config.overlay = parseInt(value);
+
+        await app.connection.post(obj.apiPath, JSON.stringify(obj.config));
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +308,7 @@ class AbstractObject {
         for (let i = 0; i < this.config.stripes.length; i++) {
             data.stripe_ids.push(this.config.stripes[i].stripe_id);
         }
-        app.connection.post("/abstract/"+ this.id + "/stripes/config-brightness", JSON.stringify(data));
+        app.connection.post("/abstract/" + this.id + "/stripes/config-brightness", JSON.stringify(data));
     }
 
     getSelectedStripes() {
@@ -833,7 +881,7 @@ class ActSceneObject {
         this.scenesViewJumpButton.style.paddingRight = "16px";
         this.scenesViewJumpButton.innerHTML = "Jump";
         this.scenesViewJumpButton.addEventListener("click", function () {
-            app.connection.post("/act/"+that.parent.id+"/scene/"+that.id+"/jump")
+            app.connection.post("/act/" + that.parent.id + "/scene/" + that.id + "/jump")
         })
         this.scenesViewElement.appendChild(this.scenesViewJumpButton);
 
@@ -948,24 +996,15 @@ class ActSceneEffectObject {
         this.config = config;
         if (this.config == null) {
             this.config = new Object;
+            this.config.effect_type = "";
             this.config.preset_id = "";
             this.config.abstract_id = "";
+            this.config.effect_value = 0;
             this.config.stripe_ids = [];
         }
 
         this.sceneEditView = document.createElement("div");
         this.sceneEditView.classList.add("flex_row");
-        this.sceneEditViewPresetID = document.createElement("select");
-        for (let i = 0; i < app.ledInfected.presetList.objects.length; i++) {
-            let option = document.createElement("option");
-            option.value = app.ledInfected.presetList.objects[i].id;
-            option.innerHTML = app.ledInfected.presetList.objects[i].id + " (" + app.ledInfected.presetList.objects[i].config.abstract_id + ")";
-            this.sceneEditViewPresetID.appendChild(option);
-        }
-        this.sceneEditViewPresetID.classList.add("scene_effect_edit_preset_id", "act_dropdown", "act_theme");
-        this.sceneEditViewPresetID.style.width = "150px";
-        this.sceneEditViewPresetID.value = this.config.preset_id;
-        this.sceneEditView.appendChild(this.sceneEditViewPresetID);
 
         this.sceneEditViewAbstractID = document.createElement("select");
         this.sceneEditViewAbstractID.style.width = "100px";
@@ -999,7 +1038,7 @@ class ActSceneEffectObject {
         this.sceneEditViewStripeIDs = document.createElement("select");
         this.sceneEditViewStripeIDs.multiple = true;
         this.sceneEditViewStripeIDs.classList.add("scene_effect_edit_stipe_ids", "act_dropdown", "act_theme");
-        this.sceneEditViewStripeIDs.style.height = "40px";
+        this.sceneEditViewStripeIDs.style.height = "48px";
         this.sceneEditViewStripeIDs.style.width = "100px";
         updateStripesOptions();
         let abstract = app.ledInfected.abstractList.getAbstract(that.config.abstract_id);
@@ -1008,8 +1047,110 @@ class ActSceneEffectObject {
                 this.sceneEditViewStripeIDs.options[i].selected = this.config.stripe_ids.indexOf(this.sceneEditViewStripeIDs.options[i].value) >= 0;
             }
         }
-
         this.sceneEditView.appendChild(this.sceneEditViewStripeIDs);
+
+
+        this.sceneEditViewEffectType = document.createElement("select");
+        let optionEntries = ["preset", "speed", "stretch", "overlay"];
+        for (let i = 0; i < optionEntries.length; i++) {
+            let option = document.createElement("option");
+            option.value = optionEntries[i];
+            option.innerHTML = optionEntries[i];
+            this.sceneEditViewEffectType.appendChild(option);
+        }
+        this.sceneEditViewEffectType.classList.add("scene_effect_edit_effect_type", "act_dropdown", "act_theme");
+        this.sceneEditViewEffectType.style.width = "50px";
+        if (this.config.effect_type == "") {
+            this.sceneEditViewEffectType.value = "preset";
+        } else {
+            this.sceneEditViewEffectType.value = this.config.effect_type;
+        }
+        this.sceneEditView.appendChild(this.sceneEditViewEffectType);
+        this.sceneEditViewEffectType.addEventListener("change", function () {
+            that.updateEffectTypeView();
+        })
+
+
+        this.sceneEditViewPresetID = document.createElement("select");
+        for (let i = 0; i < app.ledInfected.presetList.objects.length; i++) {
+            let option = document.createElement("option");
+            option.value = app.ledInfected.presetList.objects[i].id;
+            option.innerHTML = app.ledInfected.presetList.objects[i].id + " (" + app.ledInfected.presetList.objects[i].config.abstract_id + ")";
+            this.sceneEditViewPresetID.appendChild(option);
+        }
+        this.sceneEditViewPresetID.classList.add("scene_effect_edit_preset_id", "act_dropdown", "act_theme");
+        this.sceneEditViewPresetID.style.width = "100px";
+        this.sceneEditViewPresetID.value = this.config.preset_id;
+        this.sceneEditView.appendChild(this.sceneEditViewPresetID);
+
+        this.sceneEditViewEffectSpeedSelect = document.createElement("select");
+
+        function appendSpeedOption(value, label) {
+            let option = document.createElement("option");
+            option.value = value;
+            option.innerHTML = label;
+            that.sceneEditViewEffectSpeedSelect.appendChild(option);
+        }
+
+        appendSpeedOption(0, "STOP");
+        appendSpeedOption(-16, "BPM / 16");
+        appendSpeedOption(-8, "BPM / 8");
+        appendSpeedOption(-4, "BPM / 4");
+        appendSpeedOption(-2, "BPM / 2");
+        appendSpeedOption(1, "BPM * 1");
+        appendSpeedOption(2, "BPM * 2");
+        appendSpeedOption(4, "BPM * 4");
+        appendSpeedOption(8, "BPM * 8");
+        appendSpeedOption(16, "BPM * 16");
+        this.sceneEditViewEffectSpeedSelect.classList.add("scene_effect_edit_effect_speed", "act_dropdown", "act_theme");
+        this.sceneEditViewEffectSpeedSelect.style.width = "100px";
+        if (this.config.effect_type == "speed") {
+            this.sceneEditViewEffectSpeedSelect.value = this.config.effect_value;
+        } else {
+            this.sceneEditViewEffectSpeedSelect.value = 1;
+        }
+        this.sceneEditView.appendChild(this.sceneEditViewEffectSpeedSelect);
+
+
+        this.sceneEditViewEffectStretchSelect = document.createElement("select");
+
+        function appendStretchOption(value, label) {
+            let option = document.createElement("option");
+            option.value = value;
+            option.innerHTML = label;
+            that.sceneEditViewEffectStretchSelect.appendChild(option);
+        }
+
+        appendStretchOption(0, "FLAT");
+        appendStretchOption(-4, "4 Stretch");
+        appendStretchOption(-2, "2 Stretch");
+        appendStretchOption(-1, "1 Stretch");
+        appendStretchOption(1, "1 Stretch");
+        appendStretchOption(2, "1/2 Stretch");
+        appendStretchOption(4, "1/4 Stretch");
+        this.sceneEditViewEffectStretchSelect.classList.add("scene_effect_edit_effect_stretch", "act_dropdown", "act_theme");
+        this.sceneEditViewEffectStretchSelect.style.width = "100px";
+        if (this.config.effect_type == "stretch") {
+            this.sceneEditViewEffectStretchSelect.value = this.config.effect_value;
+        } else {
+            this.sceneEditViewEffectStretchSelect.value = 1;
+        }
+        this.sceneEditView.appendChild(this.sceneEditViewEffectStretchSelect);
+
+        this.sceneEditViewEffectOverlayValue = document.createElement("input");
+        this.sceneEditViewEffectOverlayValue.setAttribute("type", "number");
+        this.sceneEditViewEffectOverlayValue.classList.add("scene_effect_edit_effect_overlay", "act_theme");
+        this.sceneEditViewEffectOverlayValue.style.width = "100px";
+        this.sceneEditViewEffectOverlayValue.min = 0;
+        this.sceneEditViewEffectOverlayValue.max = 255;
+        if (this.config.effect_type == "overlay") {
+            this.sceneEditViewEffectOverlayValue.value = this.config.effect_value;
+        } else {
+            this.sceneEditViewEffectOverlayValue.value = 0;
+        }
+        this.sceneEditView.appendChild(this.sceneEditViewEffectOverlayValue);
+
+        this.updateEffectTypeView();
 
         // this.sceneEditViewStripeIDs = document.createElement("div");
         // this.sceneEditViewStripeIDs.classList.add("act_theme");
@@ -1030,22 +1171,62 @@ class ActSceneEffectObject {
 
     }
 
+    updateEffectTypeView() {
+        let effectType = this.sceneEditViewEffectType.value;
+        console.log(effectType);
+        if (effectType == "preset") {
+            this.sceneEditViewEffectStretchSelect.setAttribute("hidden", true);
+            this.sceneEditViewEffectSpeedSelect.setAttribute("hidden", true);
+            this.sceneEditViewEffectOverlayValue.setAttribute("hidden", true);
+
+            this.sceneEditViewPresetID.removeAttribute("hidden");
+        } else if (effectType == "speed") {
+            this.sceneEditViewPresetID.setAttribute("hidden", true);
+            this.sceneEditViewEffectStretchSelect.setAttribute("hidden", true);
+            this.sceneEditViewEffectOverlayValue.setAttribute("hidden", true);
+
+            this.sceneEditViewEffectSpeedSelect.removeAttribute("hidden");
+        } else if (effectType == "stretch") {
+            this.sceneEditViewPresetID.setAttribute("hidden", true);
+            this.sceneEditViewEffectSpeedSelect.setAttribute("hidden", true);
+            this.sceneEditViewEffectOverlayValue.setAttribute("hidden", true);
+
+            this.sceneEditViewEffectStretchSelect.removeAttribute("hidden");
+        } else if (effectType == "overlay") {
+            this.sceneEditViewPresetID.setAttribute("hidden", true);
+            this.sceneEditViewEffectStretchSelect.setAttribute("hidden", true);
+            this.sceneEditViewEffectSpeedSelect.setAttribute("hidden", true);
+
+            this.sceneEditViewEffectOverlayValue.removeAttribute("hidden");
+            this.sceneEditViewEffectOverlayValue.min = 0;
+            this.sceneEditViewEffectOverlayValue.max = 255;
+        }
+    }
+
     updateConfig(config) {
         this.config = config;
     }
 
     async applyEffect() {
-        const preset = app.ledInfected.presetList.getPresetByID(this.config.preset_id);
-        if (preset == null) {
-            alert("preset not found: " + this.config.preset_id);
-            return;
-        }
-        if (preset.config.config != null) {
-            await sendAbstractConfig(this.config.abstract_id, this.config.stripe_ids, preset.config.config);
-        }
-        console.log(preset.config)
-        if (preset.config.palette != null) {
-            await sendAbstractPalette(this.config.abstract_id, this.config.stripe_ids, preset.config.palette);
+        if (this.config.effect_type == "preset") {
+            const preset = app.ledInfected.presetList.getPresetByID(this.config.preset_id);
+            if (preset == null) {
+                alert("preset not found: " + this.config.preset_id);
+                return;
+            }
+            if (preset.config.config != null) {
+                await sendAbstractConfig(this.config.abstract_id, this.config.stripe_ids, preset.config.config);
+            }
+            console.log(preset.config)
+            if (preset.config.palette != null) {
+                await sendAbstractPalette(this.config.abstract_id, this.config.stripe_ids, preset.config.palette);
+            }
+        } else if (this.config.effect_type == "speed") {
+            app.ledInfected.abstractList.sendAbstractSpeed(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
+        } else if (this.config.effect_type == "stretch") {
+            app.ledInfected.abstractList.sendAbstractStretch(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
+        } else if (this.config.effect_type == "overlay") {
+            app.ledInfected.abstractList.sendAbstractOverlay(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
         }
     }
 
@@ -1259,9 +1440,9 @@ class Overview {
         this.currentBPM = document.createElement("input");
         this.currentBPM.classList.add("act_button", "act_theme");
         this.currentBPM.setAttribute("type", "number");
-        this.currentBPM.min="4";
-        this.currentBPM.max="200";
-        this.currentBPM.value="120";
+        this.currentBPM.min = "4";
+        this.currentBPM.max = "200";
+        this.currentBPM.value = "120";
         this.currentBPM.style.right = "0px";
         this.currentBPM.style.top = "48px";
         this.currentBPM.style.paddingLeft = "16px";
@@ -1269,12 +1450,12 @@ class Overview {
         this.currentBPM.style.position = "absolute";
         this.currentBPM.style.zIndex = 3;
         this.viewPort.appendChild(this.currentBPM);
-        this.currentBPM.addEventListener("click", function(){
+        this.currentBPM.addEventListener("click", function () {
             app.controls.actView.actBPM.value = that.currentBPM.value;
             that.updateBPM();
         })
         // Execute a function when the user presses a key on the keyboard
-        this.currentBPM.addEventListener("keypress", function(event) {
+        this.currentBPM.addEventListener("keypress", function (event) {
             // If the user presses the "Enter" key on the keyboard
             if (event.key === "Enter") {
                 // Cancel the default action, if needed
@@ -1289,7 +1470,7 @@ class Overview {
         this.addWindAnimation();
     }
 
-    updateBPM(){
+    updateBPM() {
         let bpmData = new Object();
         bpmData.bpm = parseInt(this.currentBPM.value);
         console.log(bpmData);
@@ -1590,7 +1771,7 @@ class ActView {
             app.overview.updateBPM();
         });
         // Execute a function when the user presses a key on the keyboard
-        this.actBPM.addEventListener("keypress", function(event) {
+        this.actBPM.addEventListener("keypress", function (event) {
             // If the user presses the "Enter" key on the keyboard
             if (event.key === "Enter") {
                 // Cancel the default action, if needed
@@ -1602,7 +1783,7 @@ class ActView {
 
         this.actBrightness = this.viewPort.getElementsByClassName('act_brightness_select')[0];
         this.actBrightness.addEventListener('input', function () {
-            for ( let i = 0; app.ledInfected.abstractList.objects.length; i++) {
+            for (let i = 0; app.ledInfected.abstractList.objects.length; i++) {
                 app.ledInfected.abstractList.objects[i].setBrightness(that.actBrightness.value)
             }
         });
@@ -1776,7 +1957,17 @@ class ActView {
                 }
             }
 
-            newEffect.preset_id = effectsHTML[i].getElementsByClassName("scene_effect_edit_preset_id")[0].value;
+            newEffect.effect_type = effectsHTML[i].getElementsByClassName("scene_effect_edit_effect_type")[0].value;
+
+            if (newEffect.effect_type == "preset") {
+                newEffect.preset_id = effectsHTML[i].getElementsByClassName("scene_effect_edit_preset_id")[0].value;
+            } else if (newEffect.effect_type == "speed") {
+                newEffect.effect_value = parseInt(effectsHTML[i].getElementsByClassName("scene_effect_edit_effect_speed")[0].value);
+            } else if (newEffect.effect_type == "stretch") {
+                newEffect.effect_value = parseInt(effectsHTML[i].getElementsByClassName("scene_effect_edit_effect_stretch")[0].value);
+            } else if (newEffect.effect_type == "overlay") {
+                newEffect.effect_value = parseInt(effectsHTML[i].getElementsByClassName("scene_effect_edit_effect_overlay")[0].value);
+            }
             sceneConfig.effects.push(newEffect);
         }
 
@@ -3239,7 +3430,7 @@ function createHummelStyle(hummelID, x, y) {
     return style;
 }
 
-function slist (target) {
+function slist(target) {
     // (A) SET CSS + GET ALL LIST ITEMS
     target.classList.add("slist");
     let items = target.getElementsByTagName("li"), current = null;
@@ -3253,13 +3444,17 @@ function slist (target) {
         i.ondragstart = (ev) => {
             current = i;
             for (let it of items) {
-                if (it != current) { it.classList.add("hint"); }
+                if (it != current) {
+                    it.classList.add("hint");
+                }
             }
         };
 
         // (B3) DRAG ENTER - RED HIGHLIGHT DROPZONE
         i.ondragenter = (ev) => {
-            if (i != current) { i.classList.add("active"); }
+            if (i != current) {
+                i.classList.add("active");
+            }
         };
 
         // (B4) DRAG LEAVE - REMOVE RED HIGHLIGHT
@@ -3268,22 +3463,30 @@ function slist (target) {
         };
 
         // (B5) DRAG END - REMOVE ALL HIGHLIGHTS
-        i.ondragend = () => { for (let it of items) {
-            it.classList.remove("hint");
-            it.classList.remove("active");
-        }};
+        i.ondragend = () => {
+            for (let it of items) {
+                it.classList.remove("hint");
+                it.classList.remove("active");
+            }
+        };
 
         // (B6) DRAG OVER - PREVENT THE DEFAULT "DROP", SO WE CAN DO OUR OWN
-        i.ondragover = (evt) => { evt.preventDefault(); };
+        i.ondragover = (evt) => {
+            evt.preventDefault();
+        };
 
         // (B7) ON DROP - DO SOMETHING
         i.ondrop = (evt) => {
             evt.preventDefault();
             if (i != current) {
                 let currentpos = 0, droppedpos = 0;
-                for (let it=0; it<items.length; it++) {
-                    if (current == items[it]) { currentpos = it; }
-                    if (i == items[it]) { droppedpos = it; }
+                for (let it = 0; it < items.length; it++) {
+                    if (current == items[it]) {
+                        currentpos = it;
+                    }
+                    if (i == items[it]) {
+                        droppedpos = it;
+                    }
                 }
                 if (currentpos < droppedpos) {
                     i.parentNode.insertBefore(current, i.nextSibling);
