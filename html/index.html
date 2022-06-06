@@ -116,6 +116,17 @@
                     none
                 </div>
             </div>
+            <div class="scene_bpm_div flex_row">
+                <div class="act_theme" style="padding-left: 8px; padding-right: 4px;">BPM:</div>
+                <input class="act_bpm_select act_theme" type="number" min="4" max="200" style="padding-left: 4px; padding-right:  8px;">
+            </div>
+            <div class="slide_container" style="padding-top: 8px; padding-bottom: 8px;">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/brightness.png">
+                    <input class="slider act_brightness_select"
+                           type="range" min="0" max="256" step="8" value="128">
+                </div>
+            </div>
             <div class="act_view_actions flex_row" style="justify-content: space-between;">
                 <button class="act_view_action_start act_button act_theme"
                         style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">START
@@ -137,10 +148,6 @@
         <div class="frame">
             <div class="frame">
                 <div class="act_theme">Live Scene</div>
-                <div class="scene_bpm_div flex_row">
-                    <div class="act_theme" style="padding-right: 8px">BPM:</div>
-                    <input class="scene_bpm_select act_theme" type="number" min="4" max="200">
-                </div>
                 <div class="act_view_live_scene">
 
                 </div>

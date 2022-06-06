@@ -252,6 +252,17 @@ class AbstractObject {
         location.reload();
     }
 
+    setBrightness(value) {
+        let brightness = parseInt(value);
+        let data = new Object();
+        data.brightness = brightness;
+        data.stripe_ids = [];
+        for (let i = 0; i < this.config.stripes.length; i++) {
+            data.stripe_ids.push(this.config.stripes[i].stripe_id);
+        }
+        app.connection.post("/abstract/"+ this.id + "/stripes/config-brightness", JSON.stringify(data));
+    }
+
     getSelectedStripes() {
         return this.controlObject.getSelectedStripes()
     }
@@ -1259,7 +1270,7 @@ class Overview {
         this.currentBPM.style.zIndex = 3;
         this.viewPort.appendChild(this.currentBPM);
         this.currentBPM.addEventListener("click", function(){
-            app.controls.actView.liveSceneBPM.value = that.currentBPM.value;
+            app.controls.actView.actBPM.value = that.currentBPM.value;
             that.updateBPM();
         })
         // Execute a function when the user presses a key on the keyboard
@@ -1268,7 +1279,7 @@ class Overview {
             if (event.key === "Enter") {
                 // Cancel the default action, if needed
                 event.preventDefault();
-                app.controls.actView.liveSceneBPM.value = that.currentBPM.value;
+                app.controls.actView.actBPM.value = that.currentBPM.value;
                 that.updateBPM();
             }
         });
@@ -1573,6 +1584,29 @@ class ActView {
         this.selectedActStatusState = this.viewPort.getElementsByClassName('act_view_status_state')[0];
         this.selectedActStatusActiveSceneID = this.viewPort.getElementsByClassName('act_view_status_active_scene_id')[0];
 
+        this.actBPM = this.viewPort.getElementsByClassName('act_bpm_select')[0];
+        this.actBPM.addEventListener('click', function () {
+            app.overview.currentBPM.value = that.actBPM.value;
+            app.overview.updateBPM();
+        });
+        // Execute a function when the user presses a key on the keyboard
+        this.actBPM.addEventListener("keypress", function(event) {
+            // If the user presses the "Enter" key on the keyboard
+            if (event.key === "Enter") {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                app.overview.currentBPM.value = that.actBPM.value;
+                app.overview.updateBPM();
+            }
+        });
+
+        this.actBrightness = this.viewPort.getElementsByClassName('act_brightness_select')[0];
+        this.actBrightness.addEventListener('input', function () {
+            for ( let i = 0; app.ledInfected.abstractList.objects.length; i++) {
+                app.ledInfected.abstractList.objects[i].setBrightness(that.actBrightness.value)
+            }
+        });
+
         this.selectedActActionButtonStart = this.viewPort.getElementsByClassName('act_view_action_start')[0];
         this.selectedActActionButtonStart.addEventListener('click', async function () {
             if (that.linkedAct == null) {
@@ -1636,21 +1670,6 @@ class ActView {
         });
 
         this.liveSceneDiv = this.viewPort.getElementsByClassName('act_view_live_scene')[0];
-        this.liveSceneBPM = this.viewPort.getElementsByClassName('scene_bpm_select')[0];
-        this.liveSceneBPM.addEventListener('click', function () {
-            app.overview.currentBPM.value = that.liveSceneBPM.value;
-            app.overview.updateBPM();
-        });
-        // Execute a function when the user presses a key on the keyboard
-        this.liveSceneBPM.addEventListener("keypress", function(event) {
-            // If the user presses the "Enter" key on the keyboard
-            if (event.key === "Enter") {
-                // Cancel the default action, if needed
-                event.preventDefault();
-                app.overview.currentBPM.value = that.liveSceneBPM.value;
-                app.overview.updateBPM();
-            }
-        });
         this.scenesView = this.viewPort.getElementsByClassName('act_view_scenes')[0];
 
         this.sceneEditView = this.viewPort.getElementsByClassName('act_view_edit_scene')[0];
@@ -1820,7 +1839,7 @@ class ActView {
         }
 
         // update the bpm
-        this.liveSceneBPM.value = app.overview.currentBPM.value;
+        this.actBPM.value = app.overview.currentBPM.value;
 
         this.refreshAct()
 
