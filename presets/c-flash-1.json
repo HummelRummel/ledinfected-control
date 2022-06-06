@@ -1,1 +1,1 @@
-{"preset_id":"c-flash-1","name":"Flash when on is on","abstract_id":"flower1","config":{"brightness":128,"movement_speed":-16,"stretch":-22,"overlay_ratio":255,"sync":0},"palette":null}
+{"preset_id":"c-flash-1","name":"Flash when on is on","abstract_id":"flower1","config":{"brightness":128,"movement_speed":-16,"stretch":0,"overlay_ratio":0,"sync":0},"palette":null}
