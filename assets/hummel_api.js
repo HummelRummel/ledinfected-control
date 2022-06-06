@@ -763,6 +763,13 @@ class ActObject {
         }
     }
 
+    setBrightness(value) {
+        let brightness = parseInt(value);
+        let data = new Object();
+        data.brightness = brightness;
+        app.connection.post("/act/" + this.id + "/brightness", JSON.stringify(data));
+    }
+
     getScene(sceneID) {
         if (this.scenes != null) {
             for (let i = 0; i < this.scenes.length; i++) {
@@ -1811,9 +1818,12 @@ class ActView {
 
         this.actBrightness = this.viewPort.getElementsByClassName('act_brightness_select')[0];
         this.actBrightness.addEventListener('input', function () {
-            for (let i = 0; app.ledInfected.abstractList.objects.length; i++) {
-                app.ledInfected.abstractList.objects[i].setBrightness(that.actBrightness.value)
+            if (that.linkedAct != null) {
+                that.linkedAct.setBrightness(that.actBrightness.value)
             }
+            // for (let i = 0; app.ledInfected.abstractList.objects.length; i++) {
+            //     app.ledInfected.abstractList.objects[i].setBrightness(that.actBrightness.value)
+            // }
         });
 
         this.selectedActActionButtonStart = this.viewPort.getElementsByClassName('act_view_action_start')[0];

@@ -18,6 +18,7 @@ type (
 		Scenes       []*LEDInfectedScene      `json:"scenes"`
 		Triggers     []*LEDInfectedActTrigger `json:"triggers"`
 		Status       *LEDInfectedActStatus    `json:"status"`
+		Brightness   uint8                    `json:"brightness"`
 
 		getAllAbstracts func() []*LEDInfectedAbstract
 	}
@@ -129,6 +130,16 @@ func UpdateAct(acts []*LEDInfectedAct, act *LEDInfectedAct) ([]*LEDInfectedAct, 
 	// update the array
 	acts = append(acts, act)
 	return acts, nil
+}
+
+func (o *LEDInfectedAct) SetActBrightness(brightness uint8) {
+	o.Brightness = brightness
+	for _, a := range o.getAllAbstracts() {
+		a.setOverwriteBrightness(brightness)
+		if o.Status.State != "NOT_LIVE" {
+			a.SetConfigBrightness(brightness, a.getAllStripeIDs()...)
+		}
+	}
 }
 
 func (o *LEDInfectedAct) UpdateScene(sceneConfig *LEDInfectedScene) {

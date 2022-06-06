@@ -15,7 +15,8 @@ type (
 		Setup      *LEDInfectedAbstractGlobalSetup `json:"setup"`       // setup of the LED abstract (configurable)
 		Stripes    []*LEDInfectedAbstractStripe    `json:"stripes"`     // stripes of the LED abstract
 
-		linkedArduinos []*LEDInfectedArduino
+		overwriteBrightness *uint8
+		linkedArduinos      []*LEDInfectedArduino
 	}
 	LEDInfectedAbstractGlobalInfo struct {
 		Name    string         `json:"name"`     // human readable name of the abstract
@@ -123,7 +124,13 @@ func (o *LEDInfectedAbstract) UpdateArduino(arduino *LEDInfectedArduino) error {
 	}
 	return nil
 }
-
+func (o *LEDInfectedAbstract) getAllStripeIDs() []string {
+	var stripeIDs []string
+	for _, s := range o.Stripes {
+		stripeIDs = append(stripeIDs, s.StripeID)
+	}
+	return stripeIDs
+}
 func (o *LEDInfectedAbstract) ResetArduino(arduino *LEDInfectedArduino) error {
 	for _, stripe := range o.Stripes {
 		for _, arduinoStripeSetup := range stripe.Setup.ArduinoStripes {
@@ -251,11 +258,18 @@ func (o *LEDInfectedAbstract) SetConfig(config *LEDInfectedArduinoConfigStripeCo
 				selectedStripes = append(selectedStripes[:i], selectedStripes[i+1:]...)
 			}
 		}
+		if o.overwriteBrightness != nil {
+			config.Brightness = *o.overwriteBrightness
+		}
 		if err := arduino.connection.StripeSetConfig(stripeMask, config); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func (o *LEDInfectedAbstract) setOverwriteBrightness(brightness uint8) {
+	o.overwriteBrightness = &brightness
 }
 
 func (o *LEDInfectedAbstract) SetConfigBrightness(brightness uint8, stripeIDs ...string) error {
@@ -398,6 +412,9 @@ func (o *LEDInfectedAbstractStripe) SetSetup(setup *LEDInfectedAbstractStripeSet
 }
 
 func (o *LEDInfectedAbstractStripe) SetConfig(config *LEDInfectedArduinoConfigStripeConfig) error {
+	if o.parent.overwriteBrightness != nil {
+		config.Brightness = *o.parent.overwriteBrightness
+	}
 	for _, s := range o.Setup.ArduinoStripes {
 		if _, stripe := o.parent.getArduinoStripeByID(s.ArduinoID, s.ArduinoStripeID); stripe != nil {
 			if err := stripe.SetConfig(config); err != nil {

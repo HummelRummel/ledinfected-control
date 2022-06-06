@@ -108,6 +108,7 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.POST("/api/act/:ActId/stop", o.stopActCallback)
 	o.engine.POST("/api/act/:ActId/pause", o.pauseActCallback)
 	o.engine.POST("/api/act/:ActId/resume", o.resumeActCallback)
+	o.engine.POST("/api/act/:ActId/brightness", o.setActBrightnessCallback)
 	o.engine.GET("/api/act/:ActId/trigger", o.getAllActTriggersCallback)
 	o.engine.GET("/api/act/:ActId/trigger/:TriggerId", o.getActTriggerCallback)
 	o.engine.POST("/api/act/:ActId/trigger/:TriggerId/trigger", o.triggerActTriggerCallback)

@@ -149,6 +149,25 @@ func (o *apiServer) resumeActCallback(c *gin.Context) {
 	return
 }
 
+func (o *apiServer) setActBrightnessCallback(c *gin.Context) {
+	a, err := o.getCallbackAct(c)
+	if err != nil {
+		c.String(http.StatusNotFound, jsonError(err))
+		return
+	}
+	type multiSelect struct {
+		Brightness uint8 `json:"brightness"`
+	}
+	data := &multiSelect{}
+	if err := c.BindJSON(data); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	a.SetActBrightness(data.Brightness)
+	c.JSON(http.StatusOK, "{}")
+}
+
 func (o *apiServer) getAllActTriggersCallback(c *gin.Context) {
 	a, err := o.getCallbackAct(c)
 	if err != nil {
