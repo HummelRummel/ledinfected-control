@@ -273,6 +273,7 @@ func (o *LEDInfectedAbstract) SetConfigSpeed(speed int8, stripeIDs ...string) er
 	config := o.GetArduinoStripeConfig()
 	if config == nil {
 		fmt.Printf("skipping speed config for %s, no arduino online\n", o.AbstractID)
+		return nil
 	}
 	config.Config.MovementSpeed = speed
 	fmt.Printf("applying speed config to abstract %s\n", o.AbstractID)
@@ -283,6 +284,7 @@ func (o *LEDInfectedAbstract) SetConfigStretch(stretch int8, stripeIDs ...string
 	config := o.GetArduinoStripeConfig()
 	if config == nil {
 		fmt.Printf("skipping stretch config for %s, no arduino online\n", o.AbstractID)
+		return nil
 	}
 	config.Config.Stretch = stretch
 	fmt.Printf("applying stretch config to abstract %s\n", o.AbstractID)
@@ -293,6 +295,7 @@ func (o *LEDInfectedAbstract) SetConfigOverlay(overlay uint8, stripeIDs ...strin
 	config := o.GetArduinoStripeConfig()
 	if config == nil {
 		fmt.Printf("skipping overlay config for %s, no arduino online\n", o.AbstractID)
+		return nil
 	}
 	config.Config.OverlayRatio = overlay
 	fmt.Printf("applying overlay config to abstract %s\n", o.AbstractID)
