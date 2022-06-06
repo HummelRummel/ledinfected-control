@@ -564,7 +564,6 @@ class ArduinoList {
 class ArduinoObject {
     constructor(config) {
         this.config = config;
-
     }
 }
 
@@ -806,6 +805,7 @@ class ActSceneObject {
             that.loadSceneEdit()
         })
         this.scenesViewElement.appendChild(this.scenesViewEditButton);
+
         this.scenesViewApplyButton = document.createElement("button");
         this.scenesViewApplyButton.classList.add("act_theme", "act_button");
         this.scenesViewApplyButton.style.paddingLeft = "16px";
@@ -815,6 +815,16 @@ class ActSceneObject {
             that.applyEffect()
         })
         this.scenesViewElement.appendChild(this.scenesViewApplyButton);
+
+        this.scenesViewJumpButton = document.createElement("button");
+        this.scenesViewJumpButton.classList.add("act_theme", "act_button");
+        this.scenesViewJumpButton.style.paddingLeft = "16px";
+        this.scenesViewJumpButton.style.paddingRight = "16px";
+        this.scenesViewJumpButton.innerHTML = "Jump";
+        this.scenesViewJumpButton.addEventListener("click", function () {
+            app.connection.post("/act/"+that.parent.id+"/scene/"+that.id+"/jump")
+        })
+        this.scenesViewElement.appendChild(this.scenesViewJumpButton);
 
         if (this.parent.config.status.active_scene != null) {
             this.scenesViewEditButton.disabled = true;
@@ -1200,6 +1210,7 @@ class ActSceneTransitionObject {
 /////////////////////////////////////////////////////////////////////////////////////////////
 class Overview {
     constructor() {
+        const that = this;
         this.viewPort = document.createElement("div");
         this.viewPort.classList.add("class_overview_viewport");
         this.actButton = document.createElement("button");
@@ -1234,9 +1245,47 @@ class Overview {
         this.onlineState.innerHTML = "WAITING";
         this.viewPort.appendChild(this.onlineState);
 
+        this.currentBPM = document.createElement("input");
+        this.currentBPM.classList.add("act_button", "act_theme");
+        this.currentBPM.setAttribute("type", "number");
+        this.currentBPM.min="4";
+        this.currentBPM.max="200";
+        this.currentBPM.value="120";
+        this.currentBPM.style.right = "0px";
+        this.currentBPM.style.top = "48px";
+        this.currentBPM.style.paddingLeft = "16px";
+        this.currentBPM.style.paddingRight = "16px";
+        this.currentBPM.style.position = "absolute";
+        this.currentBPM.style.zIndex = 3;
+        this.viewPort.appendChild(this.currentBPM);
+        this.currentBPM.addEventListener("click", function(){
+            app.controls.actView.liveSceneBPM.value = that.currentBPM.value;
+            that.updateBPM();
+        })
+        // Execute a function when the user presses a key on the keyboard
+        this.currentBPM.addEventListener("keypress", function(event) {
+            // If the user presses the "Enter" key on the keyboard
+            if (event.key === "Enter") {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                app.controls.actView.liveSceneBPM.value = that.currentBPM.value;
+                that.updateBPM();
+            }
+        });
+
         document.body.appendChild(this.viewPort);
 
         this.addWindAnimation();
+    }
+
+    updateBPM(){
+        let bpmData = new Object();
+        bpmData.bpm = parseInt(this.currentBPM.value);
+        console.log(bpmData);
+        for (let i = 0; i < app.ledInfected.arduinoList.objects.length; i++) {
+            console.log(app.ledInfected.arduinoList.objects[i])
+            app.connection.post("/arduino/" + app.ledInfected.arduinoList.objects[i].config.global.arduino_id + "/set_bpm", JSON.stringify(bpmData));
+        }
     }
 
     initHummeln() {
@@ -1587,7 +1636,21 @@ class ActView {
         });
 
         this.liveSceneDiv = this.viewPort.getElementsByClassName('act_view_live_scene')[0];
-
+        this.liveSceneBPM = this.viewPort.getElementsByClassName('scene_bpm_select')[0];
+        this.liveSceneBPM.addEventListener('click', function () {
+            app.overview.currentBPM.value = that.liveSceneBPM.value;
+            app.overview.updateBPM();
+        });
+        // Execute a function when the user presses a key on the keyboard
+        this.liveSceneBPM.addEventListener("keypress", function(event) {
+            // If the user presses the "Enter" key on the keyboard
+            if (event.key === "Enter") {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                app.overview.currentBPM.value = that.liveSceneBPM.value;
+                app.overview.updateBPM();
+            }
+        });
         this.scenesView = this.viewPort.getElementsByClassName('act_view_scenes')[0];
 
         this.sceneEditView = this.viewPort.getElementsByClassName('act_view_edit_scene')[0];
@@ -1755,6 +1818,10 @@ class ActView {
             }
             this.actSelectContainer.appendChild(app.ledInfected.actList.objects[i].getButtonHTMLElement());
         }
+
+        // update the bpm
+        this.liveSceneBPM.value = app.overview.currentBPM.value;
+
         this.refreshAct()
 
         this.viewPort.style.animation = "fadeInEffect 1s";
@@ -1951,8 +2018,6 @@ class ControlStripe {
         // });
         this.savePresetBtn = this.viewPort.getElementsByClassName("show_save_preset_btn")[0];
         this.savePresetBtn.addEventListener('click', function () {
-            // MOA meier fixme: for now disable the preset and use it to write data to the arduino
-            // that.showSavePreset();
             that.saveConfig();
         });
         this.presetSelectConfirm = this.viewPort.getElementsByClassName("preset_select_confirm")[0];

@@ -20,7 +20,7 @@
             "radial8",
             "circle"
           ],
-          "preset_id": "idleBBee",
+          "preset_id": "off",
           "sync": false
         },
         {
@@ -28,7 +28,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "heartbeat_red_yellow",
+          "preset_id": "off",
           "sync": false
         },
         {
@@ -36,7 +36,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "heartbeat_red_yellow",
+          "preset_id": "off",
           "sync": false
         },
         {
@@ -44,7 +44,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "heartbeat_red_yellow",
+          "preset_id": "off",
           "sync": false
         },
         {
@@ -52,62 +52,9 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "heartbeat_red_yellow",
+          "preset_id": "off",
           "sync": false
-        }
-      ],
-      "transitions": [
-        {
-          "trigger": {
-            "act_trigger_id": "flower1",
-            "timeout_s": null,
-            "timeout_max_s": null,
-            "remaining_s": null
-          },
-          "scene_id": "all rainbow"
         },
-        {
-          "trigger": {
-            "act_trigger_id": "next",
-            "timeout_s": null,
-            "timeout_max_s": null,
-            "remaining_s": null
-          },
-          "scene_id": "all rainbow"
-        },
-        {
-          "trigger": {
-            "act_trigger_id": "flower2",
-            "timeout_s": null,
-            "timeout_max_s": null,
-            "remaining_s": null
-          },
-          "scene_id": "all rainbow"
-        },
-        {
-          "trigger": {
-            "act_trigger_id": "flower3",
-            "timeout_s": null,
-            "timeout_max_s": null,
-            "remaining_s": null
-          },
-          "scene_id": "all rainbow"
-        },
-        {
-          "trigger": {
-            "act_trigger_id": "flower4",
-            "timeout_s": null,
-            "timeout_max_s": null,
-            "remaining_s": null
-          },
-          "scene_id": "all rainbow"
-        }
-      ]
-    },
-    {
-      "scene_id": "all rainbow",
-      "description": "Hier beginnt alles",
-      "effects": [
         {
           "abstract_id": "pfv1",
           "stripe_ids": [
@@ -121,7 +68,7 @@
             "radial8",
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "relaxed-run",
           "sync": false
         },
         {
@@ -129,7 +76,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "c-flash-1",
           "sync": false
         },
         {
@@ -137,7 +84,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "c-flash-1",
           "sync": false
         },
         {
@@ -145,7 +92,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "c-flash-1",
           "sync": false
         },
         {
@@ -153,7 +100,41 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "c-flash-1",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "moa-intro-s1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 20,
+            "timeout_max_s": 0,
+            "remaining_s": 20
+          },
+          "scene_id": "moa-intro-s1"
+        }
+      ]
+    },
+    {
+      "scene_id": "moa-intro-s1",
+      "description": "Flower1 Flash",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "1blue",
           "sync": false
         }
       ],
@@ -165,7 +146,50 @@
             "timeout_max_s": null,
             "remaining_s": null
           },
+          "scene_id": "moa-intro-s2"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "moa-intro-s2"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 5,
+            "timeout_max_s": 0,
+            "remaining_s": 5
+          },
           "scene_id": "root"
+        }
+      ]
+    },
+    {
+      "scene_id": "moa-intro-s2",
+      "description": "Flower1 On",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "test"
         },
         {
           "trigger": {
@@ -178,13 +202,138 @@
         },
         {
           "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 20,
+            "timeout_max_s": 0,
+            "remaining_s": 20
+          },
+          "scene_id": "moa-intro-s3"
+        }
+      ]
+    },
+    {
+      "scene_id": "moa-intro-s3",
+      "description": "Flower2 Flash",
+      "effects": [
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "1blue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "5blue",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
             "act_trigger_id": "flower2",
             "timeout_s": null,
             "timeout_max_s": null,
             "remaining_s": null
           },
-          "scene_id": "root"
+          "scene_id": "moa-intro-s4"
         },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "moa-intro-s4"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 5,
+            "timeout_max_s": 0,
+            "remaining_s": 5
+          },
+          "scene_id": "root"
+        }
+      ]
+    },
+    {
+      "scene_id": "moa-intro-s4",
+      "description": "Flower1 On",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "moa-intro-s5"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 20,
+            "timeout_max_s": 0,
+            "remaining_s": 20
+          },
+          "scene_id": "moa-intro-s5"
+        }
+      ]
+    },
+    {
+      "scene_id": "moa-intro-s5",
+      "description": "Flower1 On",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "12blue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "12blue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "5blue",
+          "sync": false
+        }
+      ],
+      "transitions": [
         {
           "trigger": {
             "act_trigger_id": "flower3",
@@ -192,8 +341,116 @@
             "timeout_max_s": null,
             "remaining_s": null
           },
-          "scene_id": "root"
+          "scene_id": "moa-intro-s6"
         },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "moa-intro-s6"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 5,
+            "timeout_max_s": 0,
+            "remaining_s": 5
+          },
+          "scene_id": "root"
+        }
+      ]
+    },
+    {
+      "scene_id": "moa-intro-s6",
+      "description": "Flower1 On",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "moa-intro-s7"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 10,
+            "timeout_max_s": 0,
+            "remaining_s": 10
+          },
+          "scene_id": "moa-intro-s7"
+        }
+      ]
+    },
+    {
+      "scene_id": "moa-intro-s7",
+      "description": "Flower1 On",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "12blue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "12blue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "12blue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower4",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "5blue",
+          "sync": false
+        }
+      ],
+      "transitions": [
         {
           "trigger": {
             "act_trigger_id": "flower4",
@@ -201,14 +458,156 @@
             "timeout_max_s": null,
             "remaining_s": null
           },
+          "scene_id": "moa-intro-s8"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "moa-intro-s8"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 5,
+            "timeout_max_s": 0,
+            "remaining_s": 5
+          },
           "scene_id": "root"
         }
       ]
     },
     {
-      "scene_id": "test",
-      "description": "Hier beginnt alles",
+      "scene_id": "moa-intro-s8",
+      "description": "Flower1 On",
       "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "relaxed-run",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "relaxed-run",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "relaxed-run",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower4",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "relaxed-run",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower4",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "allblue",
+          "sync": false
+        }
+      ],
+      "transitions": []
+    },
+    {
+      "scene_id": "moa-intro-s9",
+      "description": "Flower1 Flash",
+      "effects": [],
+      "transitions": []
+    },
+    {
+      "scene_id": "moa-intro-s10",
+      "description": "Flower1 Flash",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "4ping",
+          "sync": false
+        }
+      ],
+      "transitions": []
+    },
+    {
+      "scene_id": "farbspiel-init",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-config",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower4",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        },
         {
           "abstract_id": "pfv1",
           "stripe_ids": [
@@ -222,7 +621,7 @@
             "radial8",
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "farbspiel-idle",
           "sync": false
         },
         {
@@ -230,7 +629,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "farbspiel-config",
           "sync": false
         },
         {
@@ -238,7 +637,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "farbspiel-config",
           "sync": false
         },
         {
@@ -246,7 +645,7 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "farbspiel-config",
           "sync": false
         },
         {
@@ -254,7 +653,150 @@
           "stripe_ids": [
             "circle"
           ],
-          "preset_id": "Rainbow",
+          "preset_id": "farbspiel-config",
+          "sync": false
+        },
+        {
+          "abstract_id": "pfv1",
+          "stripe_ids": [
+            "radial1",
+            "radial2",
+            "radial3",
+            "radial4",
+            "radial5",
+            "radial6",
+            "radial7",
+            "radial8",
+            "circle"
+          ],
+          "preset_id": "farbspiel-config",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "big-flower",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-start"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-start"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-1-start",
+      "description": "",
+      "effects": [],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-note-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-1-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-note-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-1-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-1-note-1",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-1",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-waitreplay-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-1-waitreplay-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-1-waitreplay-1",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
           "sync": false
         }
       ],
@@ -266,8 +808,1191 @@
             "timeout_max_s": null,
             "remaining_s": null
           },
-          "scene_id": "root"
+          "scene_id": "farbspiel-1-note-1-replay"
         },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-note-1-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 10,
+            "timeout_max_s": 0,
+            "remaining_s": 10
+          },
+          "scene_id": "farbspiel-1-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-1-note-1-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-1",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-play-success"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-1-play-success"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-1-play-success",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-party",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-start"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 7,
+            "timeout_max_s": 0,
+            "remaining_s": 7
+          },
+          "scene_id": "farbspiel-2-start"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-1-play-fail",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-fail",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-1-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 3,
+            "timeout_max_s": 0,
+            "remaining_s": 3
+          },
+          "scene_id": "farbspiel-1-replay"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-start",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-note-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 5,
+            "timeout_max_s": 0,
+            "remaining_s": 5
+          },
+          "scene_id": "farbspiel-2-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-note-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-2-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-note-1",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-3",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-note-2-pause"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-2-note-2-pause"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-note-2-pause",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-note-2"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-2-note-2"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-note-2",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-5",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-waitreplay-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-2-waitreplay-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-waitreplay-1",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-note-1-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-note-1-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 10,
+            "timeout_max_s": 0,
+            "remaining_s": 10
+          },
+          "scene_id": "farbspiel-2-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-note-1-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-3",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-waitreplay-2"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-2-waitreplay-2"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-waitreplay-2",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-note-2-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-note-2-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 10,
+            "timeout_max_s": 0,
+            "remaining_s": 10
+          },
+          "scene_id": "farbspiel-2-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-note-2-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-5",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-play-success"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-2-play-success"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-play-success",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-party",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-start"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 3,
+            "timeout_max_s": 0,
+            "remaining_s": 3
+          },
+          "scene_id": "farbspiel-3-start"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-2-play-fail",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-fail",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-2-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 3,
+            "timeout_max_s": 0,
+            "remaining_s": 3
+          },
+          "scene_id": "farbspiel-2-replay"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-start",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 5,
+            "timeout_max_s": 0,
+            "remaining_s": 5
+          },
+          "scene_id": "farbspiel-3-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-note-1",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-2",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-2-pause"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-note-2-pause"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-note-2-pause",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-2"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-note-2"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-note-2",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-5",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-3-pause"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-note-3-pause"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-note-3-pause",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-3"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-note-3"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-note-3",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-2",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-waitreplay-1"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-waitreplay-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-waitreplay-1",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower2",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-1-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-1-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 10,
+            "timeout_max_s": 0,
+            "remaining_s": 10
+          },
+          "scene_id": "farbspiel-3-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-note-1-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-2",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-waitreplay-2"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-waitreplay-2"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-waitreplay-2",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-2-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-2-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 10,
+            "timeout_max_s": 0,
+            "remaining_s": 10
+          },
+          "scene_id": "farbspiel-3-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-note-2-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-5",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-success"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-play-success"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-waitreplay-3",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-idle",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "flower1",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-3-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower2",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower3",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "flower4",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-fail"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-note-3-replay"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 10,
+            "timeout_max_s": 0,
+            "remaining_s": 10
+          },
+          "scene_id": "farbspiel-3-note-1"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-note-3-replay",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-note-2",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
+            "timeout_s": null,
+            "timeout_max_s": null,
+            "remaining_s": null
+          },
+          "scene_id": "farbspiel-3-play-success"
+        },
+        {
+          "trigger": {
+            "act_trigger_id": null,
+            "timeout_s": 2,
+            "timeout_max_s": 0,
+            "remaining_s": 2
+          },
+          "scene_id": "farbspiel-3-play-success"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-play-success",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-party",
+          "sync": false
+        },
+        {
+          "abstract_id": "flower3",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-party",
+          "sync": false
+        }
+      ],
+      "transitions": [
         {
           "trigger": {
             "act_trigger_id": "next",
@@ -279,30 +2004,46 @@
         },
         {
           "trigger": {
-            "act_trigger_id": "flower2",
+            "act_trigger_id": null,
+            "timeout_s": 3,
+            "timeout_max_s": 0,
+            "remaining_s": null
+          },
+          "scene_id": "root"
+        }
+      ]
+    },
+    {
+      "scene_id": "farbspiel-3-play-fail",
+      "description": "",
+      "effects": [
+        {
+          "abstract_id": "flower1",
+          "stripe_ids": [
+            "circle"
+          ],
+          "preset_id": "farbspiel-fail",
+          "sync": false
+        }
+      ],
+      "transitions": [
+        {
+          "trigger": {
+            "act_trigger_id": "next",
             "timeout_s": null,
             "timeout_max_s": null,
             "remaining_s": null
           },
-          "scene_id": "root"
+          "scene_id": "farbspiel-3-replay"
         },
         {
           "trigger": {
-            "act_trigger_id": "flower3",
-            "timeout_s": null,
-            "timeout_max_s": null,
-            "remaining_s": null
+            "act_trigger_id": null,
+            "timeout_s": 3,
+            "timeout_max_s": 0,
+            "remaining_s": 3
           },
-          "scene_id": "root"
-        },
-        {
-          "trigger": {
-            "act_trigger_id": "flower4",
-            "timeout_s": null,
-            "timeout_max_s": null,
-            "remaining_s": null
-          },
-          "scene_id": "root"
+          "scene_id": "farbspiel-3-replay"
         }
       ]
     }
@@ -341,6 +2082,14 @@
       }
     },
     {
+      "act_trigger_id": "big-flower",
+      "active": false,
+      "linked_input": {
+        "arduino_id": 130,
+        "arduino_input_id": 0
+      }
+    },
+    {
       "act_trigger_id": "next",
       "active": false,
       "linked_input": null
@@ -349,6 +2098,25 @@
   "status": {
     "state": "NOT_LIVE",
     "active_scene": null,
-    "errors": null
+    "errors": [
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test",
+      "failed to get next scene test"
+    ]
   }
 }

@@ -200,6 +200,16 @@ func (o *LEDInfectedAct) UpdateTimer() {
 	}
 }
 
+func (o *LEDInfectedAct) JumpScene(scene *LEDInfectedScene) {
+	if err := o.disableScene(); err != nil {
+		o.Status.appendError(fmt.Errorf("WARNING: failed to disable scene %s: %s", o.Status.ActiveScene.SceneID, err))
+	}
+	o.Status.ActiveScene = scene
+	if err := o.enableScene(); err != nil {
+		o.Status.appendError(fmt.Errorf("WARNING: failed to disable scene %s: %s", o.Status.ActiveScene.SceneID, err))
+	}
+}
+
 func (o *LEDInfectedAct) enableScene() error {
 	if o.Status.ActiveScene == nil {
 		found := false

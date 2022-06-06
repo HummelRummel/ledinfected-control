@@ -235,6 +235,11 @@ func (o *LEDInfectedArduinoConnection) SetArduinoID(newID uint8) error {
 	return err
 }
 
+func (o *LEDInfectedArduinoConnection) SetArduinoBPM(newBPM uint8) error {
+	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSetBPM, []byte{newBPM}, 5)
+	return err
+}
+
 func (o *LEDInfectedArduinoConnection) GlobalSync() error {
 	fmt.Printf("sync %s\n", o.devFile)
 	_, err := o.sendInfectedCommand(ledInfectedCommandTypeGlobal, ledInfectedCommandCodeGlobalSync, nil, 0)
@@ -283,6 +288,7 @@ func (o *LEDInfectedArduinoConnection) globalGetSetup() (*LEDInfectedArduinoConf
 	if setup.Version.Major != neededArduinoMajorVersion {
 		return nil, fmt.Errorf("invalid arduino version, needed %d.xx, but arduino has %d.%d", neededArduinoMajorVersion, setup.Version.Major, setup.Version.Minor)
 	}
+
 	return setup, nil
 }
 

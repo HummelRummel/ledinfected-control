@@ -68,11 +68,7 @@ func UpdatePreset(preset *LEDInfectedPreset) error {
 		return fmt.Errorf("given preset %s contains no configuration", preset.Name)
 	}
 
-	fileName := ""
-	if preset.AbstractID != "" {
-		fileName = preset.AbstractID + "_"
-	}
-	fileName = fileName + preset.PresetID + ".json"
+	fileName := preset.PresetID + ".json"
 	jsonPreset, err := json.Marshal(preset)
 	if err != nil {
 		return err

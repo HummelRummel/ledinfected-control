@@ -3,11 +3,11 @@
   "info": {
     "name": "Button Flower",
     "image": {
-      "image_base_path": "/assets/img/abstracts/flowerv2",
+      "image_base_path": "/assets/img/abstracts/flowerv1",
       "overview": {
         "dimension": {
-          "height": 180,
-          "width": 180
+          "height": 60,
+          "width": 60
         }
       },
       "stripe_view": {
@@ -19,13 +19,13 @@
         ]
       }
     },
-    "img_base_id": "flowerv2",
+    "img_base_id": "flowerv1",
     "src_file": "configs/flower2.json"
   },
   "setup": {
     "position": {
-      "x": 700,
-      "y": 550
+      "x": 200,
+      "y": 100
     }
   },
   "stripes": [

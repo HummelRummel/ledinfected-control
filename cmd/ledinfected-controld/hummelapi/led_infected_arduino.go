@@ -32,13 +32,12 @@ func NewLEDInfectedArduino(devFile string) (*LEDInfectedArduino, error) {
 	setup, err := connection.globalGetSetup()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get setup of arduino connected to %s: %s", devFile, err)
-		time.Sleep(time.Second*10)
+		time.Sleep(time.Second * 10)
 		o.connection.Close()
 	}
 	fmt.Printf("MOA: newArduino setup: %s\n", setup)
 
 	o.Global = setup
-
 
 	for i := 0; i < int(setup.NumStripes); i++ {
 		fmt.Printf("MOA: get stripe[%d]\n", i)
@@ -69,7 +68,7 @@ func NewLEDInfectedArduino(devFile string) (*LEDInfectedArduino, error) {
 }
 
 func (o *LEDInfectedArduino) Close() {
-	for _,inp := range o.Inputs {
+	for _, inp := range o.Inputs {
 		inp.Stop()
 	}
 
@@ -82,6 +81,10 @@ func (o *LEDInfectedArduino) GlobalGetSetup() LEDInfectedArduinoConfigGlobalSetu
 
 func (o *LEDInfectedArduino) SetArduinoID(id uint8) error {
 	return o.connection.SetArduinoID(id)
+}
+
+func (o *LEDInfectedArduino) SetArduinoBPM(bpm uint8) error {
+	return o.connection.SetArduinoBPM(bpm)
 }
 
 func (o *LEDInfectedArduino) GetID() uint8 {

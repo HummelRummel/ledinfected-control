@@ -204,6 +204,24 @@ func (o *apiServer) postActUpdateSceneCallback(c *gin.Context) {
 	return
 }
 
+func (o *apiServer) postJumpToScene(c *gin.Context) {
+	a, s, err := o.getCallbackActScene(c)
+	if err != nil {
+		c.String(http.StatusNotFound, jsonError(err))
+		return
+	}
+
+	if a.Status == nil || a.Status.State == "NOT_LIVE" {
+		c.String(http.StatusBadRequest, jsonError(fmt.Errorf("act not live")))
+		return
+	}
+
+	a.JumpScene(s)
+
+	c.JSON(http.StatusOK, "{}")
+	return
+}
+
 ////////////////////////////////////////////////////////
 // helper functions
 ////////////////////////////////////////////////////////
@@ -226,6 +244,21 @@ func (o *apiServer) getCallbackActTrigger(c *gin.Context) (*hummelapi.LEDInfecte
 		}
 	}
 	return nil, nil, fmt.Errorf("trigger %s not found", triggerID)
+}
+
+func (o *apiServer) getCallbackActScene(c *gin.Context) (*hummelapi.LEDInfectedAct, *hummelapi.LEDInfectedScene, error) {
+	actID := c.Param("ActId")
+	sceneID := c.Param("SceneId")
+	a, err := o.getAct(actID)
+	if err != nil {
+		return nil, nil, err
+	}
+	for _, s := range a.Scenes {
+		if s.SceneID == sceneID {
+			return a, s, nil
+		}
+	}
+	return nil, nil, fmt.Errorf("scene %s not foundin act %s", sceneID, actID)
 }
 
 func (o *apiServer) getAct(actID string) (*hummelapi.LEDInfectedAct, error) {

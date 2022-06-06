@@ -52,6 +52,33 @@ func (o *apiServer) setArduinoIDCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, "{}")
 }
 
+func (o *apiServer) setArduinoBPMCallback(c *gin.Context) {
+	a, err := o.getCallbackArduino(c)
+	if err != nil {
+		c.String(http.StatusNotFound, err.Error())
+		return
+	}
+	type bpmConfig struct {
+		BPM *uint8 `json:"bpm"`
+	}
+	var config bpmConfig
+	if err := c.BindJSON(&config); err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if config.BPM == nil {
+		c.String(http.StatusBadRequest, "bpm not set")
+		return
+	}
+	err = a.SetArduinoBPM(*config.BPM)
+	if err != nil {
+		c.JSON(http.StatusExpectationFailed, fmt.Sprintf("failed to set bpm config: %s\n", err))
+		return
+	}
+	c.JSON(http.StatusOK, "{}")
+}
+
 func (o *apiServer) setArduinoStripeSetupCallback(c *gin.Context) {
 	_, s, err := o.getCallbackArdoinoAndStripe(c)
 	if err != nil {
@@ -132,12 +159,12 @@ func (o *apiServer) saveArduinoStripeConfigCallback(c *gin.Context) {
 func (o *apiServer) syncCallback(c *gin.Context) {
 	var sumErr error
 	wg := sync.WaitGroup{}
-	for _, a:= range o.Arduinos {
+	for _, a := range o.Arduinos {
 		fmt.Printf("sync arduino %d\n", a.GetID())
 		wg.Add(1)
 		go func(ard *hummelapi.LEDInfectedArduino) {
 			if err := ard.GlobalSync(); err != nil {
-				sumErr = err;
+				sumErr = err
 			}
 			defer wg.Done()
 		}(a)

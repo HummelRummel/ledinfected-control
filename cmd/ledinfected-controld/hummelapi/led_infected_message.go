@@ -35,6 +35,8 @@ const (
 	ledInfectedCommandCodeGlobalSync      = 0xcc
 	ledInfectedCommandCodeGlobalGetSetup  = 0x0e
 	ledInfectedCommandCodeGlobalSetSetup  = 0xe0
+	ledInfectedCommandCodeGlobalGetBPM    = 0x0b
+	ledInfectedCommandCodeGlobalSetBPM    = 0xb0
 	ledInfectedCommandCodeGlobalSetupSave = 0xfe
 
 	ledInfectedCommandCodeStripeGetConfig  = 0x01
