@@ -763,6 +763,15 @@ class ActObject {
         }
     }
 
+    getScene(sceneID) {
+        if (this.scenes != null) {
+            for (let i = 0; i < this.scenes.length; i++) {
+                if(this.scenes[i].id == sceneID) {
+                    return this.scenes[i];
+                }
+            }
+        }
+    }
     updateState() {
         this.actSelectButton.innerHTML = this.config.act_id + " - " + this.config.status.state + "(" + this.config.description + ")";
     }
@@ -946,9 +955,9 @@ class ActSceneObject {
         console.log("SHOW DETAIL", this.id);
     }
 
-    applyEffect() {
+    async applyEffect() {
         for (let i = 0; i < this.effects.length; i++) {
-            this.effects[i].applyEffect();
+            await this.effects[i].applyEffect();
         }
     }
 
@@ -1222,11 +1231,11 @@ class ActSceneEffectObject {
                 await sendAbstractPalette(this.config.abstract_id, this.config.stripe_ids, preset.config.palette);
             }
         } else if (this.config.effect_type == "speed") {
-            app.ledInfected.abstractList.sendAbstractSpeed(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
+            await app.ledInfected.abstractList.sendAbstractSpeed(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
         } else if (this.config.effect_type == "stretch") {
-            app.ledInfected.abstractList.sendAbstractStretch(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
+            await app.ledInfected.abstractList.sendAbstractStretch(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
         } else if (this.config.effect_type == "overlay") {
-            app.ledInfected.abstractList.sendAbstractOverlay(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
+            await app.ledInfected.abstractList.sendAbstractOverlay(this.config.abstract_id, this.config.stripe_ids, this.config.effect_value);
         }
     }
 
@@ -1319,6 +1328,25 @@ class ActSceneTransitionObject {
         this.sceneEditTransitionTriggerActTriggerID.classList.add("scene_transition_edit_trigger_act_trigger_id", "act_dropdown", "act_theme");
         this.sceneEditTransitionTriggerActTriggerID.style.width = "100px";
         this.sceneEditTransitionElement.appendChild(this.sceneEditTransitionTriggerActTriggerID);
+        this.sceneEditTransitionEditSceneBtn = document.createElement("button");
+        this.sceneEditTransitionEditSceneBtn.classList.add("act_button", "act_theme");
+        this.sceneEditTransitionEditSceneBtn.style.width = "48px";
+        this.sceneEditTransitionEditSceneBtn.innerHTML = "->";
+        async function editTransitionScene() {
+            console.log(that.act);
+            let scene = that.act.getScene(that.sceneEditTransitionSceneID.value);
+            console.log(scene);
+            if (scene != null) {
+                // apply effect
+                await scene.applyEffect();
+
+                // load scene
+                scene.loadSceneEdit();
+            }
+        }
+        this.sceneEditTransitionEditSceneBtn.addEventListener("click", editTransitionScene);
+        this.sceneEditTransitionElement.appendChild(this.sceneEditTransitionEditSceneBtn);
+
         this.sceneEditTransitionTriggerRemoveBtn = document.createElement("button");
         this.sceneEditTransitionTriggerRemoveBtn.classList.add("act_button", "act_theme");
         this.sceneEditTransitionTriggerRemoveBtn.style.width = "48px";
