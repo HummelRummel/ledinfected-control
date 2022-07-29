@@ -171,6 +171,26 @@ func (o *LEDInfectedAbstract) mqttMessageHandler(topic string, msg string) {
 				fmt.Printf("WARN: failed to load preset for stripe %s: %s", s.StripeID, err)
 			}
 		}
+	case "config":
+		config := &LEDInfectedArduinoConfigStripeConfig{}
+		if err := json.Unmarshal([]byte(msg), config); err != nil {
+			fmt.Printf("WARN: invalid config: %s\n", err)
+			return
+		}
+		if err := o.SetConfig(config, o.getAllStripeIDs()...); err != nil {
+			fmt.Printf("WARN: failed to set config: %s\n", err)
+			return
+		}
+	case "palette":
+		palette := &LEDInfectedArduinoConfigStripePalette{}
+		if err := json.Unmarshal([]byte(msg), palette); err != nil {
+			fmt.Printf("WARN: invalid palette: %s\n", err)
+			return
+		}
+		if err := o.SetPalette(palette, o.getAllStripeIDs()...); err != nil {
+			fmt.Printf("WARN: failed to set palette: %s\n", err)
+			return
+		}
 	default:
 		fmt.Printf("unhandled topic\n")
 	}
