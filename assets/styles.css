@@ -1,5 +1,555 @@
-body {
-    font-family: sans-serif;
-    width: 50%;
-    margin: auto;
+.class_overview_viewport {
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: #00ff00;
+    position: absolute;
+    overflow: hidden;
+}
+
+.button_container {
+    margin-bottom: 0px;
+}
+
+.preset_select_viewport {
+    witdth: 100%;
+    height: 40%;
+}
+
+.preset_select_line {
+    display: block;
+    witdth: 100%;
+    padding: 4px;
+}
+
+.simple_picture_btn {
+    width: 48px;
+    height: 48px;
+}
+
+.flex_width {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    width: 100%;
+    height: auto;
+}
+
+.flex_height {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.simple_preset_btn {
+    border: none;
+    padding: 8px 48px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.preset_select_cancel {
+    float: right;
+}
+
+.sync_btn {
+    background: url(/assets/img/sync.png);
+    background-size: contain;
+}
+
+.show_load_preset_btn {
+    background: url(/assets/img/preset_load.png);
+    background-size: contain;
+}
+
+.show_save_preset_btn {
+    background: url(/assets/img/preset_save.png);
+    background-size: contain;
+}
+
+.close_btn {
+    background: url(/assets/img/close.png);
+    background-size: contain;
+}
+
+.overviewView {
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: #00ff00;
+    position: absolute;
+    overflow: hidden;
+}
+
+.abstractControlsView {
+    left: 0px;
+    top: 0px;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+}
+
+
+.controlView {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 480px;
+    height: 100%;
+    background: #ffffff;
+    z-index: 4;
+    overflow-y: auto;
+}
+
+@media only screen and (max-width: 480px) {
+    .controlView {
+        width: 100%;
+    }
+}
+
+
+.actView {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 480px;
+    height: 100%;
+    background: #ffffff;
+    z-index: 4;
+    overflow-y: auto;
+}
+
+@media only screen and (max-width: 480px) {
+    .actView {
+        width: 100%;
+    }
+}
+
+.act_ctrl_view {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 480px;
+    height: 100%;
+    background: #ffffff;
+    z-index: 4;
+    overflow-y: auto;
+}
+
+@media only screen and (max-width: 480px) {
+    .act_ctrl_view {
+        width: 100%;
+    }
+}
+
+area {
+    cursor: pointer;
+}
+
+.toggle_btn {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
+.parameter_view {
+    width: 100%;
+    height: 100%;
+}
+
+.colorshow {
+    width: 40px;
+    height: 40px;
+    background: #a3f3f3;
+}
+
+.selection_view {
+    width: 57%;
+}
+
+/* Style the tab content */
+.tabcontent {
+    width: 100%;
+    height: 100%;
+    display: none;
+    /*padding: 6px 12px;*/
+    /*border: 1px solid #ccc;*/
+    /*border-top: none;*/
+    animation: fadeInEffect 1s; /* Fading effect takes 1 second */
+}
+
+/* Fade in tabs */
+@-webkit-keyframes fadeInEffect {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Go from zero to full opacity */
+@keyframes fadeInEffect {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* Fade in tabs */
+@-webkit-keyframes fadeOutEffect {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Go from zero to full opacity */
+@keyframes fadeOutEffect {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.button_placeholder {
+    width: 40px;
+    height: 40px;
+}
+
+.round_button {
+    display: block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border: 2px solid #f5f5f5;
+    border-radius: 50%;
+    color: #808080;
+    text-align: center;
+    font-size: xx-small;
+    text-decoration: none;
+    background: #ffffff;
+    box-shadow: 0 0 3px gray;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.round_button:hover {
+    background: #f0f0f0;
+}
+
+.selection_pattern_field_cluster {
+    display: flex;
+}
+
+.selection_pattern_field_are {
+    display: flex;
+}
+
+/* Create an active/current tablink class */
+.selected {
+    border: 4px solid gray;
+}
+
+table {
+    /* cellspacing */
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.flex_column {
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+}
+
+.flex_row {
+    display: flex;
+    flex-flow: row;
+    flex-grow: 1;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+.template {
+    display: none;
+}
+
+.control_view_template {
+    display: none;
+}
+
+.act_view_template {
+    display: none;
+}
+
+.slide_container {
+    height: 48px;
+    width: auto;
+    padding-top: 16px;
+    padding-button: 16px;
+    padding-left: 16px;
+    padding-right: 16px
+}
+
+.parameter_slider_container {
+    height: 48px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.slider_icon {
+    width: 48px;
+    height: 48px;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    max-height: 100%;
+    /*background: #cccccc;*/
+    background: url(/assets/img/slider-background.png) no-repeat center;
+    background-size: 100% 48px;
+    /*-webkit-background-size: cover;*/
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 48px;
+    height: 48px;
+    /*background: grey;*/
+    background: url(/assets/img/slider-knob.png);
+    background-size: cover;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 48px;
+    height: 48px;
+    /*background: grey;*/
+    background: url(/assets/img/slider-knob.png);
+    background-size: cover;
+    cursor: pointer;
+}
+
+/* PRESET CSS themes */
+.preset_theme {
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.preset_button {
+    background-color: #FFFFFF;
+    border: 1px solid #222222;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #222222;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0;
+    outline: none;
+    padding: 2px 4px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    touch-action: manipulation;
+    transition: box-shadow .2s, -ms-transform .1s, -webkit-transform .1s, transform .1s;
+    user-select: none;
+    -webkit-user-select: none;
+    width: auto;
+}
+
+.preset_button:focus-visible {
+    box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px;
+    transition: box-shadow .2s;
+}
+
+.preset_button:active {
+    background-color: #F7F7F7;
+    border-color: #000000;
+    transform: scale(.96);
+}
+
+.preset_button:disabled {
+    border-color: #DDDDDD;
+    color: #DDDDDD;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.presets_container_div {
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.preset_textbox {
+    border: none;
+    border-bottom: 2px solid black;
+}
+
+.frame {
+    padding: 4px;
+    padding-top: 8px;
+    padding-bottom: 16px;
+    background-color: #FFFFFF;
+    border: 4px solid #888888;
+    border-radius: 8px;
+}
+
+.frame_little {
+    padding: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    background-color: #FFFFFF;
+    border: 2px solid #888888;
+    border-radius: 8px;
+}
+
+.margin_left_auto {
+    margin-left: auto;
+}
+
+/* ACT CSS themes */
+.act_theme {
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 40px;
+}
+
+.act_view_container {
+    padding: 4px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: #FFFFFF;
+    border: 4px solid #888888;
+    border-radius: 8px;
+}
+
+.act_dropdown {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #FFFFFF;
+    border: 1px solid #222222;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #222222;
+    cursor: pointer;
+}
+
+.act_button {
+    background-color: #FFFFFF;
+    border: 1px solid #222222;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #222222;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0;
+    outline: none;
+    padding: 2px 4px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    touch-action: manipulation;
+    transition: box-shadow .2s, -ms-transform .1s, -webkit-transform .1s, transform .1s;
+    user-select: none;
+    -webkit-user-select: none;
+    width: auto;
+}
+
+
+.act_button:focus-visible {
+    box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px;
+    transition: box-shadow .2s;
+}
+
+.act_trigger_button {
+    width: 100px;
+}
+
+.act_button:active {
+    background-color: #F7F7F7;
+    border-color: #000000;
+    transform: scale(.96);
+}
+
+.act_button:disabled {
+    border-color: #DDDDDD;
+    color: #DDDDDD;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.overflow_y {
+    overflow-y: auto;
+}
+
+.height_line {
+    max-height: 48px;
+}
+
+/* (A) LIST STYLES */
+.slist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.slist li {
+    margin: 10px;
+    padding: 15px;
+    border: 1px solid #dfdfdf;
+    background: #f5f5f5;
+}
+
+/* (B) DRAG-AND-DROP HINT */
+.slist li.hint {
+    border: 1px solid #ffc49a;
+    background: #feffb4;
+}
+.slist li.active {
+    border: 1px solid #ffa5a5;
+    background: #ffe7e7;
 }

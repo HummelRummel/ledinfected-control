@@ -1,0 +1,200 @@
+{
+  "abstract_id": "pfv1",
+  "info": {
+    "name": "Performance Blume Ei-Sprung",
+    "image": {
+      "image_base_path": "/assets/img/abstracts/pfv1",
+      "overview": {
+        "dimension": {
+          "height": 180,
+          "width": 180
+        }
+      },
+      "stripe_view": {
+        "img_map": [
+          {
+            "stripe_id": "circle",
+            "max_view": "251,20,241,59,206,63,178,71,152,82,122,104,92,133,78,162,67,190,60,226,61,265,70,301,88,339,113,370,148,397,178,411,214,419,251,420,285,416,325,400,360,377,384,347,407,309,415,284,421,240,416,203,406,171,390,139,372,116,345,93,305,71,269,60,234,60,249,21,283,25,317,33,345,47,377,67,398,87,415,109,440,145,451,175,460,224,459,259,452,304,431,350,413,377,388,404,365,420,329,440,298,451,262,460,217,461,173,451,132,432,97,409,69,379,43,338,29,306,22,269,20,226,29,179,43,140,75,94,111,62,151,38,194,25,226,20"
+          },
+          {
+            "stripe_id": "radial1",
+            "max_view": "242,198,242,82,266,84,297,92,318,102,336,114,350,126,268,211,261,203,252,198"
+          },
+          {
+            "stripe_id": "radial2",
+            "max_view": "271,213,353,129,371,154,383,175,393,203,398,237,284,238,281,226"
+          },
+          {
+            "stripe_id": "radial3",
+            "max_view": "282,242,398,243,392,281,387,306,372,328,352,350,272,268,280,256"
+          },
+          {
+            "stripe_id": "radial4",
+            "max_view": "269,273,351,353,318,377,290,390,263,396,242,398,242,281,256,280"
+          },
+          {
+            "stripe_id": "radial5",
+            "max_view": "237,282,237,399,204,394,178,386,153,373,130,355,212,273,223,279"
+          },
+          {
+            "stripe_id": "radial6",
+            "max_view": "210,269,128,350,112,333,100,317,92,296,84,269,82,242,198,241,200,256"
+          },
+          {
+            "stripe_id": "radial7",
+            "max_view": "197,238,80,238,85,206,94,177,106,155,126,129,208,210,199,223"
+          },
+          {
+            "stripe_id": "radial8",
+            "max_view": "210,207,129,127,153,107,177,95,201,86,221,82,237,82,237,196,224,200"
+          },
+          {
+            "stripe_id": "all",
+            "max_view": "238,201,252,203,267,212,278,231,278,250,265,270,244,279,217,274,204,257,201,234,209,214,223,205"
+          }
+        ]
+      }
+    },
+    "img_base_id": "pfv1",
+    "src_file": "configs/performance_blume_cfg.json"
+  },
+  "setup": {
+    "position": {
+      "x": 100,
+      "y": 400
+    }
+  },
+  "stripes": [
+    {
+      "stripe_id": "radial1",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 1,
+            "arduino_stripe_id": 0
+          }
+        ],
+        "name": "radial stripe 1"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "radial2",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 1,
+            "arduino_stripe_id": 1
+          }
+        ],
+        "name": "radial stripe 2"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "radial3",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 1,
+            "arduino_stripe_id": 2
+          }
+        ],
+        "name": "radial stripe 3"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "radial4",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 1,
+            "arduino_stripe_id": 3
+          }
+        ],
+        "name": "radial stripe 4"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "radial5",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 2,
+            "arduino_stripe_id": 0
+          }
+        ],
+        "name": "radial stripe 5"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "radial6",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 2,
+            "arduino_stripe_id": 1
+          }
+        ],
+        "name": "radial stripe 6"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "radial7",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 2,
+            "arduino_stripe_id": 2
+          }
+        ],
+        "name": "radial stripe 7"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "radial8",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 2,
+            "arduino_stripe_id": 3
+          }
+        ],
+        "name": "radial stripe 8"
+      },
+      "config": null
+    },
+    {
+      "stripe_id": "circle",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 1,
+            "arduino_stripe_id": 4
+          },
+          {
+            "sync": 0,
+            "arduino_id": 2,
+            "arduino_stripe_id": 4
+          }
+        ],
+        "name": "virtual circle stripe"
+      },
+      "config": null
+    }
+  ]
+}

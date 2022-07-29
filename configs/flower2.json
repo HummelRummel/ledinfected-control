@@ -1,0 +1,54 @@
+{
+  "abstract_id": "flower2",
+  "info": {
+    "name": "Button Flower",
+    "image": {
+      "image_base_path": "/assets/img/abstracts/flowerv1",
+      "overview": {
+        "dimension": {
+          "height": 60,
+          "width": 60
+        }
+      },
+      "stripe_view": {
+        "img_map": [
+          {
+            "stripe_id": "circle",
+            "max_view": "212,174,241,165,286,174,312,205,341,242,332,277,279,316,239,322,191,306,175,276,174,223,191,192"
+          }
+        ]
+      }
+    },
+    "img_base_id": "flowerv1",
+    "src_file": "configs/flower2.json"
+  },
+  "setup": {
+    "position": {
+      "x": 200,
+      "y": 100
+    },
+    "triggers": [
+      {
+        "trigger_id": "stempel",
+        "arduino_id": 44,
+        "arduino_input_id": 1
+      }
+    ]
+  },
+  "stripes": [
+    {
+      "stripe_id": "circle",
+      "setup": {
+        "arduino_stripes": [
+          {
+            "sync": 0,
+            "arduino_id": 44,
+            "arduino_stripe_id": 1
+          }
+        ],
+        "name": "Stempel"
+      },
+      "config": null
+    }
+  ]
+}

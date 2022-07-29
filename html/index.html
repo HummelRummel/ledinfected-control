@@ -3,402 +3,336 @@
 <head>
     <title>HummelFlowerControlCentre</title>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+    <!--    <script src="assets/jquery.rwdImageMaps.js"></script>-->
+
+
+    <!--    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/maphilight/1.4.0/jquery.maphilight.min.js"></script>-->
+
+    <!-- prevents some OSX rescale issues -->
+    <!--    <meta name="viewport" content="width=device-width; initial-scale=1.0">-->
     <link rel="stylesheet" type="text/css" href="assets/styles.css"/>
 </head>
-<body onload="setupCallbacks();">
+<body>
+
+<div class="act_view_template template">
+    <div class="act_select_view height_line overflow_y">
+        <div class="act_select_container flex_column">
+            <!--Will be filled later-->
+        </div>
+    </div>
+    <div class="act_status_view segment">
+        <div class="act_status_detail_view sub_segment">
+        </div>
+        <div class="act_status_control_view sub_segment">
+            <div class="act_status_control_general_view">
+            </div>
+            <div class="act_status_control_trigger_view">
+                <div class="act_status_control_trigger_container">
+                </div>
+            </div>
+        </div>
+        <div class="act_status_live_scene sub_segment">
+
+        </div>
+    </div>
+    <div class="act_scenes_view segment">
+        <div class="act_scenes_header_view">
+            <div>Act Scenes</div>
+            <div class="act_scenes_add_scene button">+</div>
+        </div>
+        <div class="act_scenes_detail_view flex_column">
+            <div class="act_scenes_detail_container"></div>
+        </div>
+    </div>
+    <div class="act_triggers_view segment">
+        <div class="act_triggers_header_view">
+            <div>Act Triggers</div>
+            <div class="act_triggers_add_trigger button">+</div>
+        </div>
+        <div class="act_triggers_detail_view flex_column">
+            <div class="act_triggers_detail_container"></div>
+        </div>
+    </div>
+</div>
+
+<div class="scene_detail_template template sub_segment">
+    <div class="scene_short_view height_line">
+        <div class="scene_detail_toggle_button"></div>
+        <div class="scene_id">not-set</div>
+        <div class="start_flag">Start</div>
+        <div class="apply_button">Apply</div>
+        <div class="remove_scene_button">-</div>
+    </div>
+    <div class="scene_details_view">
+        <div class="scene_description">not-set</div>
+        <div class="scene_effects_view sub_sub_segment">
+            <div class="scene_effects_header_view">
+                <div>Scene Effects</div>
+                <div class="scene_effects_add_effect button">+</div>
+            </div>
+            <div class="scene_effects_detail_view flex_column">
+                <div class="scene_effects_detail_container"></div>
+            </div>
+        </div>
+        <div class="scene_triggers_view sub_sub_segment">
+            <div class="scene_triggers_header_view">
+                <div>Scene Triggers</div>
+                <div class="scene_triggers_add_effect button">+</div>
+            </div>
+            <div class="scene_triggers_detail_view flex_column">
+                <div class="scene_triggers_detail_container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="effect_detail_template template sub_el_segment">
+</div>
+<div class="scene_trigger_detail_template template sub_el_segment">
+</div>
+<div class="act_trigger_detail_template template sub_segment">
+</div>
+
+<div class="act_view_template2 template">
+    <div class="height_line overflow_y">
+        <div class="act_select_container flex_column">
+
+        </div>
+    </div>
+    <div class="act_view_container">
+        <div class="frame">
+            <div class="act_view_header act_theme" style="padding-left: 8px; padding-right:  8px;">None Selected
+            </div>
+            <div class="act_view_status flex_row">
+                <div class="act_theme" style="padding-left: 8px; padding-right:  4px;">State:</div>
+                <div class="act_view_status_state act_theme" style="padding-left: 4px; padding-right:  8px;">NOT_LIVE
+                </div>
+            </div>
+            <div class="act_view_status flex_row">
+                <div class="act_theme" style="padding-left: 8px; padding-right:  4px;">Active SceneID:</div>
+                <div class="act_view_status_active_scene_id act_theme" style="padding-left: 4px; padding-right:  8px;">
+                    none
+                </div>
+            </div>
+            <div class="scene_bpm_div flex_row">
+                <div class="act_theme" style="padding-left: 8px; padding-right: 4px;">BPM:</div>
+                <input class="act_bpm_select act_theme" type="number" min="4" max="200" style="padding-left: 4px; padding-right:  8px;">
+            </div>
+            <div class="slide_container" style="padding-top: 8px; padding-bottom: 8px;">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/brightness.png">
+                    <input class="slider act_brightness_select"
+                           type="range" min="0" max="256" step="8" value="128">
+                </div>
+            </div>
+            <div class="act_view_actions flex_row" style="justify-content: space-between;">
+                <button class="act_view_action_start act_button act_theme"
+                        style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">START
+                </button>
+                <button class="act_view_action_stop act_button act_theme"
+                        style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">STOP
+                </button>
+                <button class="act_view_action_pause act_button act_theme"
+                        style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">PAUSE
+                </button>
+                <button class="act_view_action_resume act_button act_theme"
+                        style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">RESUME
+                </button>
+                <button class="act_view_action_next_scene act_button act_theme"
+                        style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">NEXT
+                </button>
+            </div>
+        </div>
+        <div class="frame">
+            <div class="frame">
+                <div class="act_theme">Live Scene</div>
+                <div class="act_view_live_scene">
+
+                </div>
+            </div>
+            <div class="frame">
+                <div class="act_theme">Act Scenes</div>
+                <div class="act_view_scenes sortlist">
+
+                </div>
+            </div>
+            <div class="act_view_edit_scene frame">
+                <div class="flex_row">
+                    <div class="act_theme" style="margin-right: 4px;">Edit Scene - Scene ID:</div>
+                    <input class="act_view_edit_scene_scene_id act_theme">
+                </div>
+                <div class="flex_row">
+                    <div class="act_theme" style="margin-right: 4px;">Description:</div>
+                    <input class="act_view_edit_scene_scene_description act_theme">
+                </div>
+                <div class="frame_little" style="margin-bottom: 8px;">
+                    <div class="flex_row">
+                        <div class="act_theme" style="margin-right: 4px;">Effects</div>
+                        <button class="act_view_edit_scene_effect_add act_theme act_button margin_left_auto"
+                                style="width: 48px">+
+                        </button>
+                    </div>
+                    <div class="act_view_edit_scene_effects  e_effects">
+                    </div>
+                </div>
+                <div class="frame_little" style="margin-bottom: 8px;">
+                    <div class="flex_row">
+                        <div class="act_theme" style="margin-right: 4px;">Transitions</div>
+                        <button class="act_view_edit_scene_transition_add act_theme act_button margin_left_auto"
+                                style="width: 48px">+
+                        </button>
+                    </div>
+                    <div class="act_view_edit_scene_transitions">
+                    </div>
+                </div>
+                <div class="flex_row">
+                    <button class="act_view_edit_scene_apply act_button act_theme"
+                            style="padding-left: 8px; padding-right: 8px;">Apply Effect
+                    </button>
+                    <button class="act_view_edit_scene_save act_button act_theme"
+                            style="margin-left: auto; padding-left: 8px; padding-right: 8px;">Save Scene
+                    </button>
+                    <button class="act_view_edit_scene_discard act_button act_theme"
+                            style="padding-left: 8px; padding-right: 8px;">Discard Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="button_container flex_row" width="100%" height="64px"
+         style="padding-top: 16px; padding-right: 6px; padding-left: 6px; padding-bottom: 6px; justify-content: space-between;">
+        <button class="act_view_refresh_button act_button act_theme"
+                style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">Refresh
+        </button>
+        <button class="act_view_edit_act act_button act_theme"
+                style="margin-left: 4px; margin-right: 4px; padding-left: 8px; padding-right: 8px;">Edit Act
+        </button>
+        <button class="live_act_close_btn close_btn simple_picture_btn"></button>
+    </div>
+</div>
+
+<div class="control_view_template">
+    <!--    <div class="parameter_ctrl parameter_tabcontent tabcontent">-->
+    <div height="auto" width="80%"
+         style="padding-top: 6px; padding-bottom: 16px; padding-left: 6px; padding-right: 6px; position: relative;">
+        <div width="100%" height="auto" class="stripe_canvas_div">
+        </div>
+        <div width="100%" height="auto" class="stripe_canvas_minimized_div">
+        </div>
+        <button class="toggle_stripe_canvas_btn toggle_btn">Hide</button>
+    </div>
+    <div class="parameter_slider_container">
+        <div class="flex_column">
+            <div class="slide_container" style="padding-top: 8px;">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/brightness.png">
+                    <input class="slider parameter_ctrl_slider_stripe_brightness"
+                           type="range" min="0" max="256" step="8" value="256">
+                </div>
+            </div>
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/speed.png">
+                    <input type="range" min="-4" max="4" value="0"
+                           class="slider parameter_ctrl_slider_stripe_speed" height="auto" width="100%">
+                </div>
+            </div>
+            <div class="slide_container parameter_ctrl_stripe_stretch_div">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/stretch.png">
+                    <input class="slider parameter_ctrl_slider_stripe_stretch"
+                           type="range" min="-16" max="16" value="0">
+                </div>
+            </div>
+            <div class="slide_container parameter_ctrl_stripe_overlay_div">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/overlay.png">
+                    <input class="slider parameter_ctrl_slider_stripe_overlay"
+                           type="range" min="0" max="256" value="0">
+                </div>
+            </div>
+            <div height="auto" width="80%"
+                 style="padding-top: 16px; padding-left: 6px; padding-right: 6px; position: relative;">
+                <svg width="100%" height="100%" viewBox="0 0 480 480" class="pattern_canvas">
+                </svg>
+                <svg width="100%" height="100%" viewBox="0 0 480 64" class="pattern_canvas_minimized">
+                </svg>
+                <button class="toggle_pattern_canvas_btn toggle_btn">Hide</button>
+            </div>
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/hue.png">
+                    <input class="slider parameter_ctrl_slider_pattern_hue"
+                           type="range" min="0" max="256" step=8 value="256">
+                </div>
+            </div>
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/saturation.png">
+                    <input class="slider parameter_ctrl_slider_pattern_saturation"
+                           type="range" min="0" max="256" step=8 value="256">
+                </div>
+            </div>
+            <div class="slide_container">
+                <div class="flex_row">
+                    <img class="slider_icon" src="assets/img/brightness.png">
+                    <input class="slider parameter_ctrl_slider_pattern_brightness"
+                           type="range" min="0" max="256" step=8 value="256">
+                </div>
+            </div>
+            <div class="slide_container" style="padding-top: 16px;">
+                <div class="flex_row">
+                    <label for="preset_input_preset_id" class="preset_input_label preset_theme">PresetID:</label>
+                    <input class="preset_textbox preset_input_preset_id preset_theme" id="preset_input_preset_id"
+                           name="PresetID" type="text" minlength="4"
+                           maxlength="24" size="24">
+                    <label for="preset_input_preset_id" class="preset_input_label preset_theme">Name:</label>
+                    <input class="preset_textbox preset_input_name preset_theme" id="preset_input_name" name="Name"
+                           type="text" minlength="4">
+                </div>
+                <div class="flex_row" style="padding-bottom: 8px; width: 100%">
+                    <label for="preset_input_include_config" class="preset_input_label preset_theme">Config?</label>
+                    <input class="preset_checkbox preset_input_include_config" id="preset_input_include_config"
+                           name="Config" type="checkbox">
+                    <label for="preset_input_button_save" class="preset_input_label preset_theme">Preset?</label>
+                    <input class="preset_checkbox preset_input_include_palette" id="preset_input_button_save"
+                           name="Palette" type="checkbox">
+                    <button class="preset_button preset_input_button_save preset_theme" name="Save"
+                            style="justify-self: end;">Update/Save
+                    </button>
+                </div>
+                <div class="presets_container_div">
+                    <div class="presets_container flex_column">
+                    </div>
+                </div>
+                <div class="button_container flex_row" width="100%" height="64px"
+                     style="padding-top: 16px; padding-right: 6px; padding-left: 6px; padding-bottom: 6px; justify-content: space-between">
+                    <button class="sync_btn simple_picture_btn"></button>
+                    <button class="show_load_preset_btn simple_picture_btn"></button>
+                    <button class="show_save_preset_btn simple_picture_btn"></button>
+                    <button class="controls_close_btn close_btn simple_picture_btn"></button>
+                </div>
+            </div>
+            <!--            <div class="preset_select_viewport" style="height: 500px; width: 100%;">-->
+            <!--                <div class="preset_select_button_port">-->
+            <!--                </div>-->
+            <!--                <div class="preset_select_line">-->
+            <!--                    <input type="text" class="preset_select_preset_name_input" style="margin: auto 0 auto auto;">-->
+            <!--                </div>-->
+            <!--                <div class="preset_select_line">-->
+            <!--                    <button class="preset_select_confirm simple_preset_btn">Confirm</button>-->
+            <!--                    <button class="preset_select_cancel simple_preset_btn">Cancel</button>-->
+            <!--                </div>-->
+            <!--            </div>-->
+        </div>
+    </div>
+    <!--    </div>-->
+</div>
+
 <script src="assets/w3color.js"></script>
 <script src="assets/hummel_api.js"></script>
-<h1>HummelRummel FlowerControlCentre</h1>
-<p>&nbsp;</p>
-<table style="border-collapse: collapse; width: 100%;" border="1">
-    <tbody>
-    <tr>
-        <td style="width: 100%;">
-            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-                <tbody>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial1_speed" type="number" /></td>
-                </tr>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial1_direction" type="checkbox" /></td>
-                </tr>
-                <tr style="height: 29px;">
-                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-                    <td style="width: 90.84507042253522%; height: 29px;">
-                        <table style="border-collapse: collapse; width: 100%;" border="1">
-                            <tbody>
-                            <tr>
-                                <td style="width: 6.25%;"><input id="1_radial1_led1" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led2" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led3" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led4" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led5" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led6" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led7" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led8" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led9" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led10" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led11" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led12" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led13" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led14" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led15" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial1_led16" type="color" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td style="width: 100%;">
-            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-                <tbody>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial2_speed" type="number" /></td>
-                </tr>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial2_direction" type="checkbox" /></td>
-                </tr>
-                <tr style="height: 29px;">
-                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-                    <td style="width: 90.84507042253522%; height: 29px;">
-                        <table style="border-collapse: collapse; width: 100%;" border="1">
-                            <tbody>
-                            <tr>
-                                <td style="width: 6.25%;"><input id="1_radial2_led1" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led2" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led3" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led4" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led5" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led6" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led7" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led8" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led9" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led10" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led11" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led12" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led13" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led14" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led15" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial2_led16" type="color" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td style="width: 100%;">
-            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-                <tbody>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial3_speed" type="number" /></td>
-                </tr>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial3_direction" type="checkbox" /></td>
-                </tr>
-                <tr style="height: 29px;">
-                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-                    <td style="width: 90.84507042253522%; height: 29px;">
-                        <table style="border-collapse: collapse; width: 100%;" border="1">
-                            <tbody>
-                            <tr>
-                                <td style="width: 6.25%;"><input id="1_radial3_led1" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led2" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led3" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led4" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led5" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led6" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led7" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led8" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led9" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led10" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led11" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led12" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led13" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led14" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led15" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial3_led16" type="color" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td style="width: 100%;">
-        </td>
-            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-                <tbody>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial4_speed" type="number" /></td>
-                </tr>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="1_radial4_direction" type="checkbox" /></td>
-                </tr>
-                <tr style="height: 29px;">
-                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-                    <td style="width: 90.84507042253522%; height: 29px;">
-                        <table style="border-collapse: collapse; width: 100%;" border="1">
-                            <tbody>
-                            <tr>
-                                <td style="width: 6.25%;"><input id="1_radial4_led1" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led2" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led3" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led4" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led5" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led6" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led7" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led8" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led9" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led10" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led11" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led12" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led13" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led14" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led15" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="1_radial4_led16" type="color" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-    </tr>
-    <tr>
-        <td style="width: 100%;">
-            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-                <tbody>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial1_speed" type="number" /></td>
-                </tr>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial1_direction" type="checkbox" /></td>
-                </tr>
-                <tr style="height: 29px;">
-                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-                    <td style="width: 90.84507042253522%; height: 29px;">
-                        <table style="border-collapse: collapse; width: 100%;" border="1">
-                            <tbody>
-                            <tr>
-                                <td style="width: 6.25%;"><input id="2_radial1_led1" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led2" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led3" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led4" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led5" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led6" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led7" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led8" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led9" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led10" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led11" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led12" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led13" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led14" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led15" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial1_led16" type="color" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td style="width: 100%;">
-            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-                <tbody>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial2_speed" type="number" /></td>
-                </tr>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial2_direction" type="checkbox" /></td>
-                </tr>
-                <tr style="height: 29px;">
-                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-                    <td style="width: 90.84507042253522%; height: 29px;">
-                        <table style="border-collapse: collapse; width: 100%;" border="1">
-                            <tbody>
-                            <tr>
-                                <td style="width: 6.25%;"><input id="2_radial2_led1" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led2" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led3" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led4" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led5" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led6" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led7" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led8" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led9" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led10" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led11" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led12" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led13" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led14" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led15" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial2_led16" type="color" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td style="width: 100%;">
-            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-                <tbody>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial3_speed" type="number" /></td>
-                </tr>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial3_direction" type="checkbox" /></td>
-                </tr>
-                <tr style="height: 29px;">
-                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-                    <td style="width: 90.84507042253522%; height: 29px;">
-                        <table style="border-collapse: collapse; width: 100%;" border="1">
-                            <tbody>
-                            <tr>
-                                <td style="width: 6.25%;"><input id="2_radial3_led1" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led2" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led3" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led4" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led5" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led6" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led7" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led8" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led9" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led10" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led11" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led12" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led13" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led14" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led15" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial3_led16" type="color" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td style="width: 100%;">
-            <table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-                <tbody>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial4_speed" type="number" /></td>
-                </tr>
-                <tr style="height: 18px;">
-                    <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-                    <td style="width: 90.84507042253522%; height: 18px;"><input id="2_radial4_direction" type="checkbox" /></td>
-                </tr>
-                <tr style="height: 29px;">
-                    <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-                    <td style="width: 90.84507042253522%; height: 29px;">
-                        <table style="border-collapse: collapse; width: 100%;" border="1">
-                            <tbody>
-                            <tr>
-                                <td style="width: 6.25%;"><input id="2_radial4_led1" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led2" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led3" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led4" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led5" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led6" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led7" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led8" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led9" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led10" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led11" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led12" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led13" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led14" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led15" type="color" /></td>
-                                <td style="width: 6.25%;"><input id="2_radial4_led16" type="color" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>Alle auf einmal</p>
-<table style="border-collapse: collapse; width: 100%; height: 65px;" border="1">
-    <tbody>
-    <tr style="height: 18px;">
-        <td style="width: 9.154929577464785%; height: 18px;">speed</td>
-        <td style="width: 90.84507042253522%; height: 18px;"><input id="all_speed" type="number" /></td>
-    </tr>
-    <tr style="height: 18px;">
-        <td style="width: 9.154929577464785%; height: 18px;">direction</td>
-        <td style="width: 90.84507042253522%; height: 18px;"><input id="all_direction" type="checkbox" /></td>
-    </tr>
-    <tr style="height: 29px;">
-        <td style="width: 9.154929577464785%; height: 29px;">palette</td>
-        <td style="width: 90.84507042253522%; height: 29px;">
-            <table style="border-collapse: collapse; width: 100%;" border="1">
-                <tbody>
-                <tr>
-                    <td style="width: 6.25%;"><input id="all_led1" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led2" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led3" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led4" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led5" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led6" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led7" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led8" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led9" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led10" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led11" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led12" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led13" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led14" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led15" type="color" /></td>
-                    <td style="width: 6.25%;"><input id="all_led16" type="color" /></td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    </tbody>
-</table>
+
 </body>
 </html>
