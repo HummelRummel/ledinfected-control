@@ -2,12 +2,14 @@ package hummelapi
 
 import (
 	"fmt"
+	"github.com/HummelRummel/ledinfected-controld/cmd/ledinfected-controld/mqtt"
 	"time"
 )
 
 type (
 	LEDInfectedArduino struct {
 		connection *LEDInfectedArduinoConnection
+		mqtt       *mqtt.Core
 
 		Global *LEDInfectedArduinoConfigGlobalSetup `json:"global"`
 
@@ -17,7 +19,7 @@ type (
 	}
 )
 
-func NewLEDInfectedArduino(devFile string) (*LEDInfectedArduino, error) {
+func NewLEDInfectedArduino(devFile string, mqtt *mqtt.Core) (*LEDInfectedArduino, error) {
 	fmt.Printf("MOA: newArduino on %s\n", devFile)
 	connection, err := NewLEDInfectedArduinoConnection(devFile)
 	if err != nil {
@@ -25,6 +27,7 @@ func NewLEDInfectedArduino(devFile string) (*LEDInfectedArduino, error) {
 	}
 	o := &LEDInfectedArduino{
 		connection: connection,
+		mqtt:       mqtt,
 	}
 	fmt.Printf("MOA: newArduino connection established\n")
 
@@ -52,7 +55,7 @@ func NewLEDInfectedArduino(devFile string) (*LEDInfectedArduino, error) {
 
 	for i := 0; i < int(setup.NumInputs); i++ {
 		fmt.Printf("MOA: get input[%d]\n", i)
-		input, err := newLEDInfectedArduinoInput(o, uint8(i))
+		input, err := newLEDInfectedArduinoInput(o, uint8(i), o.mqtt)
 		if err != nil {
 			for _, inp := range o.Inputs {
 				inp.Stop()

@@ -92,7 +92,7 @@ func (o *Core) subscribe(topic string, qos byte) error {
 	return nil
 }
 
-func (o *Core) Publish(topic string, qos byte, retained bool, payload []byte) error {
+func (o *Core) Publish(topic string, qos byte, retained bool, payload string) error {
 	if token := o.client.Publish(topic, qos, retained, payload); token.Wait() && token.Error() != nil {
 		return token.Error()
 	}

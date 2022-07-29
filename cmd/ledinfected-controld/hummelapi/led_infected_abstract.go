@@ -50,6 +50,7 @@ type (
 
 	LEDInfectedAbstractGlobalSetup struct {
 		Position *LEDInfectedAbstractGlobalPosition `json:"position"` // position on the hummel wiese
+		Triggers []*LEDInfectedAbstractTrigger      `json:"triggers"`
 	}
 
 	LEDInfectedAbstractStripe struct {
@@ -71,11 +72,25 @@ type (
 		Name           string                                  `json:"name"` // human readable name of the stripe
 	}
 
+	LEDInfectedAbstractTrigger struct {
+		TriggerID      string `json:"trigger_id"`
+		ArduinoID      uint8  `json:"arduino_id"`
+		ArduinoInputID uint8  `json:"arduino_input_id"`
+
+		parent *LEDInfectedAbstract
+	}
+
 	LEDInfectedAbstractGlobalPosition struct {
 		X int `json:"x"` // BlumenWiese x position
 		Y int `json:"y"` // BlumenWises y position
 	}
 )
+
+func (o *LEDInfectedAbstractTrigger) callback(value byte) {
+	if err := o.parent.mqtt.Publish(fmt.Sprintf("%s/trigger/%s", o.parent.baseTopic, o.TriggerID), 0, false, fmt.Sprintf("%t", value != 0)); err != nil {
+		fmt.Printf("could not publish trigger %s state: %s", o.TriggerID, err)
+	}
+}
 
 func GetAllLEDInfectedAbstracts(configDir string, getPreset func(presetID string) (*LEDInfectedPreset, error), mqtt *mqtt.Core) ([]*LEDInfectedAbstract, error) {
 	o := []*LEDInfectedAbstract{}
@@ -105,6 +120,9 @@ func GetAllLEDInfectedAbstracts(configDir string, getPreset func(presetID string
 		for _, s := range abstract.Stripes {
 			s.parent = abstract
 		}
+		for _, t := range abstract.Setup.Triggers {
+			t.parent = abstract
+		}
 		abstract.mqtt = mqtt
 		abstract.baseTopic = "ledinfected/" + abstract.AbstractID
 		mqtt.RegisterAbstractCallback(abstract.AbstractID, abstract.mqttMessageHandler)
@@ -130,7 +148,7 @@ func (o *LEDInfectedAbstract) MQTTUpdateStatus() error {
 	} else {
 		status = "partly-online"
 	}
-	return o.mqtt.Publish(o.baseTopic+"/status", 0, true, []byte(status))
+	return o.mqtt.Publish(o.baseTopic+"/status", 0, true, status)
 }
 
 func (o *LEDInfectedAbstract) mqttMessageHandler(topic string, msg string) {
@@ -173,6 +191,15 @@ func (o *LEDInfectedAbstract) UpdateArduino(arduino *LEDInfectedArduino) error {
 				changed = true
 			}
 			stripe.Config = arduinoStripe.Config
+			for _, t := range o.Setup.Triggers {
+				if t.ArduinoID == arduino.GetID() {
+					for _, i := range arduino.Inputs {
+						if t.ArduinoInputID == i.ArduinoInputID {
+							i.RegisterInputCallback(t.callback)
+						}
+					}
+				}
+			}
 			if o.getArduinoByID(arduino.GetID()) == nil {
 				o.linkedArduinos = append(o.linkedArduinos, arduino)
 			}

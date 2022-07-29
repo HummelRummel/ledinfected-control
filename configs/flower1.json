@@ -26,7 +26,14 @@
     "position": {
       "x": 100,
       "y": 100
-    }
+    },
+    "triggers": [
+      {
+        "trigger_id": "stempel",
+        "arduino_id": 44,
+        "arduino_input_id": 0
+      }
+    ]
   },
   "stripes": [
     {

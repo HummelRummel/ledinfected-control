@@ -207,7 +207,7 @@ func (o *apiServer) arduinoConnectionHandler() {
 				}
 				if !alreadyAdded {
 					fmt.Printf("trying to connect arduino connected via dev-file %s\n", devFile)
-					arduino, err := hummelapi.NewLEDInfectedArduino(devFile)
+					arduino, err := hummelapi.NewLEDInfectedArduino(devFile, o.mqttCore)
 					if err != nil {
 						fmt.Printf("xfailed to get arduino: %s\n", err)
 					} else {
