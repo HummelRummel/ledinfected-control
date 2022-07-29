@@ -60,6 +60,11 @@ func (o *apiServer) getCallbackAbstract(c *gin.Context) (*hummelapi.LEDInfectedA
 	return o.getAbstract(id)
 }
 
+func (o *apiServer) getCallbackPreset(c *gin.Context) (*hummelapi.LEDInfectedPreset, error) {
+	id := c.Param("PresetId")
+	return o.getPreset(id)
+}
+
 func (o *apiServer) getCallbackAbstractAndStripe(c *gin.Context) (*hummelapi.LEDInfectedAbstract, *hummelapi.LEDInfectedAbstractStripe, error) {
 	objectID := c.Param("AbstractId")
 	stripeID := c.Param("StripeId")
@@ -74,6 +79,15 @@ func (o *apiServer) getAbstract(abstractID string) (*hummelapi.LEDInfectedAbstra
 		}
 	}
 	return nil, fmt.Errorf("abstract with id %d not found", abstractID)
+}
+
+func (o *apiServer) getPreset(presetID string) (*hummelapi.LEDInfectedPreset, error) {
+	for _, p := range o.Presets {
+		if p.PresetID == presetID {
+			return p, nil
+		}
+	}
+	return nil, fmt.Errorf("preset with id %d not found", presetID)
 }
 
 func (o *apiServer) getObjectAndStripe(abstractID string, stripeID string) (*hummelapi.LEDInfectedAbstract, *hummelapi.LEDInfectedAbstractStripe, error) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/HummelRummel/ledinfected-controld/cmd/ledinfected-controld/mqtt"
 	"net/http"
 	"path/filepath"
 	"sync"
@@ -16,6 +17,7 @@ type (
 	apiServer struct {
 		customSerialDev string
 
+		mqttCore  *mqtt.Core
 		Arduinos  []*hummelapi.LEDInfectedArduino  `json:"arduinos"`
 		Abstracts []*hummelapi.LEDInfectedAbstract `json:"abstracts"`
 		Presets   []*hummelapi.LEDInfectedPreset   `json:"presets"`
@@ -28,19 +30,26 @@ type (
 )
 
 func newApiServer(customSerialDev string) (*apiServer, error) {
-	abstracts, err := hummelapi.GetAllLEDInfectedAbstracts("./configs")
+	mqttCore, err := mqtt.NewCore("tcp://localhost:1883")
 	if err != nil {
 		return nil, err
 	}
 
 	o := &apiServer{
+		mqttCore:        mqttCore,
 		customSerialDev: customSerialDev,
-		Abstracts:       abstracts,
 		Presets:         hummelapi.GetAllPresets(),
 
 		engine: gin.Default(),
 		stop_:  make(chan struct{}),
 	}
+
+	abstracts, err := hummelapi.GetAllLEDInfectedAbstracts("./configs", o.getPreset, mqttCore)
+	if err != nil {
+		return nil, err
+	}
+	o.Abstracts = abstracts
+
 	o.Acts = hummelapi.GetAllActs(o.getAllAbstracts)
 
 	return o, nil
@@ -55,6 +64,16 @@ func (o *apiServer) run() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		topics := []string{"ledinfected/all/#"}
+		for _, a := range o.Abstracts {
+			topics = append(topics, fmt.Sprintf("ledinfected/%s/#", a.AbstractID))
+		}
+		o.mqttCore.Run("ledinfected", topics, o.mqttUpdateStatus)
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		o.arduinoConnectionHandler()
 	}()
 
@@ -65,6 +84,14 @@ func (o *apiServer) run() {
 	}()
 
 	wg.Wait()
+}
+
+func (o *apiServer) mqttUpdateStatus() {
+	for _, a := range o.Abstracts {
+		if err := a.MQTTUpdateStatus(); err != nil {
+			fmt.Printf("ERROR: failed to update mqtt status topic for abstract %s", a.AbstractID)
+		}
+	}
 }
 
 func (o *apiServer) registerRestAPIEndpoints() {
@@ -90,12 +117,14 @@ func (o *apiServer) registerRestAPIEndpoints() {
 	o.engine.POST("/api/abstract/:AbstractId/stripes/config-stretch", o.setAbstractStripeConfigStretchMultiCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripes/config-overlay", o.setAbstractStripeConfigOverlayMultiCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripes/save", o.setAbstractStripeSaveMultiCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripes/preset/:PresetId", o.setAbstractPresetMultiCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/setup", o.setAbstractStripeSetupCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/setup/save", o.saveAbstractCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/config", o.setAbstractStripeConfigByIDCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/config/save", o.saveAbstractStripeCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette", o.setAbstractStripePaletteByIDCallback)
 	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/palette/save", o.saveAbstractStripeCallback)
+	o.engine.POST("/api/abstract/:AbstractId/stripe/:StripeId/preset/:PresetId", o.setAbstractPresetCallback)
 	o.engine.GET("/api/preset", o.getAllPresetsCallback)
 	o.engine.POST("/api/preset", o.updatePresetCallback)
 	o.engine.PATCH("/api/preset", o.updatePresetCallback)

@@ -3,6 +3,7 @@ package hummelapi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/HummelRummel/ledinfected-controld/cmd/ledinfected-controld/mqtt"
 	"os"
 	"path/filepath"
 	"sync"
@@ -17,6 +18,9 @@ type (
 
 		overwriteBrightness *uint8
 		linkedArduinos      []*LEDInfectedArduino
+		getPreset           func(presetID string) (*LEDInfectedPreset, error)
+		mqtt                *mqtt.Core
+		baseTopic           string
 	}
 	LEDInfectedAbstractGlobalInfo struct {
 		Name    string         `json:"name"`     // human readable name of the abstract
@@ -73,7 +77,7 @@ type (
 	}
 )
 
-func GetAllLEDInfectedAbstracts(configDir string) ([]*LEDInfectedAbstract, error) {
+func GetAllLEDInfectedAbstracts(configDir string, getPreset func(presetID string) (*LEDInfectedPreset, error), mqtt *mqtt.Core) ([]*LEDInfectedAbstract, error) {
 	o := []*LEDInfectedAbstract{}
 
 	matches, err := filepath.Glob(configDir + "/*.json")
@@ -101,12 +105,61 @@ func GetAllLEDInfectedAbstracts(configDir string) ([]*LEDInfectedAbstract, error
 		for _, s := range abstract.Stripes {
 			s.parent = abstract
 		}
+		abstract.mqtt = mqtt
+		abstract.baseTopic = "ledinfected/" + abstract.AbstractID
+		mqtt.RegisterAbstractCallback(abstract.AbstractID, abstract.mqttMessageHandler)
+		abstract.getPreset = getPreset
 		o = append(o, abstract)
 	}
 	return o, nil
 }
 
+func (o *LEDInfectedAbstract) MQTTUpdateStatus() error {
+	online := 0
+	for _, stripe := range o.Stripes {
+		if stripe.Config != nil {
+			online += 1
+		}
+	}
+
+	var status string
+	if online == 0 {
+		status = "offline"
+	} else if len(o.Stripes) == online {
+		status = "online"
+	} else {
+		status = "partly-online"
+	}
+	return o.mqtt.Publish(o.baseTopic+"/status", 0, true, []byte(status))
+}
+
+func (o *LEDInfectedAbstract) mqttMessageHandler(topic string, msg string) {
+	fmt.Printf("[%s]-[%s]: %s\n", o.AbstractID, topic, msg)
+	switch topic {
+	case "status":
+	// nothing to do here
+	case "preset":
+		p, err := o.getPreset(msg)
+		if err != nil {
+			fmt.Printf("WARN: preset not found\n")
+			return
+		}
+		for _, s := range o.Stripes {
+			if s.Config == nil {
+				fmt.Printf("WARN: arduino for stripe %s is offline, preset is not applied\n", s.StripeID)
+				continue
+			}
+			if err := s.LoadPreset(p); err != nil {
+				fmt.Printf("WARN: failed to load preset for stripe %s: %s", s.StripeID, err)
+			}
+		}
+	default:
+		fmt.Printf("unhandled topic\n")
+	}
+}
+
 func (o *LEDInfectedAbstract) UpdateArduino(arduino *LEDInfectedArduino) error {
+	changed := false
 	for _, stripe := range o.Stripes {
 		for _, arduinoStripeSetup := range stripe.Setup.ArduinoStripes {
 			if arduinoStripeSetup.ArduinoID != arduino.GetID() {
@@ -116,11 +169,17 @@ func (o *LEDInfectedAbstract) UpdateArduino(arduino *LEDInfectedArduino) error {
 			if err != nil {
 				return err
 			}
+			if (stripe.Config != nil) != (arduinoStripe.Config != nil) {
+				changed = true
+			}
 			stripe.Config = arduinoStripe.Config
 			if o.getArduinoByID(arduino.GetID()) == nil {
 				o.linkedArduinos = append(o.linkedArduinos, arduino)
 			}
 		}
+	}
+	if changed {
+		return o.MQTTUpdateStatus()
 	}
 	return nil
 }
@@ -132,26 +191,32 @@ func (o *LEDInfectedAbstract) getAllStripeIDs() []string {
 	return stripeIDs
 }
 func (o *LEDInfectedAbstract) ResetArduino(arduino *LEDInfectedArduino) error {
+	changed := false
+	sendMQTTStatusIfChanged := func() error {
+		if changed {
+			return o.MQTTUpdateStatus()
+		}
+		return nil
+	}
 	for _, stripe := range o.Stripes {
 		for _, arduinoStripeSetup := range stripe.Setup.ArduinoStripes {
 			if arduinoStripeSetup.ArduinoID != arduino.GetID() {
 				continue
 			}
-			//		_, err := arduino.GetStripe(stripe.arduinoStrip.StripeID)
-			//		if err != nil {
-			//			return err
-			//		}
+			if stripe.Config != nil {
+				changed = true
+			}
 			stripe.Config = nil
-			//		stripe.arduinoStrip = nil
 		}
 	}
+
 	for i, a := range o.linkedArduinos {
 		if a.GetID() == arduino.GetID() {
 			o.linkedArduinos = append(o.linkedArduinos[:i], o.linkedArduinos[i+1:]...)
-			return nil
+			return sendMQTTStatusIfChanged()
 		}
 	}
-	return nil
+	return sendMQTTStatusIfChanged()
 }
 
 func (o *LEDInfectedAbstract) SetSetup(setup *LEDInfectedAbstractGlobalSetup) error {
@@ -398,6 +463,23 @@ func (o *LEDInfectedAbstract) SaveMulti(stripeIDs ...string) error {
 	return nil
 }
 
+func (o *LEDInfectedAbstract) LoadPresetMulti(p *LEDInfectedPreset, stripeIDs ...string) error {
+	for _, id := range stripeIDs {
+		found := false
+		for _, abStripe := range o.Stripes {
+			if abStripe.StripeID == id {
+				abStripe.LoadPreset(p)
+				found = true
+			}
+		}
+		if !found {
+			return fmt.Errorf("could not found stripe %s", id)
+		}
+	}
+
+	return nil
+}
+
 func (o *LEDInfectedAbstract) GetArduinoStripeConfig() *LEDInfectedArduinoStripeConfig {
 	for _, s := range o.Stripes {
 		if s.Config != nil {
@@ -437,6 +519,27 @@ func (o *LEDInfectedAbstractStripe) SetPalette(palette *LEDInfectedArduinoConfig
 }
 
 func (o *LEDInfectedAbstractStripe) Save() error {
+	for _, s := range o.Setup.ArduinoStripes {
+		if _, stripe := o.parent.getArduinoStripeByID(s.ArduinoID, s.ArduinoStripeID); stripe != nil {
+			if err := stripe.Save(); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (o *LEDInfectedAbstractStripe) LoadPreset(preset *LEDInfectedPreset) error {
+	if preset.Config != nil {
+		if err := o.SetConfig(preset.Config); err != nil {
+			return err
+		}
+	}
+	if preset.Palette != nil {
+		if err := o.SetPalette(preset.Palette); err != nil {
+			return err
+		}
+	}
 	for _, s := range o.Setup.ArduinoStripes {
 		if _, stripe := o.parent.getArduinoStripeByID(s.ArduinoID, s.ArduinoStripeID); stripe != nil {
 			if err := stripe.Save(); err != nil {
